@@ -9,6 +9,7 @@ use yii\web\View;
 <div class="box box-primary">
     <div class="box-header panel-title"><i class="fa fa-list"></i>Set DBM-PS Pricing</div>
     <div class="box-body">
+        <p><i class="fa fa-exclamation-circle"></i> Input current price stated by the DBM Available Items. Remove items not available by clicking <a href="javascript:void(0);" onclick="dbmItems(<?= $model->id?>);" class="dbm-link">here</a>.</p>
         <div id="for-dbm-pricing"></div>
     </div>
 </div>

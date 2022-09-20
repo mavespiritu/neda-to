@@ -9,6 +9,7 @@ use yii\web\View;
 <div class="box box-primary">
     <div class="box-header panel-title"><i class="fa fa-edit"></i>Select RIS Items</div>
     <div class="box-body">
+        <p><i class="fa fa-exclamation-circle"></i> Select items from approved RISs to include in PR.</p>
         <?= $this->render('_items-ris_form', [
             'model' => $model,
             'rises' => $rises

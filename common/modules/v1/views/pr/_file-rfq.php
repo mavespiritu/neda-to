@@ -4,8 +4,9 @@ use yii\helpers\Html;
 
 $asset = AppAsset::register($this);
 ?>
+<link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />
 <style>
-    *{ font-family: "Tahoma"; }
+    *{ font-family: "Tahoma"; font-size: 12px;}
     h3, h4{ text-align: center; } 
     p{ font-family: "Tahoma";}
     table{
@@ -19,17 +20,17 @@ $asset = AppAsset::register($this);
         width: 100%;
     }
     thead{
-        font-size: 12px;
+        font-size: 14px;
     }
 
     table.table-bordered td{
-        font-size: 12px;
+        font-size: 14px;
         border: 1px solid black;
         padding: 3px 3px;
     }
 
     table.table-bordered th{
-        font-size: 12px;
+        font-size: 14px;
         text-align: center;
         border: 1px solid black;
         padding: 3px 3px;
@@ -37,13 +38,13 @@ $asset = AppAsset::register($this);
 </style>
 
 <div class="rfq-content">
-    <div style="width: 60%; margin-left: 15%;" class="text-center">
-        <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left;" />
-        Republic of the Philippines<br>
+    <div style="width: 100%;" class="text-center flex-center">
+        <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left; z-index: 2; padding-right: 20px;" />
+        <p class="text-center" style="float: left;">Republic of the Philippines<br>
         <b><?= $agency->value ?></b><br>
         <?= $regionalOffice->value ?><br>
         <?= $address->value ?><br>  
-        Email Add: <?= $email->value ?>, Tel. Nos.: <?= $telephoneNos->value ?></div>
+        Email Add: <?= $email->value ?>, Tel. Nos.: <?= $telephoneNos->value ?></p>
     </div>
     <h3 class="text-center"><u>REQUEST FOR QUOTATION</u></h3>
     <table style="width: 100%;">
@@ -110,7 +111,8 @@ $asset = AppAsset::register($this);
                 <td align=center><b>QTY.</b></td>
                 <td align=center><b>UNIT</b></td>
                 <td align=center><b>ITEM DESCRIPTION</b></td>
-                <td align=center><b>ABC PRICE</b></td>
+                <td align=center><b>BRAND & MODEL</b></td>
+                <td align=center><b>TOTAL ABC PRICE <br> PER ITEM</b></td>
                 <td align=center><b>UNIT PRICE</b></td>
                 <td align=center><b>TOTAL AMOUNT</b></td>
             </tr>
@@ -124,6 +126,7 @@ $asset = AppAsset::register($this);
                         <td align=center><?= number_format($item['total'], 0) ?></td>
                         <td align=center><?= $item['unit'] ?></td>
                         <td><?= $item['item'] ?></td>
+                        <td>&nbsp;</td>
                         <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                         <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 90px;"></span></td>
                         <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 90px;"></span></td>
@@ -134,6 +137,7 @@ $asset = AppAsset::register($this);
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td align=center><i>(Please see attached Specifications for your reference.)</i></td>
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -149,15 +153,18 @@ $asset = AppAsset::register($this);
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                 </tr>
             <?php } ?>
         </tbody>
     </table>
     <p style="text-indent: 50px;">After having carefully read and accepted your General Conditions, I/We quote you the Gross Price (inclusive  of tax) on the item/items stated above.</p>
     <br>
+    <br>
+    <br>
     <p><span style="display: inline-block; float: right; border-bottom: 1px solid black; width: 300px;"></span></p>
     <p style="clear: both;"></p>
-    <p style="float: right; text-align: center;">Signature over Printed Name of Authorized <br> Representative</p>
+    <p style="float: right; text-align: center;">Signature over Printed Name of Authorized <br> Representative/Owner</p>
     <br>
     <br>
     <br>

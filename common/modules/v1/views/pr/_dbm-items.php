@@ -9,12 +9,14 @@ use yii\web\View;
 <div class="box box-primary">
     <div class="box-header panel-title"><i class="fa fa-list"></i>For APR</div>
     <div class="box-body">
+        <p><i class="fa fa-exclamation-circle"></i> Items included in this table will be subjected for APR to DBM.</p>
         <div id="for-apr-items"></div>
     </div>
 </div>
 <div class="box box-primary">
     <div class="box-header panel-title"><i class="fa fa-list"></i>For RFQ</div>
     <div class="box-body">
+        <p><i class="fa fa-exclamation-circle"></i> Items included in this table will be subjected for RFQ.</p>
         <div id="for-rfq-items"></div>
     </div>
 </div>

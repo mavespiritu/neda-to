@@ -26,6 +26,7 @@ class Settings extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['value'], 'required'],
             [['value'], 'string'],
             [['title'], 'string', 'max' => 100],
         ];

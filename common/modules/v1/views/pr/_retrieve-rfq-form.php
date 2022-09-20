@@ -52,7 +52,7 @@ use yii\bootstrap\Modal;
         ?>
     </div>
 </div>
-
+<p><i class="fa fa-exclamation-circle"></i> Set amount to zero if supplier does not include the item.</p>
 <table class="table table-bordered table-responsive table-hover table-condensed">
     <thead>
         <tr>
@@ -60,7 +60,7 @@ use yii\bootstrap\Modal;
             <th>Unit</th>
             <th>Item</th>
             <th>Quantity</th>
-            <th>Current Price</th>
+            <th>PPMP Price</th>
             <th>Unit Price</th>
             <th>Total Cost</th>
         </tr>
@@ -91,8 +91,9 @@ use yii\bootstrap\Modal;
                     ],
                 ])->label(false) ?>
                 </td>
-                <td align=right><p id="total-pricing-<?= $item['id'] ?>">0.00</p></td>
+                <td align=right><p id="total-pricing-<?= $item['id'] ?>"><?= isset($costModels[$item['id']]['cost']) ? number_format($item['total'] * $costModels[$item['id']]['cost'], 2) : '0.00' ?></p></td>
             </tr>
+            <?php $total += isset($costModels[$item['id']]['cost']) ? $item['total'] * $costModels[$item['id']]['cost'] : 0 ?>
             <?php $i++; ?>
         <?php } ?>
     <?php }else{ ?>
@@ -102,7 +103,7 @@ use yii\bootstrap\Modal;
     <?php } ?>
     <tr>
         <td colspan=6 align=right><b>ABC:</b></td>
-        <td align=right><b><p id="grand-total-pricing"><?= number_format(0, 2) ?></p></b></td>
+        <td align=right><b><p id="grand-total-pricing"><?= number_format($total, 2) ?></p></b></td>
         <?= Html::hiddenInput('grandtotal-pricing-hidden', 0, ['id' => 'grandtotal-pricing-hidden']) ?>
     </tr>
     </tbody>
@@ -116,17 +117,6 @@ use yii\bootstrap\Modal;
 <div class="clearfix"></div>
 
 <?php ActiveForm::end(); ?>
-
-<?php
-  Modal::begin([
-    'id' => 'create-supplier-modal',
-    'size' => "modal-lg",
-    'header' => '<div id="create-supplier-modal-header"><h4>Register Supplier</h4></div>',
-    'options' => ['tabindex' => false],
-  ]);
-  echo '<div id="create-supplier-modal-content"></div>';
-  Modal::end();
-?>
 
 <?php
     $script = '

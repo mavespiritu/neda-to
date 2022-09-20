@@ -158,18 +158,25 @@ $i = 1;
 <br>
 <table style="width: 100%;">
     <tr>
-        <td>Signature:</td>
+        <td>&nbsp;</td>
         <td>Requested By:</td>
         <td>Approved By:</td>
         <td>Issued By:</td>
         <td>Received By:</td>
     </tr>
     <tr>
+        <td>Signature:</td>
+        <td><br><br></td>
+        <td><br><br></td>
+        <td><br><br></td>
+        <td><br><br></td>
+    </tr>
+    <tr>
         <td>Printed Name:</td>
-        <td><br><?= $model->requesterName ?></td>
-        <td><br><?= $model->approverName ?></td>
-        <td><br><?= $model->issuerName ?></td>
-        <td><br><?= $model->receiverName ?></td>
+        <td><?= $model->requesterName ?></td>
+        <td><?= $model->approverName ?></td>
+        <td><?= $model->issuerName ?></td>
+        <td><?= $model->receiverName ?></td>
     </tr>
     <tr>
         <td>Designation:</td>

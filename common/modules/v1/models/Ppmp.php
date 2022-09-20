@@ -295,6 +295,7 @@ class Ppmp extends \yii\db\ActiveRecord
                         // update cost if not equal years : use updated cost, else use ppmp cost
                         $items = $this->year != $model->year ? PpmpItem::find()
                         ->select([
+                            'ppmp_ppmp_item.id',
                             'activity_id',
                             'fund_source_id',
                             'sub_activity_id',
@@ -310,7 +311,7 @@ class Ppmp extends \yii\db\ActiveRecord
                         ->createCommand()
                         ->getRawSql() : PpmpItem::find()
                         ->select([
-                            'id',
+                            'ppmp_ppmp_item.id',
                             'activity_id',
                             'fund_source_id',
                             'sub_activity_id',

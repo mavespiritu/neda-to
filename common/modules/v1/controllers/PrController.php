@@ -6,6 +6,10 @@ use Yii;
 use common\modules\v1\models\Pr;
 use common\modules\v1\models\Apr;
 use common\modules\v1\models\Rfq;
+use common\modules\v1\models\Bid;
+use common\modules\v1\models\BidMember;
+use common\modules\v1\models\BidWinner;
+use common\modules\v1\models\BacMember;
 use common\modules\v1\models\RfqInfo;
 use common\modules\v1\models\AprItem;
 use common\modules\v1\models\PrSearch;
@@ -72,7 +76,7 @@ class PrController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index'],
+                'only' => ['index', 'view'],
                 'rules' => [
                     [
                         'actions' => ['index', 'create', 'update', 'view', 'delete'],
@@ -1447,9 +1451,6 @@ class PrController extends Controller
                 $items[$key]['label'] = '<table style="width:100%;" id="rfq-table-modal-'.$rfq->id.'">';
                 $items[$key]['label'] .= '<tr>';
                 $items[$key]['label'] .= '<td>RFQ No. '.$rfq->rfq_no.'</td>';
-                $items[$key]['label'] .= '<td align=right>';
-                $items[$key]['label'] .= '<a href="javascript:void(0);" onclick="printRfq('.$rfq->id.');"><i class="fa fa-print"></i></a>&nbsp;&nbsp;';
-                $items[$key]['label'] .= '</td>';
                 $items[$key]['label'] .= '</tr>';
                 $items[$key]['label'] .= '</table>';
                 $items[$key]['content'] = $this->renderAjax('_rfq', [
@@ -1490,44 +1491,88 @@ class PrController extends Controller
                     ->all();
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+        $bids = [];
+        $suppliers = [];
+        $winners = [];
+        if($rfqs)
+        {
+            foreach($rfqs as $rfq)
+            {
+                $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+                $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
 
-        $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
-        $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+                $supplierList = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+
+                $suppliers[$rfq->id] = $supplierList;
+                $bids[$rfq->id] = Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]) ? Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]) : [];
+
+                $bidWinners = !empty($bids[$rfq->id]) ? BidWinner::find()->andWhere(['bid_id' => $bids[$rfq->id]->id])->asArray()->all() : [];
+                if(!empty($bidWinners))
+                {
+                    foreach($bidWinners as $bidWinner)
+                    {
+                        if(!empty($bidWinner)){
+                            $winners[$rfq->id][$bidWinner['pr_item_id']][$bidWinner['supplier_id']] = $bidWinner; 
+                            $winners[$rfq->id][$bidWinner['pr_item_id']]['justification'] = $bidWinner['justification']; 
+                        }
+                        $winners[$rfq->id][$bidWinner['pr_item_id']]['winner'] = Supplier::findOne($bidWinner['supplier_id']) ? Supplier::findOne($bidWinner['supplier_id']) : []; 
+                    }
+                }
+            }
+        }
 
         $rfqItems = PrItem::find()
-            ->select([
-                'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
-                'ppmp_item.id as item_id',
-                'ppmp_item.title as item',
-                'ppmp_item.unit_of_measure as unit',
-                'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total',
-            ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
-            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere([
-                'ppmp_pr_item.pr_id' => $model->id,
-            ])
-            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-            ->asArray()
-            ->all();
+                    ->select([
+                        'ppmp_pr_item.id as id',
+                        's.id as ris_item_spec_id',
+                        'ppmp_item.id as item_id',
+                        'ppmp_item.title as item',
+                        'ppmp_item.unit_of_measure as unit',
+                        'ppmp_pr_item.cost as cost',
+                        'sum(ppmp_pr_item.quantity) as total'
+                    ])
+                    ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                    ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                    ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                    ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                        s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                        s.item_id = ppmp_ppmp_item.item_id and 
+                                                        s.cost = ppmp_pr_item.cost and 
+                                                        s.type = ppmp_pr_item.type')
+                    ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                    ->andWhere([
+                        'ppmp_pr_item.pr_id' => $model->id,
+                    ])
+                    ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+                    ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                    ->asArray()
+                    ->all();
         
         $rfqItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
         
-        $rfqItemCosts = PrItemCost::find()->where(['in', 'pr_item_id', $rfqItemIDs])->asArray()->all();
+        $itemCosts = PrItemCost::find()
+                    ->andWhere(['in', 'pr_item_id', $rfqItemIDs])
+                    ->asArray()
+                    ->all();
+        
+        $costs = [];
+                
+        if(!empty($itemCosts))
+        {
+            foreach($itemCosts as $cost)
+            {
+                $costs[$cost['rfq_id']][$cost['pr_item_id']][$cost['supplier_id']] = $cost;
+            }
+        }
 
         return $this->renderAjax('_retrieve-quotation', [
             'model' => $model,
             'rfqs' => $rfqs,
+            'bids' => $bids,
+            'rfqItems' => $rfqItems,
+            'costs' => $costs,
+            'suppliers' => $suppliers,
+            'winners' => $winners,
         ]);
     }
 
@@ -1574,14 +1619,13 @@ class PrController extends Controller
                                                 s.cost = ppmp_pr_item.cost and 
                                                 s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere([
-                'ppmp_pr_item.pr_id' => $model->id,
-            ])
+            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            
             ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
             ->asArray()
             ->all();
-        
+
         $itemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
         
         $costModels = [];
@@ -1662,6 +1706,733 @@ class PrController extends Controller
             'specifications' => $specifications,
             'itemIDs' => $itemIDs,
         ]);
+    }
+
+    public function actionUpdateRetrieveRfq($id, $rfq_id, $supplier_id)
+    {
+        $model = $this->findModel($id);
+
+        $rfqInfoModel = RfqInfo::findOne(['rfq_id' => $rfq_id, 'supplier_id' => $supplier_id]);
+
+        $existingSupplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id])->andWhere(['<>', 'supplier_id', 1])->andWhere(['<>', 'supplier_id', $supplier_id])->groupBy(['supplier_id'])->asArray()->all();
+        $existingSupplierIDs = ArrayHelper::map($existingSupplierIDs, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()->select(['id', 'concat(business_name," (",business_address,")") as title'])->where(['not in', 'id', $existingSupplierIDs])->andWhere(['<>', 'id', 1])->asArray()->all();
+        $suppliers = ArrayHelper::map($suppliers, 'id', 'title');
+
+        $rfqs = Rfq::find()->select(['id', 'concat("RFQ No. ",rfq_no) as title'])->where(['pr_id' => $model->id])->asArray()->all();
+        $rfqs = ArrayHelper::map($rfqs, 'id', 'title');
+
+        $aprItemIDs = AprItem::find()
+            ->select(['pr_item_id'])
+            ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+            ->where(['pr_id' => $model->id])
+            ->asArray()
+            ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total',
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->asArray()
+            ->all();
+
+        $itemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
+        
+        $costModels = [];
+        $specifications = [];
+
+        if(!empty($rfqItems))
+        {
+            foreach($rfqItems as $item)
+            {
+                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]);
+
+                $costModels[$item['id']] = $cost;
+
+                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                if($specs){ $specifications[$item['id']] = $specs; }
+            }
+        }
+
+        if($rfqInfoModel->load(Yii::$app->request->post()) && MultipleModel::loadMultiple($costModels, Yii::$app->request->post()))
+        {
+            if($rfqInfoModel->save())
+            {
+                if(!empty($costModels))
+                {
+                    foreach($costModels as $costModel)
+                    {
+                        $item = PrItem::findOne($costModel->pr_item_id);
+  
+                        $includedItems = PrItem::find()
+                            ->select(['ppmp_pr_item.id as id'])
+                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                            ->andWhere([
+                                'ppmp_pr_item.pr_id' => $costModel->pr_id,
+                                'ppmp_item.id' => $item->ppmpItem->item_id,
+                                'ppmp_pr_item.cost' => $item->cost,
+                            ])
+                            ->all();
+                        
+                        $includedItems = ArrayHelper::map($includedItems, 'id', 'id');
+
+                        if(!empty($includedItems))
+                        {
+                            foreach($includedItems as $includedItem)
+                            {
+                                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfqInfoModel->rfq_id, 'supplier_id' => $rfqInfoModel->supplier_id, 'pr_item_id' => $includedItem]);
+                                $cost->cost = $costModel->cost;
+                                $cost->save(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $this->renderAjax('_retrieve-rfq-form', [
+            'model' => $model,
+            'rfqInfoModel' => $rfqInfoModel,
+            'rfqs' => $rfqs,
+            'rfqItems' => $rfqItems,
+            'suppliers' => $suppliers,
+            'costModels' => $costModels,
+            'specifications' => $specifications,
+            'itemIDs' => $itemIDs,
+        ]);
+    }
+
+    public function actionBid($id, $rfq_id)
+    {
+        $model = $this->findModel($id);
+
+        $chair = Settings::findOne(['title' => 'BAC Chairperson']);
+        $viceChair = Settings::findOne(['title' => 'BAC Vice-Chairperson']);
+        $member = Settings::findOne(['title' => 'BAC Member']);
+        $endUser = BacMember::findOne(['office_id' => $model->office_id, 'bac_group' => 'End User']);
+
+        $signatories = Signatory::find()->all();
+        $signatories = ArrayHelper::map($signatories, 'emp_id', 'name');
+
+        $experts = BacMember::find()
+                ->select(['ppmp_signatory.emp_id', 'ppmp_signatory.name'])
+                ->leftJoin('ppmp_signatory','ppmp_signatory.emp_id = ppmp_bac_member.emp_id')
+                ->where(['bac_group' => 'Technical Expert'])
+                ->asArray()
+                ->all();
+        
+        $experts = ArrayHelper::map($experts, 'emp_id', 'name');
+
+        $endUsers = BacMember::find()
+                ->select(['ppmp_signatory.emp_id', 'ppmp_signatory.name'])
+                ->leftJoin('ppmp_signatory','ppmp_signatory.emp_id = ppmp_bac_member.emp_id')
+                ->leftJoin('tbloffice', 'tbloffice.id = ppmp_signatory.office_id')
+                ->where(['tbloffice.abbreviation' => $model->office_id, 'bac_group' => 'End User'])
+                ->asArray()
+                ->all();
+
+        $endUsers = ArrayHelper::map($endUsers, 'emp_id', 'name');
+
+        $bidModel = new Bid();
+        $bidModel->pr_id = $model->id;
+        $bidModel->rfq_id = $rfq_id;
+
+        $memberModels = [];
+        $chairModel = new BidMember();
+        $chairModel->emp_id = $chair->value;
+        $chairModel->position = 'BAC Chairperson';
+        $memberModels[$chairModel->position] = $chairModel;
+
+        $viceChairModel = new BidMember();
+        $viceChairModel->emp_id = $viceChair->value;
+        $viceChairModel->position = 'BAC Vice-Chairperson';
+        $memberModels[$viceChairModel->position] = $viceChairModel;
+
+        $memberModel = new BidMember();
+        $memberModel->emp_id = $member->value;
+        $memberModel->position = 'BAC Member';
+        $memberModels[$memberModel->position] = $memberModel;
+
+        $expertModel = new BidMember();
+        $expertModel->position = 'Provisional Member';
+        $memberModels[$expertModel->position] = $expertModel;
+
+        $endUserModel = new BidMember();
+        $endUserModel->emp_id = $endUser->emp_id;
+        $endUserModel->position = 'Provisional Member - End User';
+        $memberModels[$endUserModel->position] = $endUserModel;
+
+        if($bidModel->load(Yii::$app->request->post()) && MultipleModel::loadMultiple($memberModels, Yii::$app->request->post()))
+        {
+            $time = str_pad($bidModel->time_opened, 2, '0', STR_PAD_LEFT).':'.str_pad($bidModel->minute, 2, '0', STR_PAD_LEFT).' '.$bidModel->meridian;
+            $bidModel->bid_no = $model->pr_no.'-00';
+            $bidModel->time_opened = $time;
+            if($bidModel->save())
+            {
+                $chairModel->bid_id = $bidModel->id;
+                $chairModel->save();
+
+                $viceChairModel->bid_id = $bidModel->id;
+                $viceChairModel->save();
+
+                $memberModel->bid_id = $bidModel->id;
+                $memberModel->save();
+
+                $expertModel->bid_id = $bidModel->id;
+                $expertModel->save();
+
+                $endUserModel->bid_id = $bidModel->id;
+                $endUserModel->save();
+            }
+        }
+
+        return $this->renderAjax('_bid-form', [
+            'model' => $model,
+            'signatories' => $signatories,
+            'experts' => $experts,
+            'endUsers' => $endUsers,
+            'bidModel' => $bidModel,
+            'memberModels' => $memberModels,
+            'chairModel' => $chairModel,
+            'viceChairModel' => $viceChairModel,
+            'memberModel' => $memberModel,
+            'expertModel' => $expertModel,
+            'endUserModel' => $endUserModel,
+        ]);
+    }
+
+    public function actionUpdateBid($id)
+    {
+        $bidModel = Bid::findOne(['id' => $id]);
+        $model = $this->findModel($bidModel->pr_id);
+
+        $chair = Settings::findOne(['title' => 'BAC Chairperson']);
+        $viceChair = Settings::findOne(['title' => 'BAC Vice-Chairperson']);
+        $member = Settings::findOne(['title' => 'BAC Member']);
+        $endUser = BacMember::findOne(['office_id' => $model->office_id, 'bac_group' => 'End User']);
+
+        $signatories = Signatory::find()->all();
+        $signatories = ArrayHelper::map($signatories, 'emp_id', 'name');
+
+        $experts = BacMember::find()
+                ->select(['ppmp_signatory.emp_id', 'ppmp_signatory.name'])
+                ->leftJoin('ppmp_signatory','ppmp_signatory.emp_id = ppmp_bac_member.emp_id')
+                ->where(['bac_group' => 'Technical Expert'])
+                ->asArray()
+                ->all();
+        
+        $experts = ArrayHelper::map($experts, 'emp_id', 'name');
+
+        $endUsers = BacMember::find()
+                ->select(['ppmp_signatory.emp_id', 'ppmp_signatory.name'])
+                ->leftJoin('ppmp_signatory','ppmp_signatory.emp_id = ppmp_bac_member.emp_id')
+                ->leftJoin('tbloffice', 'tbloffice.id = ppmp_signatory.office_id')
+                ->where(['tbloffice.abbreviation' => $model->office_id, 'bac_group' => 'End User'])
+                ->asArray()
+                ->all();
+
+        $endUsers = ArrayHelper::map($endUsers, 'emp_id', 'name');
+
+        $memberModels = [];
+        $chairModel = BidMember::findOne(['bid_id' => $bidModel->id, 'position' => 'BAC Chairperson']);
+        $memberModels[$chairModel->position] = $chairModel;
+
+        $viceChairModel = BidMember::findOne(['bid_id' => $bidModel->id, 'position' => 'BAC Vice-Chairperson']);
+        $memberModels[$viceChairModel->position] = $viceChairModel;
+
+        $memberModel = BidMember::findOne(['bid_id' => $bidModel->id, 'position' => 'BAC Member']);
+        $memberModels[$memberModel->position] = $memberModel;
+
+        $expertModel = BidMember::findOne(['bid_id' => $bidModel->id, 'position' => 'Provisional Member']);
+        $memberModels[$expertModel->position] = $expertModel;
+
+        $endUserModel = BidMember::findOne(['bid_id' => $bidModel->id, 'position' => 'Provisional Member - End User']);
+        $memberModels[$endUserModel->position] = $endUserModel;
+
+        $timeArray = explode(" ",$bidModel->time_opened);
+        $time = explode(":", $timeArray[0]);
+        $bidModel->time_opened = $time[0];
+        $bidModel->minute = isset($time[1]) ? $time[1] : '00';
+        $bidModel->meridian = isset($timeArray[1]) ? $timeArray[1] : 'AM';
+
+        if($bidModel->load(Yii::$app->request->post()) && MultipleModel::loadMultiple($memberModels, Yii::$app->request->post()))
+        {
+            $time = str_pad($bidModel->time_opened, 2, '0', STR_PAD_LEFT).':'.str_pad($bidModel->minute, 2, '0', STR_PAD_LEFT).' '.$bidModel->meridian;
+            $bidModel->time_opened = $time;
+            if($bidModel->save())
+            {
+                $chairModel->bid_id = $bidModel->id;
+                $chairModel->save();
+
+                $viceChairModel->bid_id = $bidModel->id;
+                $viceChairModel->save();
+
+                $memberModel->bid_id = $bidModel->id;
+                $memberModel->save();
+
+                $expertModel->bid_id = $bidModel->id;
+                $expertModel->save();
+
+                $endUserModel->bid_id = $bidModel->id;
+                $endUserModel->save();
+            }
+        }
+
+        return $this->renderAjax('_bid-form', [
+            'model' => $model,
+            'signatories' => $signatories,
+            'experts' => $experts,
+            'endUsers' => $endUsers,
+            'bidModel' => $bidModel,
+            'memberModels' => $memberModels,
+            'chairModel' => $chairModel,
+            'viceChairModel' => $viceChairModel,
+            'memberModel' => $memberModel,
+            'expertModel' => $expertModel,
+            'endUserModel' => $endUserModel,
+        ]);
+    }
+
+    public function actionDeleteBid($id)
+    {
+        $bid = Bid::findOne(['id' => $id]);
+        $bid->delete();
+    }
+
+    public function actionWinner($id)
+    {
+        $bid = Bid::findOne(['id' => $id]);
+        $rfq = Rfq::findOne(['id' => $bid->rfq_id]);
+        $model = $this->findModel($bid->pr_id);
+        $letters = range('A', 'Z');
+
+
+        $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+        $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+
+        $supplierList = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+        $supplierLetters = [];
+
+        if($supplierList)
+        {
+            foreach($supplierList as $idx => $supp)
+            {
+                $supplierLetters[$supp->id] = $letters[$idx];
+            }
+        }
+
+        $aprItemIDs = AprItem::find()
+            ->select(['pr_item_id'])
+            ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+            ->where(['pr_id' => $model->id])
+            ->asArray()
+            ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total',
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->asArray()
+            ->all();
+        
+        $rfqItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
+        
+        $suppliers = [];
+        $winnerModels = [];
+        
+        if(!empty($rfqItems))
+        {
+            foreach($rfqItems as $item)
+            {
+                $winnerModel = BidWinner::findOne(['bid_id' => $bid->id, 'pr_item_id' => $item['id']]) ? BidWinner::findOne(['bid_id' => $bid->id, 'pr_item_id' => $item['id']]) : new BidWinner();
+                $winnerModel->bid_id = $bid->id;
+                $winnerModel->pr_item_id = $item['id'];
+                $winnerModel->supplier_id = is_null($winnerModel->supplier_id) ? 0 : $winnerModel->supplier_id;
+
+                $bidders = PrItemCost::find()
+                ->select(['supplier_id'])
+                ->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id, 'pr_item_id' => $item['id']])
+                ->andWhere(['>', 'cost', 0])
+                ->asArray()
+                ->all();
+
+                $bidders = ArrayHelper::map($bidders, 'supplier_id', 'supplier_id');
+                $bidderIDs = [];
+                $bidders = Supplier::find()->select(['id', 'concat(business_name," (",business_address,")") as title'])->where(['in', 'id', $bidders])->andWhere(['<>', 'id', 1])->asArray()->all();
+                if(!empty($bidders))
+                {
+                    foreach($bidders as $idx => $bidder)
+                    {
+                        $bidderIDs[$bidder['id']] = $supplierLetters[$bidder['id']];
+                    }
+                }
+
+                $suppliers[$item['id']] = $bidderIDs;
+                $suppliers[$item['id']]['0'] = 'Failed';
+                $winnerModels[$item['id']] = $winnerModel;
+            }
+        }
+
+        $itemCosts = PrItemCost::find()
+                    ->andWhere(['in', 'pr_item_id', $rfqItemIDs])
+                    ->asArray()
+                    ->all();
+        
+        $costs = [];
+                
+        if(!empty($itemCosts))
+        {
+            foreach($itemCosts as $cost)
+            {
+                $costs[$cost['pr_item_id']][$cost['supplier_id']] = $cost;
+            }
+        }
+
+        if(MultipleModel::loadMultiple($winnerModels, Yii::$app->request->post()))
+        {
+            if(!empty($winnerModels))
+            {
+                foreach($winnerModels as $winner)
+                {
+                    $winner->supplier_id = $winner->supplier_id == 0 ? null : $winner->supplier_id;
+                    $winner->status = $winner->supplier_id == 0 ? 'Failed' : 'Awarded';
+                    $winner->save(false);
+                }
+            }
+        }
+
+        return $this->renderAjax('_winner-form', [
+            'model' => $model,
+            'winnerModels' => $winnerModels,
+            'bid' => $bid,
+            'rfq' => $rfq,
+            'rfqItems' => $rfqItems,
+            'suppliers' => $suppliers,
+            'supplierList' => $supplierList,
+            'supplierIDs' => $supplierIDs,
+            'rfqItemIDs' => $rfqItemIDs,
+            'costs' => $costs,
+        ]);
+    }
+
+    public function actionAoq($id)
+    {
+        $model = $this->findModel($id);
+
+        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+
+        $items = [];
+
+        if($rfqs)
+        {
+            foreach($rfqs as $key => $rfq)
+            {
+                $agency = Settings::findOne(['title' => 'Agency Name']);
+                $regionalOffice = Settings::findOne(['title' => 'Regional Office']);
+                $address = Settings::findOne(['title' => 'Address']);
+                $email = Settings::findOne(['title' => 'Email']);
+                $telephoneNos = Settings::findOne(['title' => 'Telephone Nos.']);
+                $regionalDirector = Settings::findOne(['title' => 'Regional Director']);
+                $bid = Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]);
+                $bidWinners = $bid ? BidWinner::findAll(['bid_id' => $bid->id]) : [];
+                $bidMembers = $bid ? BidMember::findAll(['bid_id' => $bid->id]) : [];
+                $specifications = [];
+                $forContractItems = [];
+
+                $aprItemIDs = AprItem::find()
+                            ->select(['pr_item_id'])
+                            ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+                            ->where(['pr_id' => $model->id])
+                            ->asArray()
+                            ->all();
+
+                $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+                $rfqItems = PrItem::find()
+                    ->select([
+                        'ppmp_ris.id as ris_id',
+                        'ppmp_pr_item.id as id',
+                        's.id as ris_item_spec_id',
+                        'ppmp_item.id as item_id',
+                        'ppmp_item.title as item',
+                        'ppmp_item.unit_of_measure as unit',
+                        'ppmp_pr_item.cost as cost',
+                        'sum(ppmp_pr_item.quantity) as total'
+                    ])
+                    ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                    ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                    ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                    ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                        s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                        s.item_id = ppmp_ppmp_item.item_id and 
+                                                        s.cost = ppmp_pr_item.cost and 
+                                                        s.type = ppmp_pr_item.type')
+                    ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                    ->andWhere([
+                        'ppmp_pr_item.pr_id' => $model->id,
+                    ])
+                    ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+                    ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                    ->asArray()
+                    ->all();
+                
+                $risIDs = ArrayHelper::map($rfqItems, 'ris_id', 'ris_id');
+                $risNumbers = Ris::find()->select(['ris_no'])->where(['in', 'id', $risIDs])->asArray()->all();
+                $risNumbers = ArrayHelper::map($risNumbers, 'ris_no', 'ris_no');
+                $risNumbers = implode(", ", $risNumbers);
+
+                $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+                $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+
+                $supplierList = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+                $prices = [];
+                $colors = [];
+                $winners = [];
+                $justifications = [];
+
+                    if(!empty($rfqItems))
+                    {
+                        foreach($rfqItems as $item)
+                        {
+                            $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                            if($specs){ $specifications[$item['id']] = $specs; }
+            
+                            $forContractItem = ForContractItem::findOne(['item_id' => $item['item_id']]);
+                            if($forContractItem){ $forContractItems[$item['id']] = $forContractItem; }
+                            
+                            $winner = $bid ? BidWinner::findOne(['bid_id' => $bid->id, 'pr_item_id' => $item['id'], 'status' => 'Awarded']) : []; 
+                            $winners[$item['id']] = !empty($winner) ? Supplier::findOne(['id' => $winner->supplier_id]) : [];
+                            $justifications[$item['id']] = !empty($winner) ? $winner->justification : '';
+                            if($supplierList)
+                            {
+                                foreach($supplierList as $sup)
+                                {
+                                    $prices[$item['id']][$sup->id] = PrItemCost::findOne(['pr_id' => $model->id, 'pr_item_id' => $item['id'], 'rfq_id' => $rfq->id, 'supplier_id' => $sup->id]);
+                                    $colors[$item['id']][$sup->id] = !empty($winner) ? $winner->supplier_id == $sup->id ? 'yellow' : 'transparent' : 'transparent';
+                                }
+                            }
+                        }
+                    }
+
+                if($bid)
+                {
+                $items[$key]['label'] = '<table style="width:100%;" id="aoq-table-modal-'.$rfq->id.'">';
+                $items[$key]['label'] .= '<tr>';
+                $items[$key]['label'] .= '<td>Canvass/Bid No. '.$bid->bid_no.'</td>';
+                $items[$key]['label'] .= '</tr>';
+                $items[$key]['label'] .= '</table>';
+                $items[$key]['content'] = $this->renderAjax('_aoq', [
+                    'model' => $model,
+                    'bid' => $bid,
+                    'prices' => $prices,
+                    'colors' => $colors,
+                    'winners' => $winners,
+                    'justifications' => $justifications,
+                    'bidMembers' => $bidMembers,
+                    'rfq' => $rfq,
+                    'rfqItems' => $rfqItems,
+                    'specifications' => $specifications,
+                    'agency' => $agency,
+                    'regionalOffice' => $regionalOffice,
+                    'address' => $address,
+                    'email' => $email,
+                    'telephoneNos' => $telephoneNos,
+                    'forContractItems' => $forContractItems,
+                    'risNumbers' => $risNumbers,
+                    'supplierList' => $supplierList,
+                    'regionalDirector' => $regionalDirector,
+                ]);
+                $items[$key]['options'] = ['class' => 'panel panel-info'];
+                }
+            }
+        }
+
+        return $this->renderAjax('_aoq-modal', [
+            'model' => $model,
+            'rfqs' => $rfqs,
+            'items' => $items,
+        ]);
+    }
+
+    public function actionPrintAoq($id, $rfq_id)
+    {
+        $model = $this->findModel($id);
+        $rfq = Rfq::findOne($rfq_id);
+
+        $items = [];
+
+        $agency = Settings::findOne(['title' => 'Agency Name']);
+        $regionalOffice = Settings::findOne(['title' => 'Regional Office']);
+        $address = Settings::findOne(['title' => 'Address']);
+        $email = Settings::findOne(['title' => 'Email']);
+        $telephoneNos = Settings::findOne(['title' => 'Telephone Nos.']);
+        $regionalDirector = Settings::findOne(['title' => 'Regional Director']);
+        $bid = Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]);
+        $bidWinners = $bid ? BidWinner::findAll(['bid_id' => $bid->id]) : [];
+        $bidMembers = $bid ? BidMember::findAll(['bid_id' => $bid->id]) : [];
+        $specifications = [];
+        $forContractItems = [];
+
+        $aprItemIDs = AprItem::find()
+                    ->select(['pr_item_id'])
+                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+                    ->where(['pr_id' => $model->id])
+                    ->asArray()
+                    ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_ris.id as ris_id',
+                'ppmp_pr_item.id as id',
+                's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->asArray()
+            ->all();
+        
+        $risIDs = ArrayHelper::map($rfqItems, 'ris_id', 'ris_id');
+        $risNumbers = Ris::find()->select(['ris_no'])->where(['in', 'id', $risIDs])->asArray()->all();
+        $risNumbers = ArrayHelper::map($risNumbers, 'ris_no', 'ris_no');
+        $risNumbers = implode(", ", $risNumbers);
+
+        $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+        $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+
+        $supplierList = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+        $prices = [];
+        $colors = [];
+        $winners = [];
+        $justifications = [];
+
+            if(!empty($rfqItems))
+            {
+                foreach($rfqItems as $item)
+                {
+                    $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                    if($specs){ $specifications[$item['id']] = $specs; }
+    
+                    $forContractItem = ForContractItem::findOne(['item_id' => $item['item_id']]);
+                    if($forContractItem){ $forContractItems[$item['id']] = $forContractItem; }
+                    
+                    $winner = $bid ? BidWinner::findOne(['bid_id' => $bid->id, 'pr_item_id' => $item['id'], 'status' => 'Awarded']) : []; 
+                    $winners[$item['id']] = !empty($winner) ? Supplier::findOne(['id' => $winner->supplier_id]) : [];
+                    $justifications[$item['id']] = !empty($winner) ? $winner->justification : '';
+                    if($supplierList)
+                    {
+                        foreach($supplierList as $sup)
+                        {
+                            $prices[$item['id']][$sup->id] = PrItemCost::findOne(['pr_id' => $model->id, 'pr_item_id' => $item['id'], 'rfq_id' => $rfq->id, 'supplier_id' => $sup->id]);
+                            $colors[$item['id']][$sup->id] = !empty($winner) ? $winner->supplier_id == $sup->id ? 'yellow' : 'transparent' : 'transparent';
+                        }
+                    }
+                }
+            }
+
+        return $this->renderAjax('_file-aoq', [
+            'model' => $model,
+            'bid' => $bid,
+            'prices' => $prices,
+            'colors' => $colors,
+            'winners' => $winners,
+            'justifications' => $justifications,
+            'bidMembers' => $bidMembers,
+            'rfq' => $rfq,
+            'rfqItems' => $rfqItems,
+            'specifications' => $specifications,
+            'agency' => $agency,
+            'regionalOffice' => $regionalOffice,
+            'address' => $address,
+            'email' => $email,
+            'telephoneNos' => $telephoneNos,
+            'forContractItems' => $forContractItems,
+            'risNumbers' => $risNumbers,
+            'supplierList' => $supplierList,
+            'regionalDirector' => $regionalDirector,
+        ]);
+    }
+
+    public function actionPurchaseOrder($id)
+    {
+        $model = $this->findModel($id);
+
+        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+
+        return $this->renderAjax('_purchase-order', [
+            'model' => $model,
+            'rfqs' => $rfqs
+        ]);
+    }
+
+    public function actionGeneratePo($id, $rfq_id)
+    {
+        $model = $this->findModel($id);
+        $rfq = Rfq::findOne($rfq_id);
     }
 
     /**

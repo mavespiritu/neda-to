@@ -1120,7 +1120,7 @@ class RisController extends Controller
                 $status->model = 'Ris';
                 $status->model_id = $model->id;
                 $status->status = 'Approved';
-                if($status->save())
+                if($status->save(false))
                 {
                     \Yii::$app->getSession()->setFlash('success', 'RIS approved');
                     return $this->redirect(['info', 'id' => $model->id]);

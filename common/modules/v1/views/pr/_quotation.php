@@ -10,6 +10,7 @@ use yii\bootstrap\Collapse;
 <div class="box box-primary">
     <div class="box-header panel-title"><i class="fa fa-list"></i>RFQ List</div>
     <div class="box-body">
+        <p><i class="fa fa-exclamation-circle"></i> Generate RFQ to cascade for suppliers.</p>
         <div class="pull-right">
             <?= Html::button('Generate RFQ', ['value' => Url::to(['/v1/pr/generate-rfq', 'id' => $model->id]), 'class' => 'btn btn-success', 'id' => 'generate-rfq-button']) ?>
         </div>

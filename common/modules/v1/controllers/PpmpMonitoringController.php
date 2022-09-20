@@ -75,7 +75,7 @@ class PpmpMonitoringController extends \yii\web\Controller
             'Final' => 'Final',
         ];
 
-        $years = Appropriation::find()->select(['distinct(year) as year'])->asArray()->orderBy(['year' => SORT_DESC])->all();
+        $years = Ppmp::find()->select(['distinct(year) as year'])->asArray()->orderBy(['year' => SORT_DESC])->all();
         $years = ArrayHelper::map($years, 'year', 'year');
 
         $offices = Office::find()->all();

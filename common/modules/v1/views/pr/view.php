@@ -45,9 +45,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php if(!empty($model->rfqItems)){ ?>
                         <li><a href="javascript:void(0);" onclick="quotations(<?= $model->id?>);">Generate RFQ</a></li>
                         <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);">Retrieve RFQs</a></li>
+                        <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);">Set Winners</a></li>
                         <?php } ?>
-                        <li>Set Purchase Order</li>
-                        <li>Set Contract</li>
+                        <?php if($model->type == 'Supply'){ ?>
+                            <li>Set Purchase Order</li>
+                        <?php }else{ ?>
+                            <li>Set Contract</li>
+                        <?php } ?>
                         <li>Inspect Items</li>
                         <li>Issue Items</li>
                     </ul>
@@ -57,18 +61,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-header panel-title"><i class="fa fa-file-o"></i> Reports</div>
                 <div class="box-body">
                     <ul class="reports" style="font-size: 13px; line-height: 2rem;" type="none">
-                        <li><?= Html::button('Purchase Request (PR)', ['value' => Url::to(['/v1/pr/pr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'pr-button']) ?></li>
-                        <li><?= Html::button('Agency Purchase Request (APR)', ['value' => Url::to(['/v1/pr/apr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'apr-button']) ?></li>
-                        <li><?= Html::button('Request For Quotation (RFQ)', ['value' => Url::to(['/v1/pr/rfq', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'rfq-button']) ?></li>
-                        <li>Abstract of Quotation (AOQ)</li>
-                        <li>DBM Purchase Order (DBM-PO)</li>
-                        <li>Purchase Order (PO)</li>
-                        <li>Contract</li>
-                        <li>Notice of Award (NOA)</li>
-                        <li>Notice to Proceed (NTP)</li>
-                        <li>Obligation Request Status (ORS)</li>
-                        <li>Disbursement Voucher (DV)</li>
-                        <li>Inspection and Acceptance Report (IAR)</li>
+                        <li><?= Html::button('<i class="fa fa-print"></i> Purchase Request (PR)', ['value' => Url::to(['/v1/pr/pr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'pr-button']) ?></li>
+                        <li><?= Html::button('<i class="fa fa-print"></i> Agency Purchase Request (APR)', ['value' => Url::to(['/v1/pr/apr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'apr-button']) ?></li>
+                        <li><?= Html::button('<i class="fa fa-print"></i> Request For Quotation (RFQ)', ['value' => Url::to(['/v1/pr/rfq', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'rfq-button']) ?></li>
+                        <li><?= Html::button('<i class="fa fa-print"></i> Abstract of Quotation (AOQ)', ['value' => Url::to(['/v1/pr/aoq', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'aoq-button']) ?></li>
+                        <?php if($model->type == 'Supply'){ ?>
+                        <li><i class="fa fa-print"></i> Purchase Order (PO)</li>
+                        <?php }else{ ?>
+                        <li><i class="fa fa-print"></i> Contract</li>
+                        <?php } ?>
+                        <li><i class="fa fa-print"></i> Notice of Award (NOA)</li>
+                        <li><i class="fa fa-print"></i> Notice to Proceed (NTP)</li>
+                        <li><i class="fa fa-print"></i> Obligation Request Status (ORS)</li>
+                        <li><i class="fa fa-print"></i> Disbursement Voucher (DV)</li>
+                        <li><i class="fa fa-print"></i> Inspection and Acceptance Report (IAR)</li>
                     </ul>
                 </div>
             </div>
@@ -97,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
   Modal::begin([
     'id' => 'pr-modal',
-    'size' => "modal-lg",
+    'size' => "modal-xl",
     'header' => '<div id="pr-modal-header"><h4>Purchase Request (PR)</h4></div>',
     'options' => ['tabindex' => false],
   ]);
@@ -107,7 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
   Modal::begin([
     'id' => 'apr-modal',
-    'size' => "modal-lg",
+    'size' => "modal-xl",
     'header' => '<div id="apr-modal-header"><h4>Agency Purchase Request (APR)</h4></div>',
     'options' => ['tabindex' => false],
   ]);
@@ -117,11 +123,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
   Modal::begin([
     'id' => 'rfq-modal',
-    'size' => "modal-lg",
+    'size' => "modal-xl",
     'header' => '<div id="rfq-modal-header"><h4>Request For Quotation (RFQ)</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="rfq-modal-content"></div>';
+  Modal::end();
+?>
+<?php
+  Modal::begin([
+    'id' => 'aoq-modal',
+    'size' => "modal-xl",
+    'header' => '<div id="aoq-modal-header"><h4>Abstract of Quotation (AOQ)</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="aoq-modal-content"></div>';
   Modal::end();
 ?>
 <?php
@@ -135,6 +151,9 @@ $this->params['breadcrumbs'][] = $this->title;
               });
             $("#rfq-button").click(function(){
                 $("#rfq-modal").modal("show").find("#rfq-modal-content").load($(this).attr("value"));
+              });
+            $("#aoq-button").click(function(){
+                $("#aoq-modal").modal("show").find("#aoq-modal-content").load($(this).attr("value"));
               });
         });     
     ';

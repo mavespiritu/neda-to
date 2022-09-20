@@ -11,10 +11,13 @@ use yii\bootstrap\ButtonDropdown;
     <li><a href="javascript:void(0);" onclick="items(<?= $model->id?>);" class="items-link">Items (<?= $model->itemCount ?>)</a></li>
     <li><a href="javascript:void(0);" onclick="dbmItems(<?= $model->id?>);" class="dbm-link">Item Grouping</a></li>
     <li><a href="javascript:void(0);" onclick="dbmPricing(<?= $model->id?>);" class="dbm-price-link">DBM-PS Pricing</a></li>
-    <li><a href="javascript:void(0);" onclick="quotations(<?= $model->id?>);" class="quotations-link">Set Quotations (<?= $model->rfqCount ?>)</a></li>
-    <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);" class="retrieve-quotation-link">Retrieve Quotations</a></li>
-    <li><a href="javascript:void(0);" class="po-link">Purchase Orders</a></li>
-    <li><a href="javascript:void(0);" class="contracts-link">Contracts</a></li>
+    <li><a href="javascript:void(0);" onclick="quotations(<?= $model->id?>);" class="quotations-link">Set Quote (<?= $model->rfqCount ?>)</a></li>
+    <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);" class="retrieve-quotation-link">Retrieve and Bid</a></li>
+    <?php if($model->type == 'Supply'){ ?>
+        <li><a href="javascript:void(0);" onClick="purchaseOrders(<?= $model->id?>);" class="po-link">Purchase Orders</a></li>
+    <?php }else{ ?>
+        <li><a href="javascript:void(0);" class="contracts-link">Contracts</a></li>
+    <?php } ?>
     <li><a href="javascript:void(0);" class="inspection-link">Inspection</a></li>
     <li><a href="javascript:void(0);" class="issuance-link">Issuance</a></li>
 </ul>
@@ -163,6 +166,27 @@ use yii\bootstrap\ButtonDropdown;
             });
         }
 
+        function purchaseOrders(id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/pr/purchase-order']).'?id=" + id,
+                beforeSend: function(){
+                    $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    console.log(this.data);
+                    $("#pr-main").empty();
+                    $("#pr-main").hide();
+                    $("#pr-main").fadeIn("slow");
+                    $("#pr-main").html(data);
+                    updateNavigation("po-link");
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
         $(document).ready(function(){
             $("#update-button").click(function(){
               $("#update-modal").modal("show").find("#update-modal-content").load($(this).attr("value"));
@@ -177,15 +201,15 @@ use yii\bootstrap\ButtonDropdown;
     ul.todos,
     ul.reports
     {
-        padding-left: 5px;
-        margin-left: 5px;
+        padding-left: 2px;
+        margin-left: 2px;
     }
 
     ul.navigation > li > a,
     ul.todos > li > a,
     ul.reports > li > a
     {
-        padding-left: 5px;
+        padding-left: 2px;
     }
 
     ul.navigation > li > a.active

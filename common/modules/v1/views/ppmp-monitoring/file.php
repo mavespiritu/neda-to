@@ -34,6 +34,7 @@
                 <?php } ?>
             <?php } ?>
             <th rowspan=2>Item</th>
+            <th rowspan=2>Mode of Procurement</th>
             <th rowspan=2>End User</th>
             <th rowspan=2>Fund Source</th>
             <th>Quantity</th>
@@ -247,6 +248,7 @@
                                                 <td>&nbsp;</td>
                                                 <td>&nbsp;</td>
                                                 <td><?= $item['itemTitle'] ?></td>
+                                                <td><?= $item['modeOfProcurement'] ?></td>
                                                 <td><?= $item['division'] ?></td>
                                                 <td><?= $item['fundSource'] ?></td>
                                                 <td><?= number_format($item['totalQty'], 0) ?></td>

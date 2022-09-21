@@ -110,6 +110,7 @@ class PpmpMonitoringController extends \yii\web\Controller
                 ) as prexc',
                 'ppmp_activity.title as activity',
                 'ppmp_sub_activity.title as subactivity',
+                'ppmp_procurement_mode.title as modeOfProcurement',
                 'IF(originalObj.obj_id IS NOT NULL, concat(parentObj.title," - ",originalObj.title), originalObj.title) as objectTitle',
                 'ppmp_item.title as itemTitle',
                 'ppmp_ppmp_item.cost as costPerUnit',
@@ -148,6 +149,7 @@ class PpmpMonitoringController extends \yii\web\Controller
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
             ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_procurement_mode', 'ppmp_procurement_mode.id = ppmp_item.procurement_mode_id')
             ->leftJoin('ppmp_obj originalObj', 'originalObj.id = ppmp_ppmp_item.obj_id')
             ->leftJoin('ppmp_obj parentObj', 'parentObj.id = originalObj.obj_id')
             ->leftJoin('ppmp_fund_source', 'ppmp_fund_source.id = ppmp_ppmp_item.fund_source_id')

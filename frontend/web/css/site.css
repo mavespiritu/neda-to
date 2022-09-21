@@ -20,6 +20,61 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
   border: 2px solid black;
 }
 
+.logo, li.user-header{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+
+.skin-blue .main-header .navbar{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+.btn-primary, span.bg-blue{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+.btn-success, span.bg-green{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(16, 185, 129, var(--tw-bg-opacity)) !important;
+}
+
+.btn-danger, span.bg-red{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(239, 68, 68, var(--tw-bg-opacity)) !important;
+}
+
+.box-primary{
+  --tw-bg-opacity: 1 !important;
+  border-top-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+.box-success{
+  --tw-bg-opacity: 1 !important;
+  border-top-color: rgba(16, 185, 129, var(--tw-bg-opacity)) !important;
+}
+
+.box-danger{
+  --tw-bg-opacity: 1 !important;
+  border-top-color: rgba(239, 68, 68, var(--tw-bg-opacity)) !important;
+}
+
+.panel-success > .panel-heading{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(16, 185, 129, var(--tw-bg-opacity)) !important;
+  color: white !important;
+}
+
+.panel-success h4.panel-title, .panel-success h4.panel-title > a{
+  color: white !important;
+}
+
+.panel-success h4.panel-title, .panel-success h4.panel-title > a:hover{
+  color: white !important;
+}
+
 h1,
 h2,
 h3,

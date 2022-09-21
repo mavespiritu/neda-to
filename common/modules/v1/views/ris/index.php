@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-md-12 col-xs-12">
-            <div class="box box-primary collapsed-box">
+            <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-search"></i> Search Filter
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-body">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'options' => ['class' => 'table table-hover table-responsive'],
+                        'options' => ['class' => 'table table-hover table-responsive gridview'],
                         'showFooter' => true,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
@@ -54,14 +54,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'type',
                                 'format' => 'raw',
                                 'value' => function($model){
-                                    return $model->type == 'Supply' ? 'Goods' : 'Service/Contract';
+                                    return $model->type == 'Supply' ? 'Goods' : 'S/C';
                                 }
                             ],
                             'officeName',
                             [
                                 'attribute' => 'purpose',
                                 'format' => 'raw',
-                                'contentOptions' => ['style' => 'width: 20%;'],
+                                'contentOptions' => ['style' => 'width: 15%;'],
                                 'value' => function($model){
                                     return $model->purpose;
                                 }
@@ -71,17 +71,28 @@ $this->params['breadcrumbs'][] = $this->title;
                             'requesterName',
                             'date_required',
                             [
-                                'header' => 'Included',
+                                'header' => 'Status',
+                                'attribute' => 'status.status',
+                                'format' => 'raw',
+                                'value' => function($ris){
+                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue'];
+                                    return '<span class="badge bg-'.$color[$ris->status->status].'">'.$ris->status->status.'</span>';
+                                }
+                            ],
+                            [
+                                'header' => 'Included PREXC',
                                 'attribute' => 'prexc',
                                 'format' => 'raw',
+                                'contentOptions' => ['style' => 'font-size: 10px;'],
                                 'value' => function($model){
                                     return $model->prexcs;
                                 }
                             ],
                             [
-                                'header' => 'Realigned',
+                                'header' => 'Realigned PREXC',
                                 'attribute' => 'realignedPrexc',
                                 'format' => 'raw',
+                                'contentOptions' => ['style' => 'font-size: 10px;'],
                                 'value' => function($model){
                                     return $model->realignedPrexcs;
                                 }
@@ -89,6 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'header' => 'Total', 
                                 'attribute' => 'total',
+                                'headerOptions' => ['style' => 'text-align: right;'],
                                 'contentOptions' => ['style' => 'text-align: right;'],
                                 'value' => function($model){
                                     return number_format($model->total, 2);
@@ -98,10 +110,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return number_format($model->total, 2);
                                 },
                                 'footer' => Ris::pageQuantityTotal($dataProvider->models, 'total'),
-                            ],
-                            [
-                                'header' => 'Status',
-                                'attribute' => 'status.status',
                             ],
                             [
                                 'format' => 'raw', 

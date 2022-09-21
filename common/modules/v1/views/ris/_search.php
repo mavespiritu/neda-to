@@ -20,21 +20,10 @@ use yii\web\View;
         ],
     ]); ?>
     
-    <?= $form->field($model, 'ris_no') ?>
-
     <div class="row">
-        <?php if(Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('AccountingStaff')){ ?>
-            <div class="col-md-3 col-xs-12">
-            <?= $form->field($model, 'office_id')->widget(Select2::classname(), [
-                'data' => ['' => 'All Divisions'] + $offices,
-                'options' => ['multiple' => false, 'class'=>'office-select'],
-                'pluginOptions' => [
-                    'allowClear' =>  false,
-                ],
-            ]);
-            ?>
-            </div>
-        <?php } ?>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'ris_no') ?>
+        </div>
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'type')->widget(Select2::classname(), [
                 'data' => $types,
@@ -55,7 +44,6 @@ use yii\web\View;
                 ]);
             ?>
         </div>
-
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'date_required')->widget(DatePicker::classname(), [
                 'options' => ['placeholder' => 'Enter date'],
@@ -67,9 +55,30 @@ use yii\web\View;
         </div>
     </div>
 
+    <div class="row">
+        <?php if(Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('AccountingStaff')){ ?>
+            <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'office_id')->widget(Select2::classname(), [
+                'data' => ['' => 'All Divisions'] + $offices,
+                'options' => ['multiple' => false, 'class'=>'office-select'],
+                'pluginOptions' => [
+                    'allowClear' =>  false,
+                ],
+            ]);
+            ?>
+            </div>
+        <?php } ?>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'creatorName') ?>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'requesterName') ?>
+        </div>
+    </div>
+
     <?= $form->field($model, 'purpose')->textarea(['rows' => 3]) ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
         <?= Html::resetButton('Clear', ['class' => 'btn btn-outline-secondary', 'onClick' => 'redirectPage()']) ?>
     </div>

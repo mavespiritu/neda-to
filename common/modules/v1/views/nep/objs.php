@@ -26,8 +26,8 @@ $objectString = json_encode($model->getAppropriationObjs()->asArray()->all());
         </div>
         <div class="col-md-6 col-xs-12">
             <div class="pull-right">
+                <?= Html::button("Set as default",['class' => 'btn btn-outline-secondary default-object']) ?>
                 <?= Html::button("Remove Selected",['class' => 'btn btn-danger delete-selected-objs']) ?>
-                <?= Html::button("Set as default objects",['class' => 'btn btn-default default-object']) ?>
             </div>
         </div>
     </div>
@@ -62,8 +62,8 @@ $objectString = json_encode($model->getAppropriationObjs()->asArray()->all());
     <br>
     <?php if(!empty($items)){ ?>
     <div class="pull-right">
+        <?= Html::button("Set as default",['class' => 'btn btn-outline-secondary default-object']) ?>
         <?= Html::button("Remove Selected",['class' => 'btn btn-danger delete-selected-objs']) ?>
-        <?= Html::button("Set as default objects",['class' => 'btn btn-default default-object']) ?>
     </div>
     <?php } ?>
     <?php ActiveForm::end(); ?>

@@ -183,8 +183,15 @@ class NepController extends Controller
         {
             foreach($model->getAppropriationPaps()->orderBy(['arrangement' => SORT_ASC])->all() as $pap)
             {
-                $items[$pap->id] = ['content' => '<p><b>'.$pap->fundSource->code.'</b></p>
-                <input type="checkbox" name="checkbox[]" class="chkbox-paps" value="'.$pap->id.'"> '.$pap->pap->codeAndTitle];
+                $items[$pap->id] = [
+                    'content' => '
+                        <div style="display: flex;">
+                            <div><i class="fa fa-arrows-alt"></i></div>
+                            <div style="padding-left: 10px;">
+                                <input type="checkbox" name="checkbox[]" class="chkbox-paps" value="'.$pap->id.'"> (<b>'.$pap->fundSource->code.'</b>) - '.$pap->pap->codeAndTitle.'
+                            </div>
+                        </div>'
+                    ];
                 $models[$pap->id] = $pap;
             }
         }
@@ -225,8 +232,15 @@ class NepController extends Controller
         {
             foreach($model->getAppropriationPaps()->orderBy(['arrangement' => SORT_ASC])->all() as $pap)
             {
-                $items[$pap->id] = ['content' => '<p><b>'.$pap->fundSource->code.'</b></p>
-                <input type="checkbox" name="checkbox[]" class="chkbox-paps" value="'.$pap->id.'"> '.$pap->pap->codeAndTitle];
+                $items[$pap->id] = [
+                    'content' => '
+                        <div style="display: flex;">
+                            <div><i class="fa fa-arrows-alt"></i></div>
+                            <div style="padding-left: 10px;">
+                                <input type="checkbox" name="checkbox[]" class="chkbox-paps" value="'.$pap->id.'"> (<b>'.$pap->fundSource->code.'</b>) - '.$pap->pap->codeAndTitle.'
+                            </div>
+                        </div>'
+                    ];
                 $models[$pap->id] = $pap;
             }
         }
@@ -330,8 +344,15 @@ class NepController extends Controller
         {
             foreach($model->getAppropriationObjs()->orderBy(['arrangement' => SORT_ASC])->all() as $obj)
             {
-                $items[$obj->id] = ['content' => '<p><b>'.$obj->obj->objTitle.'</b></p>
-                <input type="checkbox" name="checkbox[]" class="chkbox-objs" value="'.$obj->id.'"> '.$obj->obj->objectTitle];
+                $items[$obj->id] = [
+                    'content' => '
+                        <div style="display: flex;">
+                            <div><i class="fa fa-arrows-alt"></i></div>
+                            <div style="padding-left: 10px;">
+                                <input type="checkbox" name="checkbox[]" class="chkbox-objs" value="'.$obj->id.'"> '.$obj->obj->objectTitle.' (<b>'.$obj->obj->objTitle.'</b>)
+                            </div>
+                        </div>'
+                    ];
                 $models[$obj->id] = $obj;
             }
         }
@@ -372,8 +393,15 @@ class NepController extends Controller
         {
             foreach($model->getAppropriationObjs()->orderBy(['arrangement' => SORT_ASC])->all() as $obj)
             {
-                $items[$obj->id] = ['content' => '<p><b>'.$obj->obj->objTitle.'</b></p>
-                <input type="checkbox" name="checkbox[]" class="chkbox-objs" value="'.$obj->id.'"> '.$obj->obj->objectTitle];
+                $items[$obj->id] = [
+                    'content' => '
+                        <div style="display: flex;">
+                            <div><i class="fa fa-arrows-alt"></i></div>
+                            <div style="padding-left: 10px;">
+                                <input type="checkbox" name="checkbox[]" class="chkbox-objs" value="'.$obj->id.'"> '.$obj->obj->objectTitle.' (<b>'.$obj->obj->objTitle.'</b>)
+                            </div>
+                        </div>'
+                    ];
                 $models[$obj->id] = $obj;
             }
         }

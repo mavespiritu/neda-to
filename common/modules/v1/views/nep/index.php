@@ -26,9 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
       <div class="box-header panel-title"><i class="fa fa-list"></i> NEP List</div>
         <div class="box-body">
           <?= GridView::widget([
-              'options' => [
-                  'class' => 'table-responsive',
-              ],
+              'options' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive gridview'],
+              'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive gridview'],
               'dataProvider' => $dataProvider,
               'filterModel' => $searchModel,
               'showFooter' => true,
@@ -41,6 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                   [
                     'header' => 'Total', 
                     'attribute' => 'total',
+                    'headerOptions' => ['style' => 'text-align: right;'],
                     'contentOptions' => ['style' => 'text-align: right;'],
                     'value' => function($nep){
                         return number_format($nep->total, 2);

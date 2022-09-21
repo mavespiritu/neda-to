@@ -44,9 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-header panel-title"><i class="fa fa-list"></i> PPMP List</div>
                 <div class="box-body">
                 <?= GridView::widget([
-                    'tableOptions' => [
-                        'class' => 'table table-hover table-responsive',
-                    ],
+                    'options' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive gridview'],
+                    'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive gridview'],
                     'dataProvider' => $dataProvider,
                     'showFooter' => true,
                     'columns' => [

@@ -34,16 +34,19 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
 .btn-primary, span.bg-blue{
   --tw-bg-opacity: 1 !important;
   background-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+  border-color: transparent !important;
 }
 
 .btn-success, span.bg-green{
   --tw-bg-opacity: 1 !important;
   background-color: rgba(16, 185, 129, var(--tw-bg-opacity)) !important;
+  border-color: transparent !important;
 }
 
 .btn-danger, span.bg-red{
   --tw-bg-opacity: 1 !important;
   background-color: rgba(239, 68, 68, var(--tw-bg-opacity)) !important;
+  border-color: transparent !important;
 }
 
 .box-primary{
@@ -73,6 +76,12 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
 
 .panel-success h4.panel-title, .panel-success h4.panel-title > a:hover{
   color: white !important;
+}
+
+.gridview > table.table > thead > tr > th,
+.gridview > table.table > thead > tr > th > a {
+  --tw-bg-opacity: 1 !important;
+  color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
 }
 
 h1,

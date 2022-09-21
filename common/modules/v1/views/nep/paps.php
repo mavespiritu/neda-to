@@ -20,8 +20,8 @@ $objectString = json_encode($model->getAppropriationPaps()->asArray()->all());
         </div>
         <div class="col-md-6 col-xs-12">
             <div class="pull-right">
+                <?= Html::button("Set as default",['class' => 'btn btn-outline-secondary default-program']) ?>
                 <?= Html::button("Remove Selected",['class' => 'btn btn-danger delete-selected-paps']) ?>
-                <?= Html::button("Set as default programs",['class' => 'btn btn-default default-program']) ?>
             </div>
         </div>
     </div>
@@ -62,8 +62,8 @@ $objectString = json_encode($model->getAppropriationPaps()->asArray()->all());
     <br>
     <?php if(!empty($items)){ ?>
     <div class="pull-right">
+        <?= Html::button("Set as default",['class' => 'btn btn-outline-secondary default-program']) ?>
         <?= Html::button("Remove Selected",['class' => 'btn btn-danger delete-selected-paps']) ?>
-        <?= Html::button("Set as default programs",['class' => 'btn btn-default default-program']) ?>
     </div>
     <?php } ?>
     <?php ActiveForm::end(); ?>

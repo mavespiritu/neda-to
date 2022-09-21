@@ -51,157 +51,178 @@ use fedemotta\datatables\DataTables;
         [
             'header' => 'J', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(1), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(1), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(1) - $item->getQuantityUsedPerMonth(1), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'F', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(2), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(2), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(2) - $item->getQuantityUsedPerMonth(2), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'M', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(3), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(3), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(3) - $item->getQuantityUsedPerMonth(3), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'A', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(4), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(4), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(4) - $item->getQuantityUsedPerMonth(4), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'M', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(5), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(5), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(5) - $item->getQuantityUsedPerMonth(5), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'J', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(6), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(6), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(6) - $item->getQuantityUsedPerMonth(6), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'J', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(7), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(7), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(7) - $item->getQuantityUsedPerMonth(7), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'A', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(8), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(8), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(8) - $item->getQuantityUsedPerMonth(8), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'S', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(9), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(91), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(9) - $item->getQuantityUsedPerMonth(9), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'O', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(10), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(10), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(10) - $item->getQuantityUsedPerMonth(10), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'N', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(11), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(11), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(11) - $item->getQuantityUsedPerMonth(11), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'D', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 $value = '';
                 $value .= '<u>'.number_format($item->getQuantityPerMonth(12), 0).'</u> <br>';
                 $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(12), 0).'</u> <br>';
                 $value .= '<b>'.number_format($item->getQuantityPerMonth(12) - $item->getQuantityUsedPerMonth(12), 0).'</b>';
-                ;
                 return $value;
             }
         ],
         [
             'header' => 'Total Qty', 
             'attribute' => 'quantity',
+            'format' => 'raw', 
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
-                return number_format($item->quantities, 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->quantities, 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->quantityUsed, 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->remainingQuantity, 0).'</b>';
+                return $value;
             }
         ],
         [
             'header' => 'Cost Per Unit', 
             'attribute' => 'cost',
+            'contentOptions' => ['style' => 'text-align: right;'],
+            'footerOptions' => ['style' => 'text-align: right;'],
             'value' => function($item){
                 return number_format($item->cost, 2);
             },

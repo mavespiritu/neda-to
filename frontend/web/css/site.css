@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 *{
-  font-family: "Varela Round" , sans-serif;
+  font-family: "Inter" , sans-serif;
 }
 html,
 body {
     height: 100%;
-    font-family: "Varela Round" , sans-serif;
+    font-family: "Inter" , sans-serif;
 }
 table.bordered-table{
   width: 100%;
@@ -26,7 +26,7 @@ h3,
 h4,
 h5,
 h6{
-  font-family: "Varela Round" , sans-serif !important;
+  font-family: "Inter" , sans-serif !important;
 }
 
 .box{
@@ -86,7 +86,7 @@ a.asc:after, a.desc:after {
     position: relative;
     top: 1px;
     display: inline-block;
-    font-family: "Varela Round" , sans-serif;
+    font-family: "Inter" , sans-serif;
     font-style: normal;
     font-weight: normal;
     line-height: 1;

@@ -147,6 +147,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td><br><br></td>
                         </tr>
                         <tr>
+                            <td>Printed Name:</td>
+                            <td><?= ucwords(strtoupper($model->requesterName)) ?></td>
+                            <td><?= ucwords(strtoupper($model->approverName)) ?></td>
+                            <td><?= ucwords(strtoupper($model->issuerName)) ?></td>
+                            <td><?= ucwords(strtoupper($model->receiverName)) ?></td>
+                        </tr>
+                        <tr>
                             <td>Designation:</td>
                             <td><?= $model->requester ? $model->requester->position : '' ?></td>
                             <td><?= $model->approver ? $model->approver->position : '' ?></td>

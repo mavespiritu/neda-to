@@ -22,41 +22,44 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php Pjax::begin(); ?>
+    <div class="box box-primary">
+      <div class="box-header panel-title"><i class="fa fa-list"></i> GAA List</div>
+        <div class="box-body">
+          <?= GridView::widget([
+              'options' => [
+                  'class' => 'table-responsive',
+              ],
+              'dataProvider' => $dataProvider,
+              'filterModel' => $searchModel,
+              'showFooter' => true,
+              'columns' => [
+                  ['class' => 'yii\grid\SerialColumn'],
 
-    <?= GridView::widget([
-        'options' => [
-            'class' => 'table-responsive',
-        ],
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'showFooter' => true,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'year',
-            'creatorName',
-            'date_created',
-            [
-              'header' => 'Total', 
-              'attribute' => 'total',
-              'contentOptions' => ['style' => 'text-align: right;'],
-              'value' => function($gaa){
-                  return number_format($gaa->total, 2);
-              },
-              'footerOptions' => ['style' => 'text-align: right;'],
-              'value' => function($gaa){
-                  return number_format($gaa->total, 2);
-              },
-              'footer' => Appropriation::pageQuantityTotal($dataProvider->models, 'total'),
-            ],
-            [
-                'format' => 'raw', 
-                'value' => function($model){
-                    return Html::a('View', ['/v1/gaa/view', 'id' => $model->id],['class' => 'btn btn-primary btn-block']);
-            }],
-        ],
-    ]); ?>
-
+                  'year',
+                  'creatorName',
+                  'date_created',
+                  [
+                    'header' => 'Total', 
+                    'attribute' => 'total',
+                    'contentOptions' => ['style' => 'text-align: right;'],
+                    'value' => function($gaa){
+                        return number_format($gaa->total, 2);
+                    },
+                    'footerOptions' => ['style' => 'text-align: right;'],
+                    'value' => function($gaa){
+                        return number_format($gaa->total, 2);
+                    },
+                    'footer' => Appropriation::pageQuantityTotal($dataProvider->models, 'total'),
+                  ],
+                  [
+                      'format' => 'raw', 
+                      'value' => function($model){
+                          return Html::a('View', ['/v1/gaa/view', 'id' => $model->id],['class' => 'btn btn-primary btn-xs btn-block']);
+                  }],
+              ],
+          ]); ?>
+      </div>
+    </div>
     <?php Pjax::end(); ?>
 
 </div>

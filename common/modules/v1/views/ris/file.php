@@ -173,10 +173,10 @@ $i = 1;
     </tr>
     <tr>
         <td>Printed Name:</td>
-        <td><?= $model->requesterName ?></td>
-        <td><?= $model->approverName ?></td>
-        <td><?= $model->issuerName ?></td>
-        <td><?= $model->receiverName ?></td>
+        <td><?= ucwords(strtoupper($model->requesterName)) ?></td>
+        <td><?= ucwords(strtoupper($model->approverName)) ?></td>
+        <td><?= ucwords(strtoupper($model->issuerName)) ?></td>
+        <td><?= ucwords(strtoupper($model->receiverName)) ?></td>
     </tr>
     <tr>
         <td>Designation:</td>

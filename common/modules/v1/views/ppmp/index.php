@@ -52,25 +52,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     'columns' => [
                         ['class' => 'yii\grid\SerialColumn'],
 
-                        'officeName',
                         'year',
+                        'officeName',
                         [
                             'header' => 'Stage',
                             'attribute' => 'stage',
                             'format' => 'raw',
-                            'contentOptions' => ['style' => 'text-align: center;'],
                             'value' => function($ppmp){
                                 $color = ['Indicative' => 'red', 'Adjusted' => 'green', 'Final' => 'blue'];
                                 return '<span class="badge bg-'.$color[$ppmp->stage].'">'.$ppmp->stage.'</span>';
                             }
                         ],
-                        'creatorName',
-                        'date_created',
                         //'updated_by',
                         //'date_updated',
                         [
                             'header' => 'Total', 
                             'attribute' => 'originalTotal',
+                            'headerOptions' => ['style' => 'text-align: right;'],
                             'contentOptions' => ['style' => 'text-align: right;'],
                             'value' => function($ppmp){
                                 return number_format($ppmp->originalTotal, 2);
@@ -81,6 +79,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             },
                             'footer' => Ppmp::pageQuantityTotal($dataProvider->models, 'originalTotal'),
                         ],
+                        'creatorName',
+                        'date_created',
                         [
                             'header' => 'Status',
                             'attribute' => 'status.status',

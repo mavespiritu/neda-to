@@ -49,7 +49,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
 
-                            'ris_no',
+                            [
+                                'attribute' => 'ris_no',
+                                'format' => 'raw',
+                                'value' => function($model){
+                                    return '<b>'.Html::a($model->ris_no, ['/v1/ris/info', 'id' => $model->id]).'</b>';
+                                }
+                            ],
                             [
                                 'attribute' => 'type',
                                 'format' => 'raw',
@@ -72,11 +78,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             'date_required',
                             [
                                 'header' => 'Status',
-                                'attribute' => 'status.status',
+                                'attribute' => 'statusName',
                                 'format' => 'raw',
                                 'value' => function($ris){
-                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue'];
-                                    return '<span class="badge bg-'.$color[$ris->status->status].'">'.$ris->status->status.'</span>';
+                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
+                                    return '<span class="badge bg-'.$color[$ris->statusName].'">'.$ris->statusName.'</span>';
                                 }
                             ],
                             [

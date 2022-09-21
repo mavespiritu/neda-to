@@ -92,6 +92,8 @@ class Ris extends \yii\db\ActiveRecord
             'date_issued' => 'Date Issued',
             'received_by' => 'Received By',
             'date_received' => 'Date Received',
+            'status' => 'Status',
+            'statusName' => 'Status',
             'type' => 'Type',
             'total' => 'Total'
         ];
@@ -234,12 +236,15 @@ class Ris extends \yii\db\ActiveRecord
 
     public function getStatus()
     {
-        $status = Transaction::find()->where(['model' => 'Ris', 'model_id' => $this->id])->orderBy(['datetime' => SORT_DESC])->one();
-
-        return $status;
+        return $this->hasOne(Transaction::className(), ['model_id' => 'id'])->where(['model' => 'Ris'])->orderBy(['datetime' => SORT_DESC]);
     }
 
-    public function geItems($type)
+    public function getStatusName()
+    {
+        return $this->status ? $this->status->status : 'No status';
+    }
+    
+    public function getItems($type)
     {
         $items = RisItem::find()->where(['ris_id' => $this->id, 'type' => $type])->all();
 

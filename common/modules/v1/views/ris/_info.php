@@ -7,7 +7,7 @@ use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $model common\modules\v1\models\Ris */
 
-$this->title = $model->status ? $model->ris_no.' ['.$model->status->status.']' : $model->ris_no;
+$this->title = $model->statusName != 'No status' ? $model->ris_no.' ['.$model->statusName.']' : $model->ris_no;
 $this->params['breadcrumbs'][] = ['label' => 'RIS', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-list"></i> RIS Information</div>
                 <div class="box-body">
-                    <?php if($model->status->status == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
+                    <?php if($model->statusName == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
                     <span>
                         <?php // Html::a('<i class="fa fa-print"></i> Print', ['#'],['class' => 'btn btn-danger']) ?>
                     </span>

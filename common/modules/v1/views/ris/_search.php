@@ -74,6 +74,16 @@ use yii\web\View;
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'requesterName') ?>
         </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'statusName')->widget(Select2::classname(), [
+                'data' => ['Approved' => 'Approved', 'Draft' => 'Draft', 'Disapproved' => 'Disapproved', 'For Revision' => 'For Revision'],
+                'options' => ['placeholder' => 'Select Status','multiple' => false, 'class'=>'fund-source-select'],
+                'pluginOptions' => [
+                    'allowClear' =>  true,
+                ],
+                ]);
+            ?>
+        </div>
     </div>
 
     <?= $form->field($model, 'purpose')->textarea(['rows' => 3]) ?>

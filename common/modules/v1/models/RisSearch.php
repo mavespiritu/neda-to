@@ -15,6 +15,7 @@ class RisSearch extends Ris
     public $officeName;
     public $creatorName;
     public $requesterName;
+    public $statusName;
     /**
      * {@inheritdoc}
      */
@@ -22,7 +23,7 @@ class RisSearch extends Ris
     {
         return [
             [['id', 'ppmp_id', 'fund_source_id', 'fund_cluster_id', 'created_by', 'requested_by', 'approved_by', 'issued_by', 'received_by'], 'integer'],
-            [['type', 'office_id', 'section_id', 'unit_id', 'ris_no', 'purpose', 'date_required', 'date_created', 'date_requested', 'date_approved', 'date_issued', 'date_received', 'creatorName', 'requesterName'], 'safe'],
+            [['type', 'office_id', 'section_id', 'unit_id', 'ris_no', 'purpose', 'date_required', 'date_created', 'date_requested', 'date_approved', 'date_issued', 'date_received', 'creatorName', 'requesterName', 'statusName'], 'safe'],
         ];
     }
 
@@ -50,12 +51,14 @@ class RisSearch extends Ris
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
+            ->joinWith('status')
              ->orderBy(['id' => SORT_DESC]) :
             Ris::find()
             ->joinWith('creator c')
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
+            ->joinWith('status')
             ->andWhere(['r.office_id' => Yii::$app->user->identity->userinfo->office->id])
             ->orderBy(['id' => SORT_DESC]);
 
@@ -89,6 +92,10 @@ class RisSearch extends Ris
                     'asc' => ['concat(r.name)' => SORT_ASC],
                     'desc' => ['concat(r.name)' => SORT_DESC],
                 ],
+                'statusName' => [
+                    'asc' => ['ppmp_transaction.status' => SORT_ASC],
+                    'desc' => ['ppmp_transaction.status' => SORT_DESC],
+                ],
             ]
         ]);
 
@@ -120,6 +127,7 @@ class RisSearch extends Ris
             'approved_by' => $this->approved_by,
             'issued_by' => $this->issued_by,
             'received_by' => $this->received_by,
+            'ppmp_transaction.status' => $this->statusName,
             'type' => $this->type,
         ]);
 
@@ -128,6 +136,41 @@ class RisSearch extends Ris
             ->andFilterWhere(['like', 'concat(c.FIRST_M," ",c.LAST_M)', $this->creatorName])
             ->andFilterWhere(['like', 'concat(r.name)', $this->requesterName])
             ;
+
+        if(isset($params['RisSearch']['statusName']) && $params['RisSearch']['statusName'] != '')
+        {
+            $ids = [];
+            $transactions = Transaction::find()
+                            ->innerJoin(['statuses' => '(
+                            select
+                                ppmp_transaction.id,
+                                ppmp_transaction.model_id,
+                                ppmp_transaction.status
+                            from ppmp_transaction
+                            inner join
+                            (select max(id) as id from ppmp_transaction where model = "Ris" group by model_id) latest on latest.id = ppmp_transaction.id
+                            )'], 'statuses.id = ppmp_transaction.id')
+                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = statuses.model_id')
+                            ->andWhere(['statuses.status' => $params['RisSearch']['statusName']])
+                            ->asArray()
+                            ->all();
+
+            if(!empty($transactions))
+            {
+                foreach($transactions as $transaction)
+                {
+                    $ids[] = $transaction['model_id'];
+                }
+
+            }
+
+            if(!empty($ids))
+            {
+                $query->andWhere(['ppmp_ris.id' => $ids]); 
+            }else{
+                $query;
+            }
+        }
 
         return $dataProvider;
     }

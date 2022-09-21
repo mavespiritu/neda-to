@@ -26,7 +26,7 @@ use yii\bootstrap\ButtonDropdown;
         <?= Html::button('<i class="fa fa-print"></i> Print', ['class' => 'btn btn-app', 'onclick' => 'printRis()']) ?>
     </div>
     <div class="pull-right">
-        <?= $model->getRealignAmount('Supplemental') <= 0 && $model->risItems && ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::a('<i class="fa fa-paper-plane"></i> Send For Approval', ['for-approval', 'id' => $model->id], [
+        <?= $model->getRealignAmount('Supplemental') <= 0 && $model->risItems && ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ? Html::a('<i class="fa fa-paper-plane"></i> Send For Approval', ['for-approval', 'id' => $model->id], [
             'class' => 'btn btn-app',
             'data' => [
                 'confirm' => 'Items cannot be modified after this action. Would you like to proceed?',
@@ -36,8 +36,8 @@ use yii\bootstrap\ButtonDropdown;
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-paper-plane"></i> Send For Revision', ['value' => Url::to(['/v1/ris/for-revision', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'revision-button']) : '' ?>
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-thumbs-o-up"></i> Approve', ['value' => Url::to(['/v1/ris/approve', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'approve-button']) : '' ?>
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-thumbs-o-down"></i> Disapprove', ['value' => Url::to(['/v1/ris/disapprove', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'disapprove-button']) : '' ?>
-        <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') || (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-edit"></i> Edit RIS', ['value' => Url::to(['/v1/ris/update', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'update-button']) : '' ?>
-        <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ||  (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::a('<i class="fa fa-trash"></i> Delete RIS', ['delete', 'id' => $model->id], [
+        <?= ($model->statusName == 'Draft' || $model->statusName == 'For Revision') || (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-edit"></i> Edit RIS', ['value' => Url::to(['/v1/ris/update', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'update-button']) : '' ?>
+        <?= ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ||  (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::a('<i class="fa fa-trash"></i> Delete RIS', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-app',
             'data' => [
                 'confirm' => 'Deleting this RIS will also delete all included items. Would you like to proceed?',
@@ -47,9 +47,9 @@ use yii\bootstrap\ButtonDropdown;
     </div>
     <div class="clearfix"></div>
 </div>
-<?= $model->status->status == 'Disapproved' ? '<div class="alert alert-danger">RIS is disapproved.</div>' : '' ?>
-<?= $model->status->status == 'Approved' ? '<div class="alert alert-success">RIS is approved. You cannot add more items.</div>' : '' ?>
-<?= $model->status->status == 'For Approval' ? '<div class="alert alert-info">RIS is sent for approval. You cannot add more items.</div>' : '' ?>
+<?= $model->statusName == 'Disapproved' ? '<div class="alert alert-danger">RIS is disapproved.</div>' : '' ?>
+<?= $model->statusName == 'Approved' ? '<div class="alert alert-success">RIS is approved. You cannot add more items.</div>' : '' ?>
+<?= $model->statusName == 'For Approval' ? '<div class="alert alert-info">RIS is sent for approval. You cannot add more items.</div>' : '' ?>
 <?php
   Modal::begin([
     'id' => 'update-modal',

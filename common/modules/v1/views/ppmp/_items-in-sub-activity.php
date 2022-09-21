@@ -23,20 +23,6 @@ use fedemotta\datatables\DataTables;
             'headerOptions' => ['style' => 'width: 3%;'],
         ],
         [
-            'format' => 'raw', 
-            'headerOptions' => ['style' => 'width:100px'],
-            'value' => function($item) use ($subActivity, $model){
-                return $model->status ? $model->status->status != 'Approved' ? Html::button('Update', ['value' => Url::to(['/v1/ppmp/update-item', 'id' => $item->id]), 'class' => 'btn btn-primary btn-xs btn-block update-item-button-'.$subActivity->id]) : '' : Html::button('Update', ['value' => Url::to(['/v1/ppmp/update-item', 'id' => $item->id]), 'class' => 'btn btn-primary btn-xs btn-block update-item-button-'.$subActivity->id]);
-            }
-        ],
-        [
-            'format' => 'raw',
-            'headerOptions' => ['style' => 'width:100px'],
-            'value' => function($item) use ($model){
-                return $model->status ? $model->status->status != 'Approved' ? Html::button('Delete', ['class' => 'btn btn-danger btn-xs btn-block', 'onClick' => 'deleteItem('.$item->id.')']) : '' : Html::button('Delete', ['class' => 'btn btn-danger btn-xs btn-block', 'onClick' => 'deleteItem('.$item->id.')']);
-            }
-        ],
-        [
             'header' => 'Type', 
             'attribute' => 'type',
         ],
@@ -56,82 +42,161 @@ use fedemotta\datatables\DataTables;
         ],
         'item.unit_of_measure',
         [
-            'header' => 'Total Qty', 
-            'attribute' => 'quantity',
+            'header' => '&nbsp;', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->quantities, 0);
+                return '<u>T</u> <br> <u>U</u> <br> <b>R</b>';
             }
         ],
         [
             'header' => 'J', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(1), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(1), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(1), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(1) - $item->getQuantityUsedPerMonth(1), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'F', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(2), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(2), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(2), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(2) - $item->getQuantityUsedPerMonth(2), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'M', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(3), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(3), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(3), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(3) - $item->getQuantityUsedPerMonth(3), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'A', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(4), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(4), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(4), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(4) - $item->getQuantityUsedPerMonth(4), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'M', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(5), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(5), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(5), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(5) - $item->getQuantityUsedPerMonth(5), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'J', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(6), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(6), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(6), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(6) - $item->getQuantityUsedPerMonth(6), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'J', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(7), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(7), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(7), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(7) - $item->getQuantityUsedPerMonth(7), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'A', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(8), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(8), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(8), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(8) - $item->getQuantityUsedPerMonth(8), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'S', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(9), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(9), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(91), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(9) - $item->getQuantityUsedPerMonth(9), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'O', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(10), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(10), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(10), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(10) - $item->getQuantityUsedPerMonth(10), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'N', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(11), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(11), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(11), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(11) - $item->getQuantityUsedPerMonth(11), 0).'</b>';
+                ;
+                return $value;
             }
         ],
         [
             'header' => 'D', 
+            'format' => 'raw', 
             'value' => function($item){
-                return number_format($item->getQuantityPerMonth(12), 0);
+                $value = '';
+                $value .= '<u>'.number_format($item->getQuantityPerMonth(12), 0).'</u> <br>';
+                $value .= '<u>'.number_format($item->getQuantityUsedPerMonth(12), 0).'</u> <br>';
+                $value .= '<b>'.number_format($item->getQuantityPerMonth(12) - $item->getQuantityUsedPerMonth(12), 0).'</b>';
+                ;
+                return $value;
+            }
+        ],
+        [
+            'header' => 'Total Qty', 
+            'attribute' => 'quantity',
+            'value' => function($item){
+                return number_format($item->quantities, 0);
             }
         ],
         [
@@ -154,6 +219,16 @@ use fedemotta\datatables\DataTables;
         [
             'header' => 'Remarks', 
             'attribute' => 'remarks',
+        ],
+        [
+            'format' => 'raw', 
+            'headerOptions' => ['style' => 'width:50px;'],
+            'value' => function($item) use ($subActivity, $model){
+                $buttons = '';
+                $buttons .= $model->status ? $model->status->status != 'Approved' ? Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/ppmp/update-item', 'id' => $item->id]), 'class' => 'btn btn-primary btn-block btn-xs update-item-button-'.$subActivity->id]) : '' : Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/ppmp/update-item', 'id' => $item->id]), 'class' => 'btn btn-primary btn-xs btn-block update-item-button-'.$subActivity->id]);
+                $buttons .= $model->status ? $model->status->status != 'Approved' ? Html::button('<i class="fa fa-trash"></i>', ['class' => 'btn btn-danger btn-block btn-xs', 'onClick' => 'deleteItem('.$item->id.')']) : '' : Html::button('<i class="fa fa-trash"></i>', ['class' => 'btn btn-danger btn-block btn-xs', 'onClick' => 'deleteItem('.$item->id.')']);
+                return $buttons;
+            }
         ],
     ],
 ]) : '<p class="text-center">No items found</p>' ?>

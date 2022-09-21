@@ -9,7 +9,8 @@ use yii\web\View;
 <div>
     <div class="pull-left">
         <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to PPMP List', ['/v1/ppmp/'], ['class' => 'btn btn-app']) ?>
-        <?= Html::a('<i class="fa fa-eye"></i> View PPMP', ['/v1/ppmp/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+        <?= Html::a('<i class="fa fa-list"></i> View Items', ['/v1/ppmp/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+        <?= Html::a('<i class="fa fa-list"></i> View Summary', ['/v1/ppmp/summary', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= Html::a('<i class="fa fa-list"></i> Item List', ['/v1/ppmp/item-check', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
     </div>
     <div class="pull-right">

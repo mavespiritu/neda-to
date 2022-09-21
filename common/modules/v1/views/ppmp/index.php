@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-md-12 col-xs-12">
-            <div class="box box-primary collapsed-box">
+            <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-search"></i> Search Filter
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
@@ -70,16 +70,16 @@ $this->params['breadcrumbs'][] = $this->title;
                         //'date_updated',
                         [
                             'header' => 'Total', 
-                            'attribute' => 'total',
+                            'attribute' => 'originalTotal',
                             'contentOptions' => ['style' => 'text-align: right;'],
                             'value' => function($ppmp){
-                                return number_format($ppmp->total, 2);
+                                return number_format($ppmp->originalTotal, 2);
                             },
                             'footerOptions' => ['style' => 'text-align: right;'],
                             'value' => function($item){
-                                return number_format($item->total, 2);
+                                return number_format($item->originalTotal, 2);
                             },
-                            'footer' => Ppmp::pageQuantityTotal($dataProvider->models, 'total'),
+                            'footer' => Ppmp::pageQuantityTotal($dataProvider->models, 'originalTotal'),
                         ],
                         [
                             'header' => 'Status',

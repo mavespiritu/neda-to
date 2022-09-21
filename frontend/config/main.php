@@ -10,7 +10,7 @@ use \yii\web\Request;
 $baseUrl = str_replace('/frontend/web', '', (new Request)->getBaseUrl());
 
 return [
-    'name' => 'OPMS',
+    'name' => 'Procurement',
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],

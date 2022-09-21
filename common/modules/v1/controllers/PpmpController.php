@@ -243,6 +243,76 @@ class PpmpController extends Controller
         ]);
     }
 
+    public function actionSummary($id)
+    {
+        $model = $this->findModel($id);
+
+        return $this->render('summary', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionItemActivity($id)
+    {
+        $model = $this->findModel($id);
+
+        $quantity = ItemBreakdown::find()
+                   ->select([
+                       'ppmp_item_id',
+                       'sum(quantity) as total'
+                   ])
+                    ->groupBy(['ppmp_item_id'])
+                    ->createCommand()
+                    ->getRawSql();
+        
+        $items = PpmpItem::find()
+                    ->select([
+                        'fundSource.id as fundSourceID',
+                        'fundSource.code as fundSourceTitle',
+                        'activity.id as activityID',
+                        'activity.title as activityTitle',
+                        'subActivity.id as subActivityID',
+                        'subActivity.title as subActivityTitle',
+                        'object.id as objectID',
+                        'concat(object.code," - ",object.title) as objectTitle',
+                        'sum(cost * quantity.total) as total',
+    
+                    ])
+                    ->leftJoin(['quantity' => '('.$quantity.')'], 'quantity.ppmp_item_id = ppmp_ppmp_item.id')
+                    ->leftJoin('ppmp_sub_activity subActivity', 'subActivity.id = ppmp_ppmp_item.sub_activity_id')
+                    ->leftJoin('ppmp_activity activity', 'activity.id = ppmp_ppmp_item.activity_id')
+                    ->leftJoin('ppmp_pap pap', 'pap.id = activity.pap_id')
+                    ->leftJoin('ppmp_fund_source fundSource', 'fundSource.id = ppmp_ppmp_item.fund_source_id')
+                    ->leftJoin('ppmp_obj object', 'object.id = ppmp_ppmp_item.obj_id')
+                    ->groupBy(['subActivity.id','object.id'])
+                    ->where(['ppmp_id' => $model->id])
+                    ->orderBy([
+                        'fundSourceTitle' => SORT_ASC,
+                        'pap.id' => SORT_ASC,
+                        'activity.code' => SORT_ASC,
+                        'subActivity.code' => SORT_ASC,
+                        'object.code' => SORT_ASC,
+                        ])
+                    ->asArray()
+                    ->all();
+        
+        $data = [];
+
+        if(!empty($items))
+        {
+            foreach($items as $item)
+            {
+                $data[$item['fundSourceID']]['title'] = $item['fundSourceTitle'];
+                $data[$item['fundSourceID']]['contents'][$item['activityID']]['title'] = $item['activityTitle'];
+            }
+        }
+
+        return $this->renderAjax('_item-activity', [
+            'model' => $model,
+            'data' => $data,
+        ]);
+    }
+
     public function actionLoadItems($id, $activity_id, $fund_source_id)
     {
         $model = $this->findModel($id);

@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model
     ]) ?>
     <div class="row">
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-list"></i>Manage Items</div>
                 <div class="box-body">
@@ -38,51 +38,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     <hr style="opacity: 0.3" />
                     <div class="row">
                         <div class="col-md-12 col-xs-12">
-                            <div id="items"></div>
+                            <div class="row">
+                                <div class="col-md-2 col-xs-12">
+                                    <div id="item-activity"></div>
+                                </div>
+                                <div class="col-md-10 col-xs-12">
+                                    <div id="items"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 col-xs-12">
-            <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-bar-chart"></i> Summary</div>
-                <div class="box-body">
-                    <table class="table table-responsive table-condensed table-hover">
-                        <tr>
-                            <th>Reference</th>
-                            <td align="right"><?= $model->reference ? Html::button($model->reference->title, ['value' => Url::to(['/v1/ppmp/reference', 'id' => $model->reference->id]), 'id' => 'reference-button', 'class' => 'btn btn-xs btn-primary']) : 'No cited reference' ?></td>
-                        </tr>
-                        <tr>
-                            <th>Approved Budget</th>
-                            <td align="right"><?= $model->reference ? number_format($model->reference->total, 2) : '0.00' ?></td>
-                        </tr>
-                    </table>
-                    <br>
-                    <p class="panel-title"><i class="fa fa-bar-chart"></i> This PPMP</p><br>
-                    <table class="table table-responsive table-condensed table-hover">
-                        <tr>
-                            <th>Total</th>
-                            <td align="right"><div id="ppmp-total"><?= number_format($model->total, 2) ?></div></td>
-                        </tr>
-                        <tr>
-                            <td align="right" style="font-size: 12px;">Original</td>
-                            <td align="right" style="font-size: 12px;"><div id="original-total"><?= number_format($model->originalTotal, 2) ?></div></td>
-                        </tr>
-                        <tr>
-                            <td align="right" style="font-size: 12px;">Supplemental</td>
-                            <td align="right" style="font-size: 12px;"><div id="supplemental-total"><?= number_format($model->supplementalTotal, 2) ?></div></td>
-                        </tr>
-                        <tr>
-                            <th>Ongoing Procurement</th>
-                            <td align="right"><?= number_format(0, 2) ?></td>
-                        </tr>
-                        <tr>
-                            <th>Obligated</th>
-                            <td align="right"><?= number_format(0, 2) ?></td>
-                        </tr>
-                    </table>
-                    <div id="item-summary"></div>
                 </div>
             </div>
         </div>
@@ -216,6 +181,25 @@ $this->params['breadcrumbs'][] = $this->title;
             });
         }
 
+        function loadItemActivity(id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/ppmp/item-activity']).'",
+                data: {
+                    id: id,
+                },
+                success: function (data) {
+                    $("#item-activity").empty();
+                    $("#item-activity").hide();
+                    $("#item-activity").fadeIn("slow");
+                    $("#item-activity").html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
         function loadItems(id, activity_id, fund_source_id)
         {
             $.ajax({
@@ -243,6 +227,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $(document).ready(function(){
             loadItemSummary('.$model->id.');
+            loadItemActivity('.$model->id.');
             //checkPrices('.$model->id.');
         });
     ';

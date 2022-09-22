@@ -57,6 +57,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 }
                             ],
                             [
+                                'header' => 'Status',
+                                'attribute' => 'statusName',
+                                'format' => 'raw',
+                                'value' => function($ris){
+                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
+                                    return '<span class="badge bg-'.$color[$ris->statusName].'">'.$ris->statusName.'</span>';
+                                }
+                            ],
+                            [
                                 'attribute' => 'type',
                                 'format' => 'raw',
                                 'value' => function($model){
@@ -76,15 +85,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'creatorName',
                             'requesterName',
                             'date_required',
-                            [
-                                'header' => 'Status',
-                                'attribute' => 'statusName',
-                                'format' => 'raw',
-                                'value' => function($ris){
-                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
-                                    return '<span class="badge bg-'.$color[$ris->statusName].'">'.$ris->statusName.'</span>';
-                                }
-                            ],
                             [
                                 'header' => 'Included PREXC',
                                 'attribute' => 'prexc',

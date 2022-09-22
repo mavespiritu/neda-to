@@ -50,9 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'showFooter' => true,
                     'columns' => [
                         ['class' => 'yii\grid\SerialColumn'],
-
-                        'year',
-                        'officeName',
                         [
                             'header' => 'Stage',
                             'attribute' => 'stage',
@@ -62,6 +59,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 return '<span class="badge bg-'.$color[$ppmp->stage].'">'.$ppmp->stage.'</span>';
                             }
                         ],
+                        'year',
+                        'officeName',
                         //'updated_by',
                         //'date_updated',
                         [
@@ -82,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'date_created',
                         [
                             'header' => 'Status',
-                            'attribute' => 'status.status',
+                            'attribute' => 'statusName',
                         ],
                         [
                             'format' => 'raw', 

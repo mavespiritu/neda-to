@@ -51,14 +51,12 @@ class RisSearch extends Ris
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
-            ->joinWith('status')
-             ->orderBy(['id' => SORT_DESC]) :
+            ->orderBy(['id' => SORT_DESC]) :
             Ris::find()
             ->joinWith('creator c')
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
-            ->joinWith('status')
             ->andWhere(['r.office_id' => Yii::$app->user->identity->userinfo->office->id])
             ->orderBy(['id' => SORT_DESC]);
 
@@ -127,7 +125,6 @@ class RisSearch extends Ris
             'approved_by' => $this->approved_by,
             'issued_by' => $this->issued_by,
             'received_by' => $this->received_by,
-            'ppmp_transaction.status' => $this->statusName,
             'type' => $this->type,
         ]);
 
@@ -140,7 +137,7 @@ class RisSearch extends Ris
         if(isset($params['RisSearch']['statusName']) && $params['RisSearch']['statusName'] != '')
         {
             $ids = [];
-            $transactions = Transaction::find()
+            $transactions = Ris::find()
                             ->innerJoin(['statuses' => '(
                             select
                                 ppmp_transaction.id,
@@ -149,8 +146,7 @@ class RisSearch extends Ris
                             from ppmp_transaction
                             inner join
                             (select max(id) as id from ppmp_transaction where model = "Ris" group by model_id) latest on latest.id = ppmp_transaction.id
-                            )'], 'statuses.id = ppmp_transaction.id')
-                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = statuses.model_id')
+                            )'], 'statuses.model_id = ppmp_ris.id')
                             ->andWhere(['statuses.status' => $params['RisSearch']['statusName']])
                             ->asArray()
                             ->all();
@@ -159,17 +155,12 @@ class RisSearch extends Ris
             {
                 foreach($transactions as $transaction)
                 {
-                    $ids[] = $transaction['model_id'];
+                    $ids[] = $transaction['id'];
                 }
 
             }
 
-            if(!empty($ids))
-            {
-                $query->andWhere(['ppmp_ris.id' => $ids]); 
-            }else{
-                $query;
-            }
+            $query->andWhere(['ppmp_ris.id' => $ids]); 
         }
 
         return $dataProvider;

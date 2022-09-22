@@ -236,7 +236,7 @@ class Ris extends \yii\db\ActiveRecord
 
     public function getStatus()
     {
-        return $this->hasOne(Transaction::className(), ['model_id' => 'id'])->where(['model' => 'Ris'])->orderBy(['datetime' => SORT_DESC]);
+        return $this->hasOne(Transaction::className(), ['model_id' => 'id'])->onCondition(['model' => 'Ris'])->orderBy(['datetime' => SORT_DESC]);
     }
 
     public function getStatusName()

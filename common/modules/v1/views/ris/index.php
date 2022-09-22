@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'statusName',
                                 'format' => 'raw',
                                 'value' => function($ris){
-                                    $color = ['For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
+                                    $color = ['For Approval' => 'teal', 'For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
                                     return '<span class="badge bg-'.$color[$ris->statusName].'">'.$ris->statusName.'</span>';
                                 }
                             ],

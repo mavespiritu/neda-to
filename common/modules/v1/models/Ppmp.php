@@ -77,7 +77,8 @@ class Ppmp extends \yii\db\ActiveRecord
             'status' => 'Status',
             'statusName' => 'Status',
             'type' => 'Type',
-            'cse' => 'CSE'
+            'cse' => 'CSE',
+            'title' => 'Code'
         ];
     }
 

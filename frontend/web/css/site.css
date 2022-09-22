@@ -49,6 +49,12 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
   border-color: transparent !important;
 }
 
+.btn-warning, span.bg-orange{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(245, 158, 11, var(--tw-bg-opacity)) !important;	
+  border-color: transparent !important;
+}
+
 .box-primary{
   --tw-bg-opacity: 1 !important;
   border-top-color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
@@ -62,6 +68,11 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
 .box-danger{
   --tw-bg-opacity: 1 !important;
   border-top-color: rgba(239, 68, 68, var(--tw-bg-opacity)) !important;
+}
+
+.box-warning{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgba(245, 158, 11, var(--tw-bg-opacity)) !important;	
 }
 
 .panel-success > .panel-heading{
@@ -82,6 +93,31 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
 .gridview > table.table > thead > tr > th > a {
   --tw-bg-opacity: 1 !important;
   color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+.text-green{
+  --tw-bg-opacity: 1 !important;
+  color: rgba(16, 185, 129, var(--tw-bg-opacity)) !important;
+}
+
+.text-blue{
+  --tw-bg-opacity: 1 !important;
+  color: rgba(59, 130, 246, var(--tw-bg-opacity)) !important;
+}
+
+.text-red{
+  --tw-bg-opacity: 1 !important;
+  color: rgba(239, 68, 68, var(--tw-bg-opacity)) !important;
+}
+
+.text-orange{
+  --tw-bg-opacity: 1 !important;
+  color: rgba(245, 158, 11, var(--tw-bg-opacity)) !important;	
+}
+
+.table-bordered{
+  --tw-border-opacity: 1 !important;
+    border-color: rgba(156, 163, 175, var(--tw-border-opacity)) !important;
 }
 
 h1,

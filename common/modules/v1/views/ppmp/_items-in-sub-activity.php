@@ -12,7 +12,8 @@ use fedemotta\datatables\DataTables;
 
 <?= $dataProvider->getTotalCount() > 0 ? Gridview::widget([
     'options' => [
-        'class' => 'table-responsive table-condensed table-bordered table-striped table-hover content',
+        'class' => 'table-responsive table-condensed table-bordered table-striped table-hover content-table',
+        'style' => 'max-height: 500px;',
         'id' => 'table-subactivity-'.$subActivity->id,
     ],
     'dataProvider' => $dataProvider,
@@ -321,6 +322,10 @@ use fedemotta\datatables\DataTables;
                 $("#item-form-container").load($(this).attr("value"));
                 $("#close-item-form-button").css("display", "block");
                 $("#create-item-button").css("display", "none");
+            });
+
+            $(".content-table").freezeTable({
+                "scrollable": true,
             });
         });     
     ';

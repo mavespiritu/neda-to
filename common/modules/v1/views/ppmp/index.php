@@ -51,11 +51,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     'columns' => [
                         ['class' => 'yii\grid\SerialColumn'],
                         [
+                            'attribute' => 'title',
+                            'format' => 'raw',
+                            'value' => function($model){
+                                return '<b>'.Html::a($model->title, ['/v1/ppmp/view', 'id' => $model->id]).'</b>';
+                            }
+                        ],
+                        [
                             'header' => 'Stage',
                             'attribute' => 'stage',
                             'format' => 'raw',
                             'value' => function($ppmp){
-                                $color = ['Indicative' => 'red', 'Adjusted' => 'green', 'Final' => 'blue'];
+                                $color = ['Indicative' => 'blue', 'Adjusted' => 'orange', 'Final' => 'green'];
                                 return '<span class="badge bg-'.$color[$ppmp->stage].'">'.$ppmp->stage.'</span>';
                             }
                         ],

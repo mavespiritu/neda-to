@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
-
+use yii\bootstrap\ButtonDropdown;
 /* @var $this yii\web\View */
 /* @var $model common\modules\v1\models\Ris */
 
@@ -24,15 +24,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-header panel-title"><i class="fa fa-list"></i> RIS Information</div>
                 <div class="box-body">
                     <?php if($model->statusName == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
-                    <span>
-                        <?php // Html::a('<i class="fa fa-print"></i> Print', ['#'],['class' => 'btn btn-danger']) ?>
+                    <span class="pull-right">
+                        <?= ButtonDropdown::widget([
+                            'label' => '<i class="fa fa-download"></i> Export',
+                            'encodeLabel' => false,
+                            'options' => ['class' => 'btn btn-success'],
+                            'dropdown' => [
+                                'items' => [
+                                    ['label' => 'Excel', 'url' => Url::to(['/v1/ris/download', 'type' => 'excel', 'id' => $model->id])],
+                                    ['label' => 'PDF', 'url' => Url::to(['/v1/ris/download', 'type' => 'pdf', 'id' => $model->id])],
+                                ],
+                            ],
+                            ]) ?>
+                        <?= Html::button('<i class="fa fa-print"></i> Print', ['class' => 'btn btn-danger', 'onclick' => 'printRis()']) ?>
                     </span>
-                    <br>
+                    <span class="clearfix"></span>
+                    <hr style="opacity: 0.4">
                     <h5 class="text-center"><b>REQUEST AND ISSUANCE SLIP</b></h5>
                     <p><b>Entity Name: <u><?= $entityName ?></u></b></p>
                     <p><b>Fund Cluster: <u><?= $fundClusterName ?></u></b></p>
                     <?php $total = 0; ?>
-                    <table class="table table-bordered">
+                    <table class="table table-bordered table-condensed">
                         <tr>
                             <td colspan=2>Division:<br>Office: </td>
                             <td colspan=4><u><?= $model->officeName ?></u><br><u><?= $model->officeName ?></u></td>
@@ -56,31 +68,44 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td align=center>Fund Source</td>
                         </tr>
                         <?php if(!empty($risItems)){ ?>
-                            <?php foreach($risItems as $idx => $items){ ?>
+                            <?php foreach($risItems as $activity => $subActivityitems){ ?>
                             <tr>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
-                                <td>&nbsp;</td>
-                                <th><?= $idx ?> - <?= $model->fundSource->code ?> Funded</th>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
+                                <th colspan=2><?= $activity ?></th>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                             </tr>
-                                <?php if(!empty($items)){ ?>
-                                    
-                                    <?php foreach($items as $item){ ?>
-                                        <?= $this->render('_ris-item', [
-                                            'i' => $i,
-                                            'model' => $model,
-                                            'item' => $item,
-                                            'specifications' => $specifications
-                                        ]) ?>
-                                        <?php $total += ($item['total'] * $item['cost']); ?>
-                                        <?php $i++; ?>
+                                <?php if(!empty($subActivityitems)){ ?>
+                                    <?php foreach($subActivityitems as $subActivity => $items){ ?>
+                                    <tr>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <th><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                        <?php if(!empty($items)){ ?>
+                                            <?php foreach($items as $item){ ?>
+                                                <?= $this->render('_ris-item', [
+                                                    'i' => $i,
+                                                    'model' => $model,
+                                                    'item' => $item,
+                                                    'specifications' => $specifications
+                                                ]) ?>
+                                                <?php $total += ($item['total'] * $item['cost']); ?>
+                                                <?php $i++; ?>
+                                            <?php } ?>
+                                        <?php } ?>
                                     <?php } ?>
                                 <?php } ?>
                             <?php } ?>
@@ -171,10 +196,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <br>
                     <?php if($model->getItemsTotal('Realigned') > 0){ ?>
                         <h5 class="text-center"><b>SOURCE OF REALIGNMENT</b></h5>
-                        <table class="table table-bordered table-responsive">
+                        <table class="table table-bordered table-condensed table-responsive">
                             <thead>
                                 <tr>
-                                    <th>Description</th>
+                                    <th colspan=2>Description</th>
                                     <?php if($months){ ?>
                                         <?php foreach($months as $month){ ?>
                                             <th><?= $month->abbreviation ?></th>
@@ -185,21 +210,30 @@ $this->params['breadcrumbs'][] = $this->title;
                             </thead>
                             <tbody>
                             <?php if(!empty($realignedItems)){ ?>
-                                <?php foreach($realignedItems as $activity => $raItems){ ?>
+                                <?php foreach($realignedItems as $activity => $subActivityItems){ ?>
                                     <tr>
-                                        <th colspan=14><?= $activity ?></th>
+                                        <th colspan=15><?= $activity ?></th>
                                     </tr>
-                                    <?php if(!empty($raItems)){ ?>
-                                        <?php foreach($raItems as $itemTitle => $ritems){ ?>
+                                    <?php if(!empty($subActivityItems)){ ?>
+                                        <?php foreach($subActivityItems as $subActivity => $raItems){ ?>
                                             <tr>
-                                                <td><?= $itemTitle ?></td>
-                                                <?php if($months){ ?>
-                                                    <?php foreach($months as $month){ ?>
-                                                        <td><?= isset($ritems[$month->id]) ? number_format($ritems[$month->id], 0) : 0 ?></td>
-                                                    <?php } ?>
-                                                <?php } ?>
-                                                <td><?= $model->purpose ?></td>
+                                                <th>&nbsp;</th>
+                                                <th colspan=14><?= $subActivity ?></th>
                                             </tr>
+                                            <?php if(!empty($raItems)){ ?>
+                                                <?php foreach($raItems as $itemTitle => $ritems){ ?>
+                                                    <tr>
+                                                        <td>&nbsp;</td>
+                                                        <td><?= $itemTitle ?></td>
+                                                        <?php if($months){ ?>
+                                                            <?php foreach($months as $month){ ?>
+                                                                <td><?= isset($ritems[$month->id]) ? number_format($ritems[$month->id], 0) : 0 ?></td>
+                                                            <?php } ?>
+                                                        <?php } ?>
+                                                        <td><?= $model->purpose ?></td>
+                                                    </tr>
+                                                <?php } ?>
+                                            <?php } ?>
                                         <?php } ?>
                                     <?php } ?>
                                 <?php } ?>

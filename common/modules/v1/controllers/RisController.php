@@ -528,6 +528,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -553,7 +564,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
                 ->asArray()
                 ->all();
 
@@ -563,11 +574,12 @@ class RisController extends Controller
         {
             foreach($items as $item)
             {
-                $risItems[$item['prexc']][] = $item;
+                $risItems[$item['activity']][$item['prexc']][] = $item;
 
                 $spec = RisItemSpec::findOne([
                     'ris_id' => $item['ris_id'],
                     'activity_id' => $item['activityId'],
+                    'sub_activity_id' => $item['subActivityId'],
                     'item_id' => $item['stockNo'],
                     'cost' => $item['cost'],
                     'type' => $item['type'],
@@ -597,6 +609,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
                     'sum(quantity) as total'
@@ -615,7 +638,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.month_id'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
                 ->asArray()
                 ->all();
         
@@ -625,7 +648,7 @@ class RisController extends Controller
         {
             foreach($raItems as $item)
             {
-                $realignedItems[$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
+                $realignedItems[$item['activity']][$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
             }
         }
 
@@ -683,6 +706,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -708,7 +742,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
                 ->asArray()
                 ->all();
 
@@ -718,11 +752,12 @@ class RisController extends Controller
         {
             foreach($items as $item)
             {
-                $risItems[$item['prexc']][] = $item;
+                $risItems[$item['activity']][$item['prexc']][] = $item;
 
                 $spec = RisItemSpec::findOne([
                     'ris_id' => $item['ris_id'],
                     'activity_id' => $item['activityId'],
+                    'sub_activity_id' => $item['subActivityId'],
                     'item_id' => $item['stockNo'],
                     'cost' => $item['cost'],
                     'type' => $item['type'],
@@ -752,6 +787,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
                     'sum(quantity) as total'
@@ -770,7 +816,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.month_id'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
                 ->asArray()
                 ->all();
         
@@ -780,7 +826,7 @@ class RisController extends Controller
         {
             foreach($raItems as $item)
             {
-                $realignedItems[$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
+                $realignedItems[$item['activity']][$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
             }
         }
 
@@ -804,7 +850,25 @@ class RisController extends Controller
             }
         }
 
-        if($type == 'pdf')
+        $filename = 'RIS No. '.$model->ris_no;
+
+        if($type == 'excel')
+        {
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=".$filename.".xls");
+            return $this->renderPartial('file', [
+                'action' => 'pdf',
+                'model' => $model,
+                'entityName' => $entityName['value'],
+                'fundClusterName' => $fundCluster->title,
+                'risItems' => $risItems,
+                'realignedItems' => $realignedItems,
+                'months' => $months,
+                'comment' => $comment,
+                'specifications' => $specifications
+            ]);
+        }
+        else if($type == 'pdf')
         {
             $content = $this->renderPartial('file', [
                 'action' => 'pdf',
@@ -817,8 +881,6 @@ class RisController extends Controller
                 'comment' => $comment,
                 'specifications' => $specifications
             ]);
-
-            $filename = 'RIS No. '.$model->ris_no;
 
             $pdf = new Pdf([
                 'mode' => Pdf::MODE_CORE,
@@ -886,6 +948,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -911,7 +984,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
                 ->asArray()
                 ->all();
 
@@ -921,7 +994,7 @@ class RisController extends Controller
         {
             foreach($items as $item)
             {
-                $risItems[$item['prexc']][] = $item;
+                $risItems[$item['activity']][$item['prexc']][] = $item;
 
                 $spec = RisItemSpec::findOne([
                     'ris_id' => $item['ris_id'],
@@ -956,6 +1029,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
                     'sum(quantity) as total'
@@ -974,7 +1058,7 @@ class RisController extends Controller
                     'ris_id' => $model->id,
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.month_id'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
                 ->asArray()
                 ->all();
         
@@ -984,7 +1068,7 @@ class RisController extends Controller
         {
             foreach($raItems as $item)
             {
-                $realignedItems[$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
+                $realignedItems[$item['activity']][$item['prexc']][$item['itemTitle']][$item['month_id']] = $item['total'];
             }
         }
 

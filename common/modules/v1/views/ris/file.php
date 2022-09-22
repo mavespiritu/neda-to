@@ -1,4 +1,3 @@
-<?php if($action == 'print'){ ?>
 <style>
     *{ font-family: "Tahoma"; }
     h6{ text-align: center; } 
@@ -25,7 +24,6 @@
         padding: 3px 3px;
     }
 </style>
-<?php } ?>
 <?php 
 use yii\web\View;
 
@@ -60,12 +58,11 @@ $i = 1;
         <td align=center>Fund Source</td>
     </tr>
     <?php if(!empty($risItems)){ ?>
-        <?php foreach($risItems as $idx => $items){ ?>
+        <?php foreach($risItems as $activity => $subActivityitems){ ?>
         <tr>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td><b><?= $idx ?> - <?= $model->fundSource->code ?> Funded</b></td>
+            <th colspan=2><?= $activity ?></th>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
@@ -74,16 +71,33 @@ $i = 1;
             <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
-            <?php if(!empty($items)){ ?>
-                <?php foreach($items as $item){ ?>
-                    <?= $this->render('_ris-item', [
-                        'i' => $i,
-                        'model' => $model,
-                        'item' => $item,
-                        'specifications' => $specifications
-                    ]) ?>
-                    <?php $total += ($item['total'] * $item['cost']); ?>
-                    <?php $i++; ?>
+            <?php if(!empty($subActivityitems)){ ?>
+                <?php foreach($subActivityitems as $subActivity => $items){ ?>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <th><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                    <?php if(!empty($items)){ ?>
+                        <?php foreach($items as $item){ ?>
+                            <?= $this->render('_ris-item', [
+                                'i' => $i,
+                                'model' => $model,
+                                'item' => $item,
+                                'specifications' => $specifications
+                            ]) ?>
+                            <?php $total += ($item['total'] * $item['cost']); ?>
+                            <?php $i++; ?>
+                        <?php } ?>
+                    <?php } ?>
                 <?php } ?>
             <?php } ?>
         <?php } ?>
@@ -199,7 +213,7 @@ $i = 1;
     <table style="width: 100%;">
         <thead>
             <tr>
-                <th>Description</th>
+                <th colspan=2>Description</th>
                 <?php if($months){ ?>
                     <?php foreach($months as $month){ ?>
                         <th><?= $month->abbreviation ?></th>
@@ -210,21 +224,30 @@ $i = 1;
         </thead>
         <tbody>
         <?php if(!empty($realignedItems)){ ?>
-            <?php foreach($realignedItems as $activity => $raItems){ ?>
+            <?php foreach($realignedItems as $activity => $subActivityItems){ ?>
                 <tr>
-                    <td colspan=14><b><?= $activity ?></b></td>
+                    <td colspan=15><b><?= $activity ?></b></td>
                 </tr>
-                <?php if(!empty($raItems)){ ?>
-                    <?php foreach($raItems as $itemTitle => $ritems){ ?>
+                <?php if(!empty($subActivityItems)){ ?>
+                    <?php foreach($subActivityItems as $subActivity => $raItems){ ?>
                         <tr>
-                            <td><?= $itemTitle ?></td>
-                            <?php if($months){ ?>
-                                <?php foreach($months as $month){ ?>
-                                    <td><?= isset($ritems[$month->id]) ? number_format($ritems[$month->id], 0) : 0 ?></td>
-                                <?php } ?>
-                            <?php } ?>
-                            <td><?= $model->purpose ?></td>
+                            <th>&nbsp;</th>
+                            <td colspan=14><b><?= $subActivity ?></b></td>
                         </tr>
+                        <?php if(!empty($raItems)){ ?>
+                            <?php foreach($raItems as $itemTitle => $ritems){ ?>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td><?= $itemTitle ?></td>
+                                    <?php if($months){ ?>
+                                        <?php foreach($months as $month){ ?>
+                                            <td><?= isset($ritems[$month->id]) ? number_format($ritems[$month->id], 0) : 0 ?></td>
+                                        <?php } ?>
+                                    <?php } ?>
+                                    <td><?= $model->purpose ?></td>
+                                </tr>
+                            <?php } ?>
+                        <?php } ?>
                     <?php } ?>
                 <?php } ?>
             <?php } ?>

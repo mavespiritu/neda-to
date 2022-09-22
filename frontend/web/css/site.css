@@ -115,10 +115,11 @@ table.bordered-table, table.bordered-table tr, table.bordered-table tr th, table
   color: rgba(245, 158, 11, var(--tw-bg-opacity)) !important;	
 }
 
-.table-bordered{
-  --tw-border-opacity: 1 !important;
-    border-color: rgba(156, 163, 175, var(--tw-border-opacity)) !important;
-}
+/* .table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > td{
+  --tw-border-opacity: 1 !important;	
+  border-color: rgba(209, 213, 219, var(--tw-border-opacity)) !important;	
+} */
 
 h1,
 h2,

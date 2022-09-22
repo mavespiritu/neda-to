@@ -9,21 +9,10 @@ use yii\bootstrap\ButtonDropdown;
 <div>
     <div class="pull-left">
         <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/v1/ris/'], ['class' => 'btn btn-app']) ?>
-        <?= Html::a('<i class="fa fa-eye"></i> View Content', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= Html::a('<i class="fa fa-plus"></i> Add Original', ['/v1/ris/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= Html::a('<i class="fa fa-plus"></i> Add Supplemental', ['/v1/ris/supplemental', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= $model->getRealignedAmount() > 0 ? Html::a('<span class="badge bg-red"><i class="fa fa-exclamation"></i></span> <i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) : Html::a('<i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-        <?php /* ButtonDropdown::widget([
-          'label' => '<i class="fa fa-download"></i> Export',
-          'encodeLabel' => false,
-          'options' => ['class' => 'btn btn-app'],
-          'dropdown' => [
-              'items' => [
-                  ['label' => 'PDF', 'url' => Url::to(['/v1/ris/download', 'type' => 'pdf', 'id' => $model->id])],
-              ],
-          ],
-        ]); */ ?>
-        <?= Html::button('<i class="fa fa-print"></i> Print', ['class' => 'btn btn-app', 'onclick' => 'printRis()']) ?>
+        <?= Html::a('<i class="fa fa-file-o"></i> View Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
     </div>
     <div class="pull-right">
         <?= $model->getRealignAmount('Supplemental') <= 0 && $model->risItems && ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ? Html::a('<i class="fa fa-paper-plane"></i> Send For Approval', ['for-approval', 'id' => $model->id], [

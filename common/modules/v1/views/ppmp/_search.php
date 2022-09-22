@@ -20,18 +20,6 @@ use yii\web\View;
     ]); ?>
 
     <div class="row">
-        <?php if(Yii::$app->user->can('Administrator') || Yii::$app->user->can('Accounting')){ ?>
-        <div class="col-md-3 col-xs-12">
-            <?= $form->field($model, 'office_id')->widget(Select2::classname(), [
-                'data' => ['' => 'All Divisions'] + $offices,
-                'options' => ['multiple' => false, 'class'=>'office-select'],
-                'pluginOptions' => [
-                    'allowClear' =>  false,
-                ],
-            ]);
-            ?>
-        </div>
-        <?php } ?>
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'stage')->widget(Select2::classname(), [
                     'data' => ['' => 'All Stages'] + $stages,
@@ -52,6 +40,33 @@ use yii\web\View;
                 ]);
             ?>
         </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'creatorName') ?>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'statusName')->widget(Select2::classname(), [
+                'data' => ['Approved' => 'Approved', 'Draft' => 'Draft', 'Disapproved' => 'Disapproved', 'For Revision' => 'For Revision'],
+                'options' => ['placeholder' => 'Select Status','multiple' => false, 'class'=>'fund-source-select'],
+                'pluginOptions' => [
+                    'allowClear' =>  true,
+                ],
+                ]);
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <?php if(Yii::$app->user->can('Administrator') || Yii::$app->user->can('AccountingStaff')){ ?>
+            <div class="col-md-3 col-xs-12">
+                <?= $form->field($model, 'office_id')->widget(Select2::classname(), [
+                    'data' => ['' => 'All Divisions'] + $offices,
+                    'options' => ['multiple' => false, 'class'=>'office-select'],
+                    'pluginOptions' => [
+                        'allowClear' =>  false,
+                    ],
+                ]);
+                ?>
+            </div>
+        <?php } ?>
     </div>
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

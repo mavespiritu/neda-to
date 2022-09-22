@@ -14,6 +14,7 @@ class PpmpSearch extends Ppmp
 {
     public $officeName;
     public $creatorName;
+    public $statusName;
     /**
      * {@inheritdoc}
      */
@@ -21,7 +22,7 @@ class PpmpSearch extends Ppmp
     {
         return [
             [['id', 'office_id', 'year', 'created_by', 'updated_by'], 'integer'],
-            [['stage', 'date_created', 'date_updated', 'officeName', 'creatorName', 'updaterName'], 'safe'],
+            [['stage', 'date_created', 'date_updated', 'officeName', 'creatorName', 'updaterName', 'statusName'], 'safe'],
         ];
     }
 
@@ -93,6 +94,36 @@ class PpmpSearch extends Ppmp
             'stage' => $this->stage,
         ]);
 
+        $query->andFilterWhere(['like', 'concat(c.FIRST_M," ",c.LAST_M)', $this->creatorName]);
+
+        if(isset($params['PpmpSearch']['statusName']) && $params['PpmpSearch']['statusName'] != '')
+        {
+            $ids = [];
+            $transactions = Ppmp::find()
+                            ->innerJoin(['statuses' => '(
+                            select
+                                ppmp_transaction.id,
+                                ppmp_transaction.model_id,
+                                ppmp_transaction.status
+                            from ppmp_transaction
+                            inner join
+                            (select max(id) as id from ppmp_transaction where model = "Ppmp" group by model_id) latest on latest.id = ppmp_transaction.id
+                            )'], 'statuses.model_id = ppmp_ppmp.id')
+                            ->andWhere(['statuses.status' => $params['PpmpSearch']['statusName']])
+                            ->asArray()
+                            ->all();
+
+            if(!empty($transactions))
+            {
+                foreach($transactions as $transaction)
+                {
+                    $ids[] = $transaction['id'];
+                }
+
+            }
+
+            $query->andWhere(['ppmp_ppmp.id' => $ids]); 
+        }
 
         return $dataProvider;
     }

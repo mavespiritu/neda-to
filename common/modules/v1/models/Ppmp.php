@@ -74,6 +74,8 @@ class Ppmp extends \yii\db\ActiveRecord
             'updated_by' => 'Updated By',
             'updaterName' => 'Updated By',
             'date_updated' => 'Date Updated',
+            'status' => 'Status',
+            'statusName' => 'Status',
             'type' => 'Type',
             'cse' => 'CSE'
         ];
@@ -259,10 +261,14 @@ class Ppmp extends \yii\db\ActiveRecord
 
     public function getStatus()
     {
-        $status = Transaction::find()->where(['model' => 'Ppmp', 'model_id' => $this->id])->orderBy(['datetime' => SORT_DESC])->one();
-
-        return $status;
+        return $this->hasOne(Transaction::className(), ['model_id' => 'id'])->onCondition(['model' => 'Ppmp'])->orderBy(['datetime' => SORT_DESC]);
     }
+
+    public function getStatusName()
+    {
+        return $this->status ? $this->status->status : 'No status';
+    }
+    
 
     public function afterSave($insert, $changedAttributes){
         if($insert){

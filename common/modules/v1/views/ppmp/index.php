@@ -82,6 +82,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         [
                             'header' => 'Status',
                             'attribute' => 'statusName',
+                            'format' => 'raw',
+                            'value' => function($ppmp){
+                                $color = ['For Revision' => 'text-yellow', 'Disapproved' => 'text-red', 'Approved' => 'text-green', 'Draft' => 'text-light-blue', 'No status' => 'text-muted'];
+                                return '<span class="'.$color[$ppmp->statusName].'">'.$ppmp->statusName.'</span>';
+                            }
                         ],
                         [
                             'format' => 'raw', 

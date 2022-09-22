@@ -76,7 +76,7 @@ use yii\web\View;
         </div>
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'statusName')->widget(Select2::classname(), [
-                'data' => ['Approved' => 'Approved', 'Draft' => 'Draft', 'Disapproved' => 'Disapproved', 'For Revision' => 'For Revision'],
+                'data' => ['Approved' => 'Approved', 'Draft' => 'Draft', 'Disapproved' => 'Disapproved', 'For Approval' => 'For Approval', 'For Revision' => 'For Revision'],
                 'options' => ['placeholder' => 'Select Status','multiple' => false, 'class'=>'fund-source-select'],
                 'pluginOptions' => [
                     'allowClear' =>  true,

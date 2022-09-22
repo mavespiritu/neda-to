@@ -37,8 +37,8 @@
             <th rowspan=2>Mode of Procurement</th>
             <th rowspan=2>End User</th>
             <th rowspan=2>Fund Source</th>
-            <th>Quantity</th>
             <th rowspan=2>Estimated Budget</th>
+            <th>Quantity</th>
             <?php if($quarters){ ?>
                 <?php foreach($quarters as $quarter){ ?>
                     <?php if($months){ ?>

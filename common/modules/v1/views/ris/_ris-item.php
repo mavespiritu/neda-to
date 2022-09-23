@@ -12,6 +12,7 @@ use yii\web\View;
         <?= $item['itemTitle'] ?><br>
         <i><?= isset($specifications[$item['id']]) ? $specifications[$item['id']]->risItemSpecValueString : '' ?></i>
     </td>
+    <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=center><?= number_format($item['total'], 0) ?></td>
     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
     <td>&nbsp;</td>

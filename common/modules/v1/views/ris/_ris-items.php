@@ -51,7 +51,7 @@ use yii\widgets\MaskedInput;
     </tbody>
   </table>
   <div class="form-group pull-right">
-  <?= $quantityTotal > 0 && ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Submit', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
+  <?= $quantityTotal > 0 && ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Add to RIS', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
   </div>
 <?php }else{ ?>
   <p class="text-center">No items selected.</p>

@@ -7,22 +7,22 @@
     $total = 0;
 ?>
 
-<table class="table table-condensed table-hover">
+<table class="table table-bordered table-condensed table-striped table-hover">
     <thead>
         <tr>
-            <th>Item</th>
-            <th>Specification</th>
-            <th>Unit Cost</th>
-            <th>Quantity</th>
-            <td align=center><b>Total</b></td>
             <th>&nbsp;</th>
+            <th style="width: 25%">Item</th>
+            <th style="width: 15%">Specification</th>
+            <td align=right style="width: 15%"><b>Unit Cost</b></td>
+            <td align=center style="width: 15%"><b>Quantity</b></td>
+            <td align=right style="width: 15%"><b>Total</b></td>
         </tr>
     </thead>
     <tbody>
     <?php if(!empty($originalItems)){ ?>
-        <?php foreach($originalItems as $idx => $origItems){ ?>
+        <?php foreach($originalItems as $activity => $origItems){ ?>
             <tr>
-                <th colspan=5><i><?= $idx ?></i></th>
+                <th colspan=6><?= $activity ?></th>
             </tr>
             <?php if(!empty($origItems)){ ?>
                 <?php foreach($origItems as $item){ ?>
@@ -37,14 +37,12 @@
         <?php } ?>
     <?php }else{ ?>
         <tr>
-            <td colspan=7 align=center>No original items included</td>
+            <td colspan=6 align=center>No original items included</td>
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=2 align=right><b>Grand Total</b></td>
-        <td>&nbsp;</td>
+        <td colspan=5 align=right><b>Grand Total</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
-        <td>&nbsp;</td>
     </tr>
     </tbody>
 </table>

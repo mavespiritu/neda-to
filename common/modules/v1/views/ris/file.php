@@ -1,3 +1,4 @@
+<?php if($action != 'pdf'){ ?>
 <style>
     *{ font-family: "Tahoma"; }
     h6{ text-align: center; } 
@@ -24,6 +25,7 @@
         padding: 3px 3px;
     }
 </style>
+<?php } ?>
 <?php 
 use yii\web\View;
 
@@ -37,11 +39,11 @@ $i = 1;
 <table style="width: 100%">
     <tr>
         <td colspan=2>Division:<br>Office: </td>
-        <td colspan=4><u><?= $model->officeName ?></u><br><u><?= $model->officeName ?></u></td>
+        <td colspan=5><u><?= $model->officeName ?></u><br><u><?= $model->officeName ?></u></td>
         <td colspan=5>RIS No. <u><?= $model->ris_no ?></u></td>
     </tr>
     <tr>
-        <td colspan=6 align=center><b>Requisition</b></td>
+        <td colspan=7 align=center><b>Requisition</b></td>
         <td rowspan=2><b>Stock Available?</b></td>
         <td colspan=4 align=center><b>Issue</b></td>
     </tr>
@@ -50,6 +52,7 @@ $i = 1;
         <td align=center>Stock No.</td>
         <td align=center>Unit</td>
         <td align=center>Description</td>
+        <td align=center>Unit Cost</td>
         <td align=center>Quantity</td>
         <td align=center>ABC</td>
         <td align=center>Quantity</td>
@@ -62,7 +65,8 @@ $i = 1;
         <tr>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
-            <th colspan=2><?= $activity ?></th>
+            <td colspan=2><b><?= $activity ?></b></td>
+            <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
@@ -77,7 +81,8 @@ $i = 1;
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <th><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                    <td><b><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</b></td>
+                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -103,7 +108,7 @@ $i = 1;
         <?php } ?>
     <?php } ?>
     <tr>
-        <td colspan=5 align=right><b>Total</b></td>
+        <td colspan=6 align=right><b>Total</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
@@ -172,11 +177,11 @@ $i = 1;
 <br>
 <table style="width: 100%;">
     <tr>
-        <td>&nbsp;</td>
-        <td>Requested By:</td>
-        <td>Approved By:</td>
-        <td>Issued By:</td>
-        <td>Received By:</td>
+        <td style="width: 20%">&nbsp;</td>
+        <td style="width: 20%">Requested By:</td>
+        <td style="width: 20%">Approved By:</td>
+        <td style="width: 20%">Issued By:</td>
+        <td style="width: 20%">Received By:</td>
     </tr>
     <tr>
         <td>Signature:</td>

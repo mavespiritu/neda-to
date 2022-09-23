@@ -25,6 +25,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     ]); ?>
 
 <?= $form->field($spec, 'activity_id')->hiddenInput(['value' => $activity->id])->label(false) ?>
+<?= $form->field($spec, 'sub_activity_id')->hiddenInput(['value' => $subActivity->id])->label(false) ?>
 
     <table class="table table-condensed">
         <tr>
@@ -33,11 +34,11 @@ use wbraganca\dynamicform\DynamicFormWidget;
         </tr>
         <tr>
             <th>Activity</th>
-            <td><?= $activity->title ?> - <?= $model->fundSource->code ?> Funded</td>
+            <td><?= $activity->title ?></td>
         </tr>
         <tr>
             <th>PPA</th>
-            <td><?= $subActivity->title ?></td>
+            <td><?= $subActivity->title ?> - <?= $model->fundSource->code ?> Funded</td>
         </tr>
         <tr>
             <th>Item</th>
@@ -45,7 +46,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
         </tr>
     </table>
     <p>List down all specification of item below. Click "Add Specification" button to add more row.
-    <div class="pull-right"><button type="button" class="pull-right add-item btn btn-success btn-xs"><i class="fa fa-plus"></i> Add Specification</button></div>
+    <div class="pull-right"><button type="button" class="pull-right add-item btn btn-success btn-xs"><i class="fa fa-plus"></i> Add Descriptions</button></div>
     <div class="clearfix"></div>
     <br>
     <table class="table table-responsive table-condensed">

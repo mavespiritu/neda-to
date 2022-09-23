@@ -3,7 +3,7 @@ use yii\widgets\Breadcrumbs;
 use dmstr\widgets\Alert;
 
 ?>
-<div class="content-wrapper" style="background: white;">
+<div class="content-wrapper" style="background-color: white;">
     <?php if(!Yii::$app->user->isGuest){ ?>
     <section class="content-header">
         <?php if (isset($this->blocks['content-header'])) { ?>

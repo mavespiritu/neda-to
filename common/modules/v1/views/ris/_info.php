@@ -18,12 +18,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model
     ]) ?>
 
+    <?php if($model->statusName == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
     <div class="row">
         <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-list"></i> RIS Information</div>
                 <div class="box-body">
-                    <?php if($model->statusName == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
                     <span class="pull-right">
                         <?= ButtonDropdown::widget([
                             'label' => '<i class="fa fa-download"></i> Export',
@@ -47,11 +47,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <table class="table table-bordered table-condensed">
                         <tr>
                             <td colspan=2>Division:<br>Office: </td>
-                            <td colspan=4><u><?= $model->officeName ?></u><br><u><?= $model->officeName ?></u></td>
+                            <td colspan=5><u><?= $model->officeName ?></u><br><u><?= $model->officeName ?></u></td>
                             <td colspan=5>RIS No. <u><?= $model->ris_no ?></u></td>
                         </tr>
                         <tr>
-                            <td colspan=6 align=center><b>Requisition</b></td>
+                            <td colspan=7 align=center><b>Requisition</b></td>
                             <td rowspan=2><b>Stock Available?</b></td>
                             <td colspan=4 align=center><b>Issue</b></td>
                         </tr>
@@ -60,6 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td align=center>Stock No.</td>
                             <td align=center>Unit</td>
                             <td align=center>Description</td>
+                            <td align=center>Unit Cost</td>
                             <td align=center>Quantity</td>
                             <td align=center>ABC</td>
                             <td align=center>Quantity</td>
@@ -78,6 +79,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                             </tr>
                                 <?php if(!empty($subActivityitems)){ ?>
                                     <?php foreach($subActivityitems as $subActivity => $items){ ?>
@@ -86,6 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <td>&nbsp;</td>
                                         <td>&nbsp;</td>
                                         <th><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                                        <td>&nbsp;</td>
                                         <td>&nbsp;</td>
                                         <td>&nbsp;</td>
                                         <td>&nbsp;</td>
@@ -111,8 +116,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php } ?>
                         <?php } ?>
                         <tr>
-                            <td colspan=5 align=right><b>Total</b></td>
+                            <td colspan=6 align=right><b>Total</b></td>
                             <td align=right><b><?= number_format($total, 2) ?></b></td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
                         </tr>
                     </table>
                     <br>
@@ -158,11 +168,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     <br>
                     <table class="table table-bordered">
                         <tr>
-                            <td>&nbsp;</td>
-                            <td>Requested By:</td>
-                            <td>Approved By:</td>
-                            <td>Issued By:</td>
-                            <td>Received By:</td>
+                            <td style="width: 20%">&nbsp;</td>
+                            <td style="width: 20%">Requested By:</td>
+                            <td style="width: 20%">Approved By:</td>
+                            <td style="width: 20%">Issued By:</td>
+                            <td style="width: 20%">Received By:</td>
                         </tr>
                         <tr>
                             <td>Signature:</td>

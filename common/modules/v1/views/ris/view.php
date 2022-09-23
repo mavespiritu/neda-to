@@ -8,7 +8,7 @@ use yii\web\View;
 /* @var $this yii\web\View */
 /* @var $model common\modules\v1\models\Ris */
 
-$this->title = $model->statusName != 'No status' ? $model->ris_no.' ['.$model->statusName.']' : $model->ris_no;
+$this->title = $model->statusName != 'No s' ? $model->ris_no.' ['.$model->statusName.']' : $model->ris_no;
 $this->params['breadcrumbs'][] = ['label' => 'RIS', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -18,9 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model
     ]) ?>
     <div class="row">
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-5 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-edit"></i> Add Original Item</div>
+                <div class="box-header panel-title"><i class="fa fa-edit"></i> Add Original Item Form</div>
                 <div class="box-body">
                     <?= $this->render('_home',[
                         'model' => $model,
@@ -33,9 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-7 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i>Original Items</div>
+                <div class="box-header panel-title"><i class="fa fa-list"></i>Added Original Items</div>
                 <div class="box-body">
                     <div id="original-items"></div>
                 </div>

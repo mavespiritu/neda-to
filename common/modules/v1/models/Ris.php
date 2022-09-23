@@ -44,7 +44,7 @@ class Ris extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['office_id', 'ppmp_id', 'fund_source_id', 'fund_cluster_id', 'requested_by', 'date_required', 'purpose', 'type'], 'required', 'on' => 'isAdmin'],
+            [['office_id', 'ppmp_id', 'fund_source_id', 'fund_cluster_id', 'requested_by', 'date_requested', 'date_required', 'purpose', 'type'], 'required', 'on' => 'isAdmin'],
             [['ppmp_id', 'fund_source_id', 'fund_cluster_id', 'requested_by', 'date_required', 'purpose', 'type'], 'required', 'on' => 'isUser'],
             [['date_approved'], 'required', 'on' => 'Approve'],
             [['disapproved_by', 'date_disapproved'], 'required', 'on' => 'Disapprove'],

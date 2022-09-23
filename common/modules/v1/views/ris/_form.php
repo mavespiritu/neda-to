@@ -121,6 +121,15 @@ DisableButtonAsset::register($this);
         ]);
     ?>
 
+    <?= (Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff')) ?
+        $form->field($model, 'date_requested')->widget(DatePicker::classname(), [
+        'options' => ['placeholder' => 'Enter date', 'autocomplete' => 'off'],
+        'clientOptions' => [
+            'autoclose' => true,
+            'format' => 'yyyy-mm-dd',
+        ],
+    ]) : '' ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) ?>
     </div>

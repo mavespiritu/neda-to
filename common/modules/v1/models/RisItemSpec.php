@@ -3,7 +3,7 @@
 namespace common\modules\v1\models;
 
 use Yii;
-
+use \file\models\File;
 /**
  * This is the model class for table "ppmp_ris_item_spec".
  *
@@ -72,6 +72,11 @@ class RisItemSpec extends \yii\db\ActiveRecord
     public function getRisItemSpecValues()
     {
         return $this->hasMany(RisItemSpecValue::className(), ['ris_item_spec_id' => 'id']);
+    }
+
+    public function getRisItemSpecFiles()
+    {
+        return File::find()->where(['model' => 'RisItemSpec', 'itemId' => $this->id])->all();
     }
 
     public function getRisItemSpecValueString()

@@ -3,7 +3,6 @@
 namespace common\modules\v1\models;
 
 use Yii;
-
 /**
  * This is the model class for table "ppmp_ris_item".
  *

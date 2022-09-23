@@ -1165,8 +1165,8 @@ class RisController extends Controller
             $lastNumber = $lastRis ? intval(substr($lastRis->ris_no, -3)) : '001';
             $ris_no = $lastRis ? substr(date("Y"), -2).'-'.date("md").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("md").$lastNumber;
             $model->ris_no = $ris_no;
-            $model->office_id = (Yii::$app->user->can('Administrator') || Yii::$app->user->can('Procurement')) ? $model->office_id : $userOffice->abbreviation;
-            $model->date_requested = date("Y-m-d"); 
+            $model->office_id = (Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff')) ? $model->office_id : $userOffice->abbreviation;
+            $model->date_requested = (Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff')) ? $model->date_requested : date("Y-m-d"); 
             $model->created_by = Yii::$app->user->identity->userinfo->EMP_N; 
             $model->date_created = date("Y-m-d"); 
             $model->save(false);
@@ -2116,15 +2116,17 @@ class RisController extends Controller
         ]);
     }
 
-    public function actionCreateSpecification($id, $activity_id, $item_id, $cost, $type)
+    public function actionCreateSpecification($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
         $activity = Activity::findOne($activity_id);
+        $subActivity = SubActivity::findOne($sub_activity_id);
         $item = Item::findOne($item_id);
 
         $spec = new RIsItemSpec();
         $spec->ris_id = $model->id;
         $spec->activity_id = $activity->id;
+        $spec->sub_activity_id = $subActivity->id;
         $spec->item_id = $item->id;
         $spec->cost = $cost;
         $spec->type = $type;
@@ -2170,25 +2172,29 @@ class RisController extends Controller
             'specValues' => (empty($specValues)) ? [new RisItemSpecValue] : $specValues,
             'model' => $model,
             'activity' => $activity,
+            'subActivity' => $subActivity,
             'item' => $item,
         ]);
     }
 
-    public function actionAttachSpecification($id, $activity_id, $item_id, $cost, $type)
+    public function actionAttachSpecification($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
         $activity = Activity::findOne($activity_id);
+        $subActivity = SubActivity::findOne($sub_activity_id);
         $item = Item::findOne($item_id);
 
         $spec = RisItemSpec::findOne([
             'ris_id' => $model->id,
             'activity_id' => $activity_id,
+            'sub_activity_id' => $sub_activity_id,
             'item_id' => $item_id,
             'cost' => $cost,
             'type' => $type,
         ]) ? RisItemSpec::findOne([
             'ris_id' => $model->id,
             'activity_id' => $activity_id,
+            'sub_activity_id' => $sub_activity_id,
             'item_id' => $item_id,
             'cost' => $cost,
             'type' => $type,
@@ -2196,6 +2202,7 @@ class RisController extends Controller
 
         $spec->ris_id = $model->id;
         $spec->activity_id = $activity->id;
+        $spec->sub_activity_id = $subActivity->id;
         $spec->item_id = $item->id;
         $spec->cost = $cost;
         $spec->type = $type;
@@ -2213,19 +2220,22 @@ class RisController extends Controller
             'spec' => $spec,
             'model' => $model,
             'activity' => $activity,
+            'subActivity' => $subActivity,
             'item' => $item,
         ]);
     }
 
-    public function actionUpdateSpecification($id, $activity_id, $item_id, $cost, $type)
+    public function actionUpdateSpecification($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
         $activity = Activity::findOne($activity_id);
+        $subActivity = SubActivity::findOne($sub_activity_id);
         $item = Item::findOne($item_id);
 
         $spec = RisItemSpec::findOne([
             'ris_id' => $model->id,
             'activity_id' => $activity->id,
+            'sub_activity_id' => $subActivity->id,
             'item_id' => $item->id,
             'cost' => $cost,
             'type' => $type,
@@ -2284,19 +2294,22 @@ class RisController extends Controller
             'specValues' => (empty($specValues)) ? [new RisItemSpecValue] : $specValues,
             'model' => $model,
             'activity' => $activity,
+            'subActivity' => $subActivity,
             'item' => $item,
         ]);
     }
 
-    public function actionDeleteSpecification($id, $activity_id, $item_id, $cost, $type)
+    public function actionDeleteSpecification($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
         $activity = Activity::findOne($activity_id);
+        $subActivity = SubActivity::findOne($sub_activity_id);
         $item = Item::findOne($item_id);
 
         $spec = RisItemSpec::findOne([
             'ris_id' => $model->id,
             'activity_id' => $activity->id,
+            'sub_activity_id' => $subActivity->id,
             'item_id' => $item->id,
             'cost' => $cost,
             'type' => $type,

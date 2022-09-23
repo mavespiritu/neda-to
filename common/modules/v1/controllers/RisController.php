@@ -1555,6 +1555,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code,"-",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -1588,7 +1599,7 @@ class RisController extends Controller
                     'ppmp_ris_item.ris_id' => $model->id,
                     'ppmp_ris_item.type' => 'Original'
                 ])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
                 ->asArray()
                 ->all();
         
@@ -1596,27 +1607,37 @@ class RisController extends Controller
         {
             foreach($origItems as $item)
             {
-                $originalItems[$item['prexc']][] = $item;
+                $originalItems[$item['activity']][$item['prexc']][] = $item;
             }
         }
 
         if(!empty($originalItems))
         {
-            foreach($originalItems as $ogItems)
+            foreach($originalItems as $activityItems)
             {
-                foreach($ogItems as $item)
+                if(!empty($activityItems))
                 {
-                    $spec = RisItemSpec::findOne([
-                        'ris_id' => $item['ris_id'],
-                        'activity_id' => $item['activityId'],
-                        'item_id' => $item['stockNo'],
-                        'cost' => $item['cost'],
-                        'type' => $item['type'],
-                    ]);
-
-                    if($spec)
+                    foreach($activityItems as $subActivityItems)
                     {
-                        $specifications[$item['id']] = $spec;
+                        if(!empty($subActivityItems))
+                        {
+                            foreach($subActivityItems as $item)
+                            {
+                                $spec = RisItemSpec::findOne([
+                                    'ris_id' => $item['ris_id'],
+                                    'activity_id' => $item['activityId'],
+                                    'sub_activity_id' => $item['subActivityId'],
+                                    'item_id' => $item['stockNo'],
+                                    'cost' => $item['cost'],
+                                    'type' => $item['type'],
+                                ]);
+
+                                if($spec)
+                                {
+                                    $specifications[$item['id']] = $spec;
+                                }
+                            }
+                        }
                     }
                 }
             }

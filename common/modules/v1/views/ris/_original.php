@@ -10,6 +10,7 @@
 <table class="table table-bordered table-condensed table-striped table-hover">
     <thead>
         <tr>
+            <th style="width: 5%">&nbsp;</th>
             <th>&nbsp;</th>
             <th style="width: 25%">Item</th>
             <th style="width: 15%">Specification</th>
@@ -20,18 +21,26 @@
     </thead>
     <tbody>
     <?php if(!empty($originalItems)){ ?>
-        <?php foreach($originalItems as $activity => $origItems){ ?>
+        <?php foreach($originalItems as $activity => $activityItems){ ?>
             <tr>
-                <th colspan=6><?= $activity ?></th>
+                <th colspan=7><?= $activity ?></th>
             </tr>
-            <?php if(!empty($origItems)){ ?>
-                <?php foreach($origItems as $item){ ?>
-                    <?= $this->render('_original-item', [
-                        'model' => $model,
-                        'item' => $item,
-                        'specifications' => $specifications,
-                    ]) ?>
-                    <?php $total += ($item['cost'] * $item['total']); ?>
+            <?php if(!empty($activityItems)){ ?>
+                <?php foreach($activityItems as $subActivity => $subActivityItems){ ?>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th colspan=6><?= $subActivity ?></th>
+                    </tr>
+                    <?php if(!empty($subActivityItems)){ ?>
+                        <?php foreach($subActivityItems as $item){ ?>
+                            <?= $this->render('_original-item', [
+                                'model' => $model,
+                                'item' => $item,
+                                'specifications' => $specifications,
+                            ]) ?>
+                            <?php $total += ($item['cost'] * $item['total']); ?>
+                        <?php } ?>
+                    <?php } ?>
                 <?php } ?>
             <?php } ?>
         <?php } ?>

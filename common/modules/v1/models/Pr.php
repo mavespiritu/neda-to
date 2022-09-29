@@ -8,6 +8,7 @@ use markavespiritu\user\models\Section;
 use markavespiritu\user\models\Unit;
 use markavespiritu\user\models\UserInfo;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 /**
  * This is the model class for table "ppmp_pr".
  *
@@ -104,9 +105,17 @@ class Pr extends \yii\db\ActiveRecord
         $risIDs = ArrayHelper::map($prItems, 'ris_id', 'ris_id');
         
         $risNos = Ris::find()->where(['id' => $risIDs])->all();
-        $risNos = ArrayHelper::map($risNos, 'ris_no', 'ris_no');
+        $ids = [];
 
-        return implode('<br>', $risNos);
+        if($risNos)
+        {
+            foreach($risNos as $ris)
+            {
+                $ids[] = Html::a($ris->ris_no, ['/v1/ris/info', 'id' => $ris->id], ['target' => '_blank']);
+            }
+        }
+
+        return implode('<br>', $ids);
     }
 
     public function getRfqs()

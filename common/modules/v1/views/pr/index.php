@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-md-12 col-xs-12">
-            <div class="box box-primary collapsed-box">
+            <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-search"></i> Search Filter
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
@@ -44,12 +44,27 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-header panel-title"><i class="fa fa-list"></i> PR List</div>
                 <div class="box-body">
                     <?= GridView::widget([
-                        'options' => ['class' => 'table table-hover table-responsive'],
+                        'options' => ['class' => 'table table-hover table-responsive gridview'],
                         'dataProvider' => $dataProvider,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
 
-                            'pr_no',
+                            [
+                                'attribute' => 'pr_no',
+                                'format' => 'raw',
+                                'value' => function($model){
+                                    return '<b>'.Html::a($model->pr_no, ['/v1/pr/view', 'id' => $model->id]).'</b>';
+                                }
+                            ],
+                            [
+                                'header' => 'Status',
+                                'attribute' => 'statusName',
+                                'format' => 'raw',
+                                'value' => function($pr){
+                                    $color = ['For Approval' => 'teal', 'For Revision' => 'orange', 'Disapproved' => 'red', 'Approved' => 'green', 'Draft' => 'blue', 'No status' => 'white'];
+                                    return '<span class="badge bg-'.$color[$pr->statusName].'">'.$pr->statusName.'</span>';
+                                }
+                            ],
                             [
                                 'attribute' => 'type',
                                 'format' => 'raw',
@@ -57,8 +72,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $model->type == 'Supply' ? 'Goods' : 'Service/Contract';
                                 }
                             ],
-                            'procurementModeName',
                             'officeName',
+                            'procurementModeName',
                             [
                                 'attribute' => 'purpose',
                                 'format' => 'raw',
@@ -72,8 +87,18 @@ $this->params['breadcrumbs'][] = $this->title;
                             'requesterName',
                             'date_requested',
                             [
+                                'header' => 'RIS',
+                                'attribute' => 'risNos',
+                                'format' => 'raw',
+                                'contentOptions' => ['style' => 'font-size: 10px;'],
+                                'value' => function($model){
+                                    return $model->risNos;
+                                }
+                            ],
+                            [
                                 'header' => 'Total', 
                                 'attribute' => 'total',
+                                'headerOptions' => ['style' => 'text-align: right;'],
                                 'contentOptions' => ['style' => 'text-align: right;'],
                                 'value' => function($model){
                                     return number_format($model->total, 2);
@@ -83,10 +108,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return number_format($model->total, 2);
                                 },
                                 'footer' => Pr::pageQuantityTotal($dataProvider->models, 'total'),
-                            ],
-                            [
-                                'header' => 'Status',
-                                'attribute' => 'status.status',
                             ],
                             [
                                 'format' => 'raw', 

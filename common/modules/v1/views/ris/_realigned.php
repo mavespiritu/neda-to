@@ -7,29 +7,41 @@
     $total = 0;
 ?>
 
-<table class="table table-condensed table-hover">
+<table class="table table-bordered table-condensed table-striped table-hover">
     <thead>
         <tr>
-            <th>Item</th>
-            <th>Unit Cost</th>
-            <th>Quantity</th>
-            <td align=center><b>Total</b></td>
+            <th style="width: 5%">&nbsp;</th>
             <th>&nbsp;</th>
+            <th style="width: 25%">Item</th>
+            <th style="width: 15%">Specification</th>
+            <td align=center style="width: 15%"><b>Quantity</b></td>
+            <td align=right style="width: 15%"><b>Unit Cost</b></td>
+            <td align=right style="width: 15%"><b>Total</b></td>
         </tr>
     </thead>
     <tbody>
     <?php if(!empty($realignedItems)){ ?>
-        <?php foreach($realignedItems as $idx => $raItems){ ?>
+        <?php foreach($realignedItems as $activity => $activityItems){ ?>
             <tr>
-                <th colspan=5><i><?= $idx ?></i></th>
+                <th colspan=7><?= $activity ?></th>
             </tr>
-            <?php if(!empty($raItems)){ ?>
-                <?php foreach($raItems as $item){ ?>
-                    <?= $this->render('_realigned-item', [
-                        'model' => $model,
-                        'item' => $item
-                    ]) ?>
-                    <?php $total += ($item['cost'] * $item['total']); ?>
+            <?php if(!empty($activityItems)){ ?>
+                <?php foreach($activityItems as $subActivity => $subActivityItems){ ?>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th colspan=6><?= $subActivity ?></th>
+                    </tr>
+                    <?php if(!empty($subActivityItems)){ ?>
+                        <?php foreach($subActivityItems as $item){ ?>
+                            <?= $this->render('_item', [
+                                'model' => $model,
+                                'item' => $item,
+                                'specifications' => $specifications,
+                                'type' => 'Realigned'
+                            ]) ?>
+                            <?php $total += ($item['cost'] * $item['total']); ?>
+                        <?php } ?>
+                    <?php } ?>
                 <?php } ?>
             <?php } ?>
         <?php } ?>
@@ -39,10 +51,8 @@
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=2 align=right><b>Grand Total</b></td>
-        <td>&nbsp;</td>
+        <td colspan=6 align=right><b>Grand Total</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
-        <td>&nbsp;</td>
     </tr>
     </tbody>
 </table>

@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="col-md-7 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i>Added Original Items</div>
+                <div class="box-header panel-title"><i class="fa fa-list"></i>RIS Original Items</div>
                 <div class="box-body">
                     <div id="original-items"></div>
                 </div>

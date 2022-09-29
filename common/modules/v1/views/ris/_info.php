@@ -17,13 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_menu', [
         'model' => $model
     ]) ?>
-
-    <?php if($model->statusName == 'For Revision'){ ?> <div class="alert alert-info">Remarks: <?= $model->status->remarks ?></div> <?php } ?>
     <div class="row">
         <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i> RIS Information</div>
-                <div class="box-body">
+                <div class="box-header panel-title"><i class="fa fa-list"></i> RIS Information
                     <span class="pull-right">
                         <?= ButtonDropdown::widget([
                             'label' => '<i class="fa fa-download"></i> Export',
@@ -38,8 +35,15 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]) ?>
                         <?= Html::button('<i class="fa fa-print"></i> Print', ['class' => 'btn btn-danger', 'onclick' => 'printRis()']) ?>
                     </span>
+                </div>
+                <div class="box-body">
+                    <?php if($model->statusName == 'For Revision'){ ?> 
+                        <div class="callout callout-info">
+                            <h4 style="color: white;">RIS must be revised</h4>
+                            <p>Remarks: <?= $model->status->remarks ?></p>
+                        </div> 
+                    <?php } ?>
                     <span class="clearfix"></span>
-                    <hr style="opacity: 0.4">
                     <h5 class="text-center"><b>REQUEST AND ISSUANCE SLIP</b></h5>
                     <p><b>Entity Name: <u><?= $entityName ?></u></b></p>
                     <p><b>Fund Cluster: <u><?= $fundClusterName ?></u></b></p>
@@ -60,8 +64,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td align=center>Stock No.</td>
                             <td align=center>Unit</td>
                             <td align=center>Description</td>
-                            <td align=center>Unit Cost</td>
                             <td align=center>Quantity</td>
+                            <td align=center>Unit Cost</td>
                             <td align=center>ABC</td>
                             <td align=center>Quantity</td>
                             <td align=center>Date Issue</td>

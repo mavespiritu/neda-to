@@ -434,7 +434,6 @@ class RisController extends Controller
         $items = PpmpItem::find()->where(['in', 'id', $itemIDs])->all();
 
         $months = Month::find()->all();
-
         if (MultipleModel::loadMultiple($data, Yii::$app->request->post())) {
             foreach($data as $itemModel)
             {
@@ -443,21 +442,21 @@ class RisController extends Controller
                 
                 if($itemBreakdowns)
                 {
-                    // QUANTITY INPUT: 2
+                    // QUANTITY INPUT: 10
                     $quantity = $itemModel->quantity;
 
                     foreach($itemBreakdowns as $breakdown)
                     {
-                        // REMAINING: 3
+                        // REMAINING: 55
                         $remaining = $breakdown->ppmpItem->getRemainingQuantityPerMonth($breakdown->month_id);
-                        // CHECK IF THERE IS REMAINING QUANTITY OR REMAINING: TRUE
+                        // CHECK IF THERE IS REMAINING QUANTITY OR REMAINING = TRUE
                         if($quantity > 0 && $remaining > 0)
                         {
-                            // 3 > 2 ? 2 : 3;
+                            // ACTUAL: 10  55 > 10 ? 10 : 55;
                             $actual = $remaining >= $quantity ? $quantity : $remaining;
                             $ppmpItem = PpmpItem::findOne(['id' => $itemModel->ppmp_item_id]);
 
-                            $risItemModel = RisItem::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'month_id' => $breakdown->month_id]) ? RisItem::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'month_id' => $breakdown->month_id]) : new RisItem();
+                            $risItemModel = RisItem::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'month_id' => $breakdown->month_id, 'type' => $itemModel->type]) ? RisItem::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'month_id' => $breakdown->month_id, 'type' => $itemModel->type]) : new RisItem();
                             $risItemModel->ris_id = $itemModel->ris_id;
                             $risItemModel->ppmp_item_id = $itemModel->ppmp_item_id;
                             $risItemModel->month_id = $breakdown->month_id;
@@ -466,7 +465,7 @@ class RisController extends Controller
                             $risItemModel->type = $itemModel->type;
                             if($risItemModel->save())
                             {
-                                $risSourceModel = RisSource::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'ris_item_id' => $risItemModel->id, 'month_id' => $breakdown->month_id]) ? RisSource::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'ris_item_id' => $risItemModel->id, 'month_id' => $breakdown->month_id]) : new RisSource();
+                                $risSourceModel = RisSource::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'ris_item_id' => $risItemModel->id, 'month_id' => $breakdown->month_id, 'type' => $itemModel->type]) ? RisSource::findOne(['ris_id' => $model->id, 'ppmp_item_id' => $itemModel->ppmp_item_id, 'ris_item_id' => $risItemModel->id, 'month_id' => $breakdown->month_id, 'type' => $itemModel->type]) : new RisSource();
                                 $risSourceModel->ris_id = $itemModel->ris_id;
                                 $risSourceModel->ris_item_id = $risItemModel->id;
                                 $risSourceModel->ppmp_item_id = $itemModel->ppmp_item_id;
@@ -1356,19 +1355,22 @@ class RisController extends Controller
 
     }
 
-    public function actionUpdateItem($id, $activity_id, $item_id, $cost, $type)
+    public function actionUpdateItem($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
         $activity = Activity::findOne($activity_id);
+        $subActivity = SubActivity::findOne($sub_activity_id);
         $item = Item::findOne($item_id);
 
         $items = RisItem::find()
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
                 ->andWhere([
                     'ris_id' => $model->id,
-                    'ppmp_ppmp_item.activity_id' => $activity_id,
+                    'ppmp_activity.id' => $activity_id,
+                    'ppmp_sub_activity.id' => $sub_activity_id,
                     'ppmp_item.id' => $item_id,
                     'ppmp_ris_item.cost' => $cost,
                     'ppmp_ris_item.type' => $type
@@ -1428,6 +1430,7 @@ class RisController extends Controller
         return $this->renderAjax('_update-item', [
             'model' => $model,
             'activity' => $activity,
+            'subActivity' => $subActivity,
             'items' => $items,
             'item' => $item,
             'data' => $data,
@@ -1435,7 +1438,7 @@ class RisController extends Controller
         
     }
 
-    public function actionDeleteItem($id, $activity_id, $item_id, $cost, $type)
+    public function actionDeleteItem($id, $activity_id, $sub_activity_id, $item_id, $cost, $type)
     {
         $model = $this->findModel($id);
 
@@ -1443,9 +1446,11 @@ class RisController extends Controller
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
                 ->andWhere([
                     'ris_id' => $model->id,
-                    'ppmp_ppmp_item.activity_id' => $activity_id,
+                    'ppmp_activity.id' => $activity_id,
+                    'ppmp_sub_activity.id' => $sub_activity_id,
                     'ppmp_item.id' => $item_id,
                     'ppmp_ris_item.cost' => $cost,
                     'ppmp_ris_item.type' => $type,
@@ -1564,7 +1569,7 @@ class RisController extends Controller
                         ppmp_identifier.code,"",
                         ppmp_pap.code,"000-",
                         ppmp_activity.code,"-",
-                        ppmp_sub_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
                         ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
@@ -1759,6 +1764,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -1784,7 +1800,7 @@ class RisController extends Controller
                     'ppmp_ris_item.ris_id' => $model->id,
                     'ppmp_ris_item.type' => 'Supplemental'
                 ])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id'])
                 ->asArray()
                 ->all();
         
@@ -1792,28 +1808,37 @@ class RisController extends Controller
         {
             foreach($suppItems as $item)
             {
-                $supplementalItems[$item['prexc'].' - '.$item['subActivityTitle']][] = $item;
+                $supplementalItems[$item['activity']][$item['prexc']][] = $item;
             }
         }
 
         if(!empty($supplementalItems))
         {
-            foreach($supplementalItems as $suppItems)
+            foreach($supplementalItems as $activityItems)
             {
-                foreach($suppItems as $item)
+                if(!empty($activityItems))
                 {
-                    $spec = RisItemSpec::findOne([
-                        'ris_id' => $item['ris_id'],
-                        'activity_id' => $item['activityId'],
-                        'sub_activity_id' => $item['subActivityId'],
-                        'item_id' => $item['stockNo'],
-                        'cost' => $item['cost'],
-                        'type' => $item['type'],
-                    ]);
-
-                    if($spec)
+                    foreach($activityItems as $subActivityItems)
                     {
-                        $specifications[$item['id']] = $spec;
+                        if(!empty($subActivityItems))
+                        {
+                            foreach($subActivityItems as $item)
+                            {
+                                $spec = RisItemSpec::findOne([
+                                    'ris_id' => $item['ris_id'],
+                                    'activity_id' => $item['activityId'],
+                                    'sub_activity_id' => $item['subActivityId'],
+                                    'item_id' => $item['stockNo'],
+                                    'cost' => $item['cost'],
+                                    'type' => $item['type'],
+                                ]);
+
+                                if($spec)
+                                {
+                                    $specifications[$item['id']] = $spec;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2082,6 +2107,7 @@ class RisController extends Controller
         $model = $this->findModel($id);
 
         $realignedItems = [];
+        $specifications = [];
 
         $raItems = RisItem::find()
                 ->select([
@@ -2097,6 +2123,17 @@ class RisController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_sub_activity.id as subActivityId',
                     'ppmp_sub_activity.title as subActivityTitle',
@@ -2127,13 +2164,14 @@ class RisController extends Controller
         {
             foreach($raItems as $item)
             {
-                $realignedItems[$item['prexc']][] = $item;
+                $realignedItems[$item['activity']][$item['prexc']][] = $item;
             }
         }
 
         return $this->renderAjax('_realigned', [
             'model' => $model,
             'realignedItems' => $realignedItems,
+            'specifications' => $specifications,
         ]);
     }
 

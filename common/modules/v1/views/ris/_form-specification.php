@@ -61,7 +61,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
         <?php foreach ($specValues as $i => $specValue): ?>
             <tr class="item">
                 <td><?= $form->field($specValue, "[{$i}]description")->textInput(['maxlength' => true, 'placeholder' => 'e.g. Color'])->label(false) ?></td>
-                <td><?= $form->field($specValue, "[{$i}]value")->textArea(['maxlength' => true, 'placeholder' => 'e.g. Black', 'style' => 'resize: none;', 'rows' => 4])->label(false) ?></td>
+                <td><?= $form->field($specValue, "[{$i}]value")->textInput(['maxlength' => true, 'placeholder' => 'e.g. Black'])->label(false) ?></td>
                 <td><button type="button" class="pull-right remove-item btn btn-danger btn-xs"><i class="fa fa-minus"></i></button></td>
             </tr>
         <?php endforeach; ?>
@@ -69,9 +69,11 @@ use wbraganca\dynamicform\DynamicFormWidget;
     </table>
     <?php DynamicFormWidget::end(); ?>
 
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
+
+    <div class="clearfix"></div>
 
     <?php ActiveForm::end(); ?>
 

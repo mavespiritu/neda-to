@@ -16,6 +16,7 @@ class PrSearch extends Pr
     public $procurementModeName;
     public $creatorName;
     public $requesterName;
+    public $statusName;
     /**
      * {@inheritdoc}
      */
@@ -23,7 +24,7 @@ class PrSearch extends Pr
     {
         return [
             [['id', 'fund_source_id', 'fund_cluster_id'], 'integer'],
-            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type'], 'safe'],
+            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type', 'officeName', 'procurementModeName', 'creatorName', 'requesterName', 'statusName'], 'safe'],
         ];
     }
 
@@ -121,7 +122,38 @@ class PrSearch extends Pr
 
         $query->andFilterWhere(['like', 'pr_no', $this->pr_no])
             ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'concat(c.FIRST_M," ",c.LAST_M)', $this->creatorName])
+            ->andFilterWhere(['like', 'concat(r.name)', $this->requesterName])
             ;
+
+        if(isset($params['PrSearch']['statusName']) && $params['PrSearch']['statusName'] != '')
+        {
+            $ids = [];
+            $transactions = Pr::find()
+                            ->innerJoin(['statuses' => '(
+                            select
+                                ppmp_transaction.id,
+                                ppmp_transaction.model_id,
+                                ppmp_transaction.status
+                            from ppmp_transaction
+                            inner join
+                            (select max(id) as id from ppmp_transaction where model = "Pr" group by model_id) latest on latest.id = ppmp_transaction.id
+                            )'], 'statuses.model_id = ppmp_pr.id')
+                            ->andWhere(['statuses.status' => $params['PrSearch']['statusName']])
+                            ->asArray()
+                            ->all();
+
+            if(!empty($transactions))
+            {
+                foreach($transactions as $transaction)
+                {
+                    $ids[] = $transaction['id'];
+                }
+
+            }
+
+            $query->andWhere(['ppmp_pr.id' => $ids]); 
+        }
 
         return $dataProvider;
     }

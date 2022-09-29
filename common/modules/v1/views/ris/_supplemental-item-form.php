@@ -15,178 +15,174 @@ $item_id = $itemModel->isNewRecord ? 0 : $itemModel->item_id;
 ?>
 
 <div class="ppmp-item">
-    <div class="panel panel-default">
-        <div class="panel-body">
-        <?php $form = ActiveForm::begin([
-            'options' => ['class' => 'disable-submit-buttons'],
-            'id' => 'supplemental-items-form',
-        ]); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => ['class' => 'disable-submit-buttons'],
+        'id' => 'supplemental-items-form',
+    ]); ?>
 
-        <?= Html::hiddenInput('cost_per_unit', $itemModel->isNewRecord ? '' : $itemModel->item->cost_per_unit, ['id' => 'cost_per_unit']) ?>
-        
-        <div class="row">
-            <div class="col-md-6 col-xs-12">
-                <?php 
-                    $subActivitiesUrl = \yii\helpers\Url::to(['/v1/ris/sub-activity-list']);
-                    echo $form->field($itemModel, 'activity_id')->widget(Select2::classname(), [
-                    'data' => $activities,
-                    'options' => ['placeholder' => 'Select Activity','multiple' => false, 'class'=>'activity-select'],
+    <?= Html::hiddenInput('cost_per_unit', $itemModel->isNewRecord ? '' : $itemModel->item->cost_per_unit, ['id' => 'cost_per_unit']) ?>
+    
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <?php 
+                $subActivitiesUrl = \yii\helpers\Url::to(['/v1/ris/sub-activity-list']);
+                echo $form->field($itemModel, 'activity_id')->widget(Select2::classname(), [
+                'data' => $activities,
+                'options' => ['placeholder' => 'Select Activity','multiple' => false, 'class'=>'activity-select'],
+                'pluginOptions' => [
+                    'allowClear' =>  true,
+                ],
+                'pluginEvents'=>[
+                    'select2:select'=>'
+                        function(){
+                            $.ajax({
+                                url: "'.$subActivitiesUrl.'",
+                                data: {
+                                        id: this.value
+                                    }
+                                
+                            }).done(function(result) {
+                                $(".sub-activity-select").html("").select2({ data:result, theme:"krajee", width:"100%",placeholder:"Select PPA", allowClear: true});
+                                $(".sub-activity-select").select2("val","");
+                            });
+                        }'
+
+                ]
+                ]);
+            ?>
+        </div>
+        <div class="col-md-12 col-xs-12">
+            <?= $form->field($itemModel, 'sub_activity_id')->widget(Select2::classname(), [
+                    'data' => $subActivities,
+                    'options' => ['placeholder' => 'Select PPA', 'multiple' => false, 'class' => 'sub-activity-select'],
                     'pluginOptions' => [
                         'allowClear' =>  true,
                     ],
-                    'pluginEvents'=>[
+                    
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <?= $form->field($itemModel, 'obj_id')->widget(Select2::classname(), [
+                    'data' => $objects,
+                    'options' => ['placeholder' => 'Select Object', 'multiple' => false, 'class' => 'obj-select'],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                    'pluginEvents' => [
                         'select2:select'=>'
                             function(){
                                 $.ajax({
-                                    url: "'.$subActivitiesUrl.'",
+                                    url: "'.$itemsUrl.'",
                                     data: {
-                                            id: this.value
+                                            id: '.$model->id.',
+                                            obj_id: this.value,
+                                            type: "Supplemental"
                                         }
                                     
                                 }).done(function(result) {
-                                    $(".sub-activity-select").html("").select2({ data:result, theme:"krajee", width:"100%",placeholder:"Select PPA", allowClear: true});
-                                    $(".sub-activity-select").select2("val","");
+                                    $(".item-select").html("").select2({ data:result, theme:"krajee", width:"100%",placeholder:"Select Item", allowClear: true});
+                                    $(".item-select").select2("val","");
                                 });
                             }'
 
                     ]
-                    ]);
-                ?>
-            </div>
-            <div class="col-md-6 col-xs-12">
-                <?= $form->field($itemModel, 'sub_activity_id')->widget(Select2::classname(), [
-                        'data' => $subActivities,
-                        'options' => ['placeholder' => 'Select PPA', 'multiple' => false, 'class' => 'sub-activity-select'],
-                        'pluginOptions' => [
-                            'allowClear' =>  true,
-                        ],
-                        
-                    ]);
-                ?>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12 col-xs-12">
-                <?= $form->field($itemModel, 'obj_id')->widget(Select2::classname(), [
-                        'data' => $objects,
-                        'options' => ['placeholder' => 'Select Object', 'multiple' => false, 'class' => 'obj-select'],
-                        'pluginOptions' => [
-                            'allowClear' => true
-                        ],
-                        'pluginEvents' => [
-                            'select2:select'=>'
-                                function(){
-                                    $.ajax({
-                                        url: "'.$itemsUrl.'",
-                                        data: {
-                                                id: '.$model->id.',
-                                                obj_id: this.value,
-                                                type: "Supplemental"
-                                            }
-                                        
-                                    }).done(function(result) {
-                                        $(".item-select").html("").select2({ data:result, theme:"krajee", width:"100%",placeholder:"Select Item", allowClear: true});
-                                        $(".item-select").select2("val","");
-                                    });
-                                }'
-
-                        ]
-                    ])->label('Object');
-                ?>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-12 col-xs-12">
-                <?= $form->field($itemModel, 'item_id')->widget(Select2::classname(), [
-                        'data' => $items,
-                        'options' => ['placeholder' => 'Select Item', 'multiple' => false, 'class' => 'item-select', 'id' => 'ppmpitem-item_id-'.$itemModel->sub_activity_id],
-                        'pluginOptions' => [
-                            'allowClear' =>  true,
-                        ],
-                        'pluginEvents' => [
-                            'select2:select'=>'
-                                function(){
-                                    updateItemDetails(this.value);
-                                    getTotal();
-                                }'
-                        ]
-                    ]);
-                ?>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 col-xs-12">
-                <div class="form-group">
-                    <label class="control-label">Unit of Measure</label>
-                    <?= Html::textInput('unit_of_measure', $itemModel->isNewRecord ? '' : $itemModel->item->unit_of_measure, ['disabled' => 'disabled', 'class' => 'form-control', 'id' => 'ppmp-item-unit_of_measure']); ?>
-                </div>
-            </div>
-            <div class="col-md-6 col-xs-12">
-                <div class="form-group">
-                <?= $form->field($itemModel, 'cost')->widget(MaskedInput::classname(), [
-                    'options' => [
-                        'autocomplete' => 'off',
-                        'onchange' => 'getTotal()',
-                        'onkeyup' => 'getTotal()',
-                    ],
-                    'clientOptions' => [
-                        'alias' =>  'decimal',
-                        'removeMaskOnSubmit' => true,
-                        'groupSeparator' => ',',
-                        'autoGroup' => true
-                    ],
-                ])->label('Cost Per Unit') ?>
-                </div>
-            </div>
-        </div>
-        
-        <label for="quantity" class="control-label">Quantity</label>
-        
-        <?php if($months){ ?>
-            <div class="row">
-                <?php foreach($months as $idx => $month){ ?>
-                    <?php if($idx <= 5){ ?>
-                    <div class="col-md-2 col-xs-12">
-                        <?= $form->field($itemBreakdowns[$month->id], "[$month->id]month_id")->hiddenInput(['value' => $month->id])->label(false) ?>
-                        <?= $form->field($itemBreakdowns[$month->id], "[$month->id]quantity")->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0, 'onchange' => 'getTotal()', 'onkeyup' => 'getTotal()', 'value' => $itemBreakdowns[$month->id]->quantity > 0 ? $itemBreakdowns[$month->id]->quantity : 0])->label($month->abbreviation) ?>
-                    </div>
-                    <?php } ?>
-                <?php } ?>
-            </div>
-            <div class="row">
-                <?php foreach($months as $idx => $month){ ?>
-                    <?php if($idx > 5){ ?>
-                    <div class="col-md-2 col-xs-12">
-                        <?= $form->field($itemBreakdowns[$month->id], "[$month->id]month_id")->hiddenInput(['value' => $month->id])->label(false) ?>
-                        <?= $form->field($itemBreakdowns[$month->id], "[$month->id]quantity")->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0, 'onchange' => 'getTotal()', 'onkeyup' => 'getTotal()', 'value' => $itemBreakdowns[$month->id]->quantity > 0 ? $itemBreakdowns[$month->id]->quantity : 0])->label($month->abbreviation) ?>
-                    </div>
-                    <?php } ?>
-                <?php } ?>
-            </div>
-        <?php } ?>
-        
-
-        <div class="row">
-            <div class="col-md-12 col-xs-12">
-                <?= $form->field($itemModel, 'remarks')->textArea(['rows' => 6]) ?>
-            </div>
-        </div>
-        
-        <span class="pull-right">Total</span><br>
-        <p class="panel-title pull-right" style="font-size: 35px !important;" id="total-per-item"></p>
-        <p class="clearfix"></p>
-        
-        <div class="form-group">
-            <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Save Item', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
-        </div>
-
-        <?php ActiveForm::end(); ?>
+                ])->label('Object');
+            ?>
         </div>
     </div>
-</div>
+    
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <?= $form->field($itemModel, 'item_id')->widget(Select2::classname(), [
+                    'data' => $items,
+                    'options' => ['placeholder' => 'Select Item', 'multiple' => false, 'class' => 'item-select', 'id' => 'ppmpitem-item_id-'.$itemModel->sub_activity_id],
+                    'pluginOptions' => [
+                        'allowClear' =>  true,
+                    ],
+                    'pluginEvents' => [
+                        'select2:select'=>'
+                            function(){
+                                updateItemDetails(this.value);
+                                getTotal();
+                            }'
+                    ]
+                ]);
+            ?>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group">
+                <label class="control-label">Unit of Measure</label>
+                <?= Html::textInput('unit_of_measure', $itemModel->isNewRecord ? '' : $itemModel->item->unit_of_measure, ['disabled' => 'disabled', 'class' => 'form-control', 'id' => 'ppmp-item-unit_of_measure']); ?>
+            </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+            <div class="form-group">
+            <?= $form->field($itemModel, 'cost')->widget(MaskedInput::classname(), [
+                'options' => [
+                    'autocomplete' => 'off',
+                    'onchange' => 'getTotal()',
+                    'onkeyup' => 'getTotal()',
+                ],
+                'clientOptions' => [
+                    'alias' =>  'decimal',
+                    'removeMaskOnSubmit' => true,
+                    'groupSeparator' => ',',
+                    'autoGroup' => true
+                ],
+            ])->label('Cost Per Unit') ?>
+            </div>
+        </div>
+    </div>
+    
+    <label for="quantity" class="control-label">Quantity</label>
+    
+    <?php if($months){ ?>
+        <div class="row">
+            <?php foreach($months as $idx => $month){ ?>
+                <?php if($idx <= 5){ ?>
+                <div class="col-md-2 col-xs-12">
+                    <?= $form->field($itemBreakdowns[$month->id], "[$month->id]month_id")->hiddenInput(['value' => $month->id])->label(false) ?>
+                    <?= $form->field($itemBreakdowns[$month->id], "[$month->id]quantity")->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0, 'onchange' => 'getTotal()', 'onkeyup' => 'getTotal()', 'value' => $itemBreakdowns[$month->id]->quantity > 0 ? $itemBreakdowns[$month->id]->quantity : 0])->label($month->abbreviation) ?>
+                </div>
+                <?php } ?>
+            <?php } ?>
+        </div>
+        <div class="row">
+            <?php foreach($months as $idx => $month){ ?>
+                <?php if($idx > 5){ ?>
+                <div class="col-md-2 col-xs-12">
+                    <?= $form->field($itemBreakdowns[$month->id], "[$month->id]month_id")->hiddenInput(['value' => $month->id])->label(false) ?>
+                    <?= $form->field($itemBreakdowns[$month->id], "[$month->id]quantity")->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0, 'onchange' => 'getTotal()', 'onkeyup' => 'getTotal()', 'value' => $itemBreakdowns[$month->id]->quantity > 0 ? $itemBreakdowns[$month->id]->quantity : 0])->label($month->abbreviation) ?>
+                </div>
+                <?php } ?>
+            <?php } ?>
+        </div>
+    <?php } ?>
+    
+
+    <div class="row">
+        <div class="col-md-12 col-xs-12">
+            <?= $form->field($itemModel, 'remarks')->textArea(['rows' => 3]) ?>
+        </div>
+    </div>
+    
+    <span class="pull-right">Total</span><br>
+    <p class="panel-title pull-right" style="font-size: 35px !important;" id="total-per-item"></p>
+    <p class="clearfix"></p>
+    
+    <div class="form-group pull-right">
+        <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Add to RIS', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
+    </div>
+    <div class="clearfix"></div>
+    <?php ActiveForm::end(); ?>
+    </div>
 <?php
   $script = '
     function getTotal()

@@ -98,10 +98,11 @@ use yii\web\View;
                     ]);
                 ?>
             </div>
-            <div class="col-md-4 col-xs-12">
-                <div class="form-group">
+            <div class="col-md-12 col-xs-12">
+                <div class="form-group pull-right">
                     <?= Html::submitButton('<i class="fa fa-refresh"></i> Load Items', ['class' => 'btn btn-success btn-block']) ?>
                 </div>
+                <div class="clearfix"></div>
             </div>
         </div>
     <?php ActiveForm::end(); ?>

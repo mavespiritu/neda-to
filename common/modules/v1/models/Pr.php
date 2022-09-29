@@ -88,13 +88,25 @@ class Pr extends \yii\db\ActiveRecord
             'type' => 'Type',
             'procurement_mode_id' => 'Mode of Procurement',
             'procurementModeName' => 'Mode of Procurement',
-            'ris_id' => 'Approved RIS'
+            'ris_id' => 'Approved RIS',
+            'risNos' => 'RIS',
         ];
     }
 
     public function getPrItems()
     {
         return $this->hasMany(PrItem::className(), ['pr_id' => 'id']);
+    }
+
+    public function getRisNos()
+    {
+        $prItems = PrItem::findAll(['pr_id' => $this->id]);
+        $risIDs = ArrayHelper::map($prItems, 'ris_id', 'ris_id');
+        
+        $risNos = Ris::find()->where(['id' => $risIDs])->all();
+        $risNos = ArrayHelper::map($risNos, 'ris_no', 'ris_no');
+
+        return implode('<br>', $risNos);
     }
 
     public function getRfqs()
@@ -145,9 +157,12 @@ class Pr extends \yii\db\ActiveRecord
 
     public function getStatus()
     {
-        $status = Transaction::find()->where(['model' => 'Pr', 'model_id' => $this->id])->orderBy(['datetime' => SORT_DESC])->one();
+        return $this->hasOne(Transaction::className(), ['model_id' => 'id'])->onCondition(['model' => 'Pr'])->orderBy(['datetime' => SORT_DESC]);
+    }
 
-        return $status;
+    public function getStatusName()
+    {
+        return $this->status ? $this->status->status : 'No status';
     }
 
     public function getApr()

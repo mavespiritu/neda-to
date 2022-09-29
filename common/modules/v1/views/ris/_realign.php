@@ -19,9 +19,9 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <div class="row">
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-5 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-edit"></i> Realign Items</div>
+                <div class="box-header panel-title"><i class="fa fa-edit"></i> Realign Item Form</div>
                 <div class="box-body">
                     <center>
                         <p>Amount to Re-align:</p>
@@ -56,9 +56,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-7 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i> Realigned Items</div>
+                <div class="box-header panel-title"><i class="fa fa-list"></i>RIS Realigned Items</div>
                 <div class="box-body">
                     <div id="realigned-items"></div>
                 </div>

@@ -16,8 +16,8 @@ $buttonItems = [];
       </button>
       <ul class="dropdown-menu">
         <?php if($model->status->status == 'Draft' || $model->status->status == 'For Revision'){ ?>
-          <li><?= Html::a('Edit Item', ['#'], ['id' => 'update-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/update-item', 'id' => $model->id, 'activity_id' => $item['activityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'])]) ?></li>
-          <li><?= Html::a('Delete Item', ['delete-item', 'id' => $model->id, 'activity_id' => $item['activityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'], [
+          <li><?= Html::a('Edit Item', ['#'], ['id' => 'update-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/update-item', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type])]) ?></li>
+          <li><?= Html::a('Delete Item', ['delete-item', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type], [
             'data' => [
                 'confirm' => 'Are you sure you want to remove this item?',
                 'method' => 'post',
@@ -28,17 +28,17 @@ $buttonItems = [];
         <!-- If specs not available -->
         <?php if(!isset($specifications[$item['id']])){ ?>
           <?php if($model->status->status == 'Draft' || $model->status->status == 'For Revision'){ ?>
-            <li><?= Html::a('Write Specs', ['#'], ['id' => 'create-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/create-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'])]) ?></li>
-            <li><?= Html::a('Attach Specs', ['#'], ['id' => 'attach-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/attach-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'])]) ?></li>
+            <li><?= Html::a('Write Specs', ['#'], ['id' => 'create-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/create-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type])]) ?></li>
+            <li><?= Html::a('Attach Specs', ['#'], ['id' => 'attach-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/attach-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type])]) ?></li>
           <?php } ?>
         <!-- If specs available -->
         <?php }else{ ?>
           <?php if($model->status->status == 'Draft' || $model->status->status == 'For Revision'){ ?>
-            <li><?= Html::a('Attach Specs', ['#'], ['id' => 'attach-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/attach-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'])]) ?></li>
+            <li><?= Html::a('Attach Specs', ['#'], ['id' => 'attach-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/attach-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type])]) ?></li>
             <?php if($specifications[$item['id']]->risItemSpecValueString != ''){ ?>
-              <li><?= Html::a('Edit Specs', ['#'], ['id' => 'update-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/update-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'])]) ?></li>
+              <li><?= Html::a('Edit Specs', ['#'], ['id' => 'update-specification-'.$item['id'].'-button', 'value' => Url::to(['/v1/ris/update-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type])]) ?></li>
             <?php } ?>
-            <li><?= Html::a('Delete Specs', ['delete-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => 'Original'], [
+            <li><?= Html::a('Delete Specs', ['delete-specification', 'id' => $model->id, 'activity_id' => $item['activityId'], 'sub_activity_id' => $item['subActivityId'], 'item_id' => $item['stockNo'], 'cost' => $item['cost'], 'type' => $type], [
                   'data' => [
                       'confirm' => 'Are you sure you want to remove uploaded/written specification?',
                       'method' => 'post',
@@ -71,8 +71,8 @@ $buttonItems = [];
         <?= $specifications[$item['id']]->risItemSpecValueString ?>
       <?php } ?>
     </td>
-    <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=center><?= number_format($item['total'], 0) ?></td>
+    <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=right><?= number_format($item['cost'] * $item['total'], 2) ?></td>
 </tr>
 <?php

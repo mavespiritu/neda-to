@@ -14,8 +14,8 @@
             <th>&nbsp;</th>
             <th style="width: 25%">Item</th>
             <th style="width: 15%">Specification</th>
-            <td align=right style="width: 15%"><b>Unit Cost</b></td>
             <td align=center style="width: 15%"><b>Quantity</b></td>
+            <td align=right style="width: 15%"><b>Unit Cost</b></td>
             <td align=right style="width: 15%"><b>Total</b></td>
         </tr>
     </thead>
@@ -33,10 +33,11 @@
                     </tr>
                     <?php if(!empty($subActivityItems)){ ?>
                         <?php foreach($subActivityItems as $item){ ?>
-                            <?= $this->render('_original-item', [
+                            <?= $this->render('_item', [
                                 'model' => $model,
                                 'item' => $item,
                                 'specifications' => $specifications,
+                                'type' => 'Original'
                             ]) ?>
                             <?php $total += ($item['cost'] * $item['total']); ?>
                         <?php } ?>
@@ -46,11 +47,11 @@
         <?php } ?>
     <?php }else{ ?>
         <tr>
-            <td colspan=6 align=center>No original items included</td>
+            <td colspan=7 align=center>No original items included</td>
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=5 align=right><b>Grand Total</b></td>
+        <td colspan=6 align=right><b>Grand Total</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
     </tr>
     </tbody>

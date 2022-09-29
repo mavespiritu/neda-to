@@ -45,22 +45,22 @@ use yii\widgets\ActiveForm;
         <?php $quantityTotal += $item->remainingQuantity ?>
       <?php } ?>
       <tr>
-        <td colspan=5 align=right><h4>Minimum</h4></td>
-        <td align=right><h4><?= number_format($model->getRealignAmount() - $model->getItemsTotal('Realigned'), 2) ?></h4></td>
+        <td colspan=5 align=right><h5>Minimum</h5></td>
+        <td align=right><h5><?= ($model->getRealignAmount() - $model->getItemsTotal('Realigned')) < 0 ? number_format(0, 2) : number_format($model->getRealignAmount() - $model->getItemsTotal('Realigned'), 2) ?></h5></td>
       </tr>
       <tr>
-        <td colspan=5 align=right><h4>Grand Total</h4></td>
-        <td align=right><h4 id="grand-total">0.00</h4></td>
+        <td colspan=5 align=right><h5>Grand Total</h5></td>
+        <td align=right><h5 id="grand-total">0.00</h5></td>
         <?= Html::hiddenInput('grandtotal-hidden', 0, ['id' => 'grandtotal-hidden']) ?>
       </tr>
       <tr>
-        <td colspan=5 align=right><h4>Maximum</h4></td>
-        <td align=right><h4><?= number_format(($model->getRealignAmount() + ($model->getItemsTotal('Supplemental') * 0.20)) - $model->getItemsTotal('Realigned'), 2) ?></h4></td>
+        <td colspan=5 align=right><h5>Maximum</h5></td>
+        <td align=right><h5><?= number_format(($model->getRealignAmount() + ($model->getItemsTotal('Supplemental') * 0.20)) - $model->getItemsTotal('Realigned'), 2) ?></h5></td>
       </tr>
     </tbody>
   </table>
   <div class="form-group pull-right">
-  <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Submit', ['class' => 'btn btn-success', 'id' => 'realign-submit-button', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
+  <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') ? Html::submitButton('Realign Items', ['class' => 'btn btn-success', 'id' => 'realign-submit-button', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
   </div>
 <?php }else{ ?>
   <p class="text-center">No items selected.</p>

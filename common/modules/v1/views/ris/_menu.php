@@ -8,13 +8,16 @@ use yii\bootstrap\ButtonDropdown;
 
 <div>
     <div class="pull-left">
-        <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/v1/ris/'], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/v1/ris/'], ['class' => 'btn btn-app']) ?>
+      <div class="btn-group" style="padding-left: 10px; padding-right: 10px;">
+        <?= Html::a('<i class="fa fa-file-o"></i> View Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= Html::a('<i class="fa fa-plus"></i> Add Original', ['/v1/ris/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
         <?= Html::a('<i class="fa fa-plus"></i> Add Supplemental', ['/v1/ris/supplemental', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-        <?= $model->getRealignedAmount() > 0 ? Html::a('<span class="badge bg-red"><i class="fa fa-exclamation"></i></span> <i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) : Html::a('<i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-        <?= Html::a('<i class="fa fa-file-o"></i> View Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+        <?= $model->getRealignedAmount() > 0 ? Html::a('<span class="badge bg-red"><i class="fa fa-exclamation"></i></span> <i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) : Html::a('<i class="fa fa-mail-forward"></i> Realign', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      </div>
     </div>
     <div class="pull-right">
+      <div class="btn-group" style="padding-left: 10px;">
         <?= $model->getRealignAmount('Supplemental') <= 0 && $model->risItems && ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ? Html::a('<i class="fa fa-paper-plane"></i> Send For Approval', ['for-approval', 'id' => $model->id], [
             'class' => 'btn btn-app',
             'data' => [
@@ -25,6 +28,8 @@ use yii\bootstrap\ButtonDropdown;
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-paper-plane"></i> Send For Revision', ['value' => Url::to(['/v1/ris/for-revision', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'revision-button']) : '' ?>
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-thumbs-o-up"></i> Approve', ['value' => Url::to(['/v1/ris/approve', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'approve-button']) : '' ?>
         <?= (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-thumbs-o-down"></i> Disapprove', ['value' => Url::to(['/v1/ris/disapprove', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'disapprove-button']) : '' ?>
+      </div>
+      <div class="btn-group" style="padding-left: 10px;">
         <?= ($model->statusName == 'Draft' || $model->statusName == 'For Revision') || (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-edit"></i> Edit RIS', ['value' => Url::to(['/v1/ris/update', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'update-button']) : '' ?>
         <?= ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ||  (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::a('<i class="fa fa-trash"></i> Delete RIS', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-app',
@@ -33,6 +38,7 @@ use yii\bootstrap\ButtonDropdown;
                 'method' => 'post',
             ],
         ]) : '' ?>
+      </div>
     </div>
     <div class="clearfix"></div>
 </div>

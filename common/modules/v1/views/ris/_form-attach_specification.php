@@ -24,9 +24,11 @@ use yii\bootstrap\ActiveForm;
 	]
 ]) ?>
   
-    <div class="form-group">
+    <div class="form-group pull-right">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
+    
+    <div class="clearfix"></div>
 
     <?php ActiveForm::end(); ?>
 

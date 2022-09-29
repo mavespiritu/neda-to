@@ -90,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'header' => 'RIS',
                                 'attribute' => 'risNos',
                                 'format' => 'raw',
-                                'contentOptions' => ['style' => 'font-size: 10px;'],
+                                'contentOptions' => ['style' => 'width: 5%; font-size: 10px;'],
                                 'value' => function($model){
                                     return $model->risNos;
                                 }

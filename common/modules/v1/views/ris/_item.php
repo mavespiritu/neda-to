@@ -8,7 +8,7 @@ use yii\bootstrap\ButtonDropdown;
 $buttonItems = [];
 ?>
 <tr>
-  <td>&nbsp;</td>
+  <td><?= $i ?></td>
   <td style="width: 5%">
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

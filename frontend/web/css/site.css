@@ -475,5 +475,5 @@ a.desc:after {
 }
 
 .modal-xl{
-  width: 1140px;
+  width: 1140px !important;
 }

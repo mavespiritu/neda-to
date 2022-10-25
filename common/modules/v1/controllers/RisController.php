@@ -564,6 +564,7 @@ class RisController extends Controller
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -638,6 +639,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         
@@ -742,6 +744,7 @@ class RisController extends Controller
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -816,6 +819,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         
@@ -984,6 +988,7 @@ class RisController extends Controller
                 ])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -1058,6 +1063,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Realigned',
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.month_id'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         
@@ -1605,6 +1611,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Original'
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         
@@ -1801,6 +1808,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Supplemental'
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         
@@ -2157,6 +2165,7 @@ class RisController extends Controller
                     'ppmp_ris_item.type' => 'Realigned'
                 ])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
         

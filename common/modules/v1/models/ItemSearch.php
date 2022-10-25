@@ -41,7 +41,7 @@ class ItemSearch extends Item
      */
     public function search($params)
     {
-        $query = Item::find();
+        $query = Item::find()->orderBy(['title' => SORT_ASC]);
 
         // add conditions that should always apply here
 

@@ -82,7 +82,9 @@
             <?php foreach($aprItems as $item){ ?>
                 <tr>
                     <td align=center><?= $i ?></td>
-                    <td colspan=3><?= $item['item'] ?></td>
+                    <td colspan=3><?= $item['item'] ?><br>
+                    <i><?= isset($specifications[$item['id']]) ? $specifications[$item['id']]->risItemSpecValueString : '' ?></i>
+                    </td>
                     <td align=center><?= number_format($item['total'], 0) ?></td>
                     <td align=center><?= $item['unit'] ?></td>
                     <td>&nbsp;</td>

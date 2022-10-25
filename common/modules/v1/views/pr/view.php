@@ -18,64 +18,22 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <div class="row">
-        <div class="col-md-2 col-xs-12">
+        <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i> Main Navigation</div>
+                <div class="box-header panel-title"><i class="fa fa-list"></i> PR Information</div>
                 <div class="box-body">
-                <?= $this->render('_pr-menu', [
-                    'model' => $model
-                ]) ?>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8 col-xs-12">
-            <div id="pr-main">
-            </div>
-        </div>
-        <div class="col-md-2 col-xs-12">
-            <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-edit"></i> To Dos</div>
-                <div class="box-body">
-                    <ul class="todos" style="font-size: 13px; line-height: 2rem;" type="none" >
-                        <li><a href="javascript:void(0);" onclick="items(<?= $model->id?>);">Add Items</a></li>
-                        <li><a href="javascript:void(0);" onclick="dbmItems(<?= $model->id?>);">Group Items</a></li>
-                        <?php if(!empty($model->aprItems)){ ?>
-                        <li><a href="javascript:void(0);" onclick="dbmPricing(<?= $model->id?>);">Set DBM-PS Pricing</a></li>
-                        <?php } ?>
-                        <?php if(!empty($model->rfqItems)){ ?>
-                        <li><a href="javascript:void(0);" onclick="quotations(<?= $model->id?>);">Generate RFQ</a></li>
-                        <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);">Retrieve RFQs</a></li>
-                        <li><a href="javascript:void(0);" onclick="retrieveQuotations(<?= $model->id?>);">Set Winners</a></li>
-                        <?php } ?>
-                        <?php if($model->type == 'Supply'){ ?>
-                            <li>Set Purchase Order</li>
-                        <?php }else{ ?>
-                            <li>Set Contract</li>
-                        <?php } ?>
-                        <li>Inspect Items</li>
-                        <li>Issue Items</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-file-o"></i> Reports</div>
-                <div class="box-body">
-                    <ul class="reports" style="font-size: 13px; line-height: 2rem;" type="none">
-                        <li><?= Html::button('<i class="fa fa-print"></i> Purchase Request (PR)', ['value' => Url::to(['/v1/pr/pr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'pr-button']) ?></li>
-                        <li><?= Html::button('<i class="fa fa-print"></i> Agency Purchase Request (APR)', ['value' => Url::to(['/v1/pr/apr', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'apr-button']) ?></li>
-                        <li><?= Html::button('<i class="fa fa-print"></i> Request For Quotation (RFQ)', ['value' => Url::to(['/v1/pr/rfq', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'rfq-button']) ?></li>
-                        <li><?= Html::button('<i class="fa fa-print"></i> Abstract of Quotation (AOQ)', ['value' => Url::to(['/v1/pr/aoq', 'id' => $model->id]), 'class' => 'button-link', 'id' => 'aoq-button']) ?></li>
-                        <?php if($model->type == 'Supply'){ ?>
-                        <li><i class="fa fa-print"></i> Purchase Order (PO)</li>
-                        <?php }else{ ?>
-                        <li><i class="fa fa-print"></i> Contract</li>
-                        <?php } ?>
-                        <li><i class="fa fa-print"></i> Notice of Award (NOA)</li>
-                        <li><i class="fa fa-print"></i> Notice to Proceed (NTP)</li>
-                        <li><i class="fa fa-print"></i> Obligation Request Status (ORS)</li>
-                        <li><i class="fa fa-print"></i> Disbursement Voucher (DV)</li>
-                        <li><i class="fa fa-print"></i> Inspection and Acceptance Report (IAR)</li>
-                    </ul>
+                    <div class="row">
+                        <div class="col-md-2 col-xs-12">
+                            <div>
+                                <?= $this->render('\menu\menu', [
+                                    'model' => $model
+                                ]) ?>
+                            </div>
+                        </div>
+                        <div class="col-md-10 col-xs-12">
+                          <div id="pr-main"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

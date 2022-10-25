@@ -134,6 +134,60 @@ class PrController extends Controller
         ]);
     }
 
+    public function actionSubMenu($id, $step)
+    {
+        $model = $this->findModel($id);
+        if($step == 'groupItems')
+        {
+            return $this->renderAjax('\menu\submenu\group-items', [
+                'model' => $model,
+            ]);
+        }else if($step == 'setQuotations')
+        {
+            return $this->renderAjax('\menu\submenu\request-quotations', [
+                'model' => $model,
+            ]);
+        }else if($step == 'retrieveQuotations')
+        {
+            return $this->renderAjax('\menu\submenu\retrieve-quotations', [
+                'model' => $model,
+            ]);
+        }else if($step == 'bidItems')
+        {
+            $rfqs = Rfq::find()->where(['pr_id' => $model->id])->all();
+
+            return $this->renderAjax('\menu\submenu\bid-items', [
+                'model' => $model,
+                'rfqs' => $rfqs,
+            ]);
+        }else if($step == 'createPurchaseOrders')
+        {
+            $rfqs = Rfq::find()->where(['pr_id' => $model->id])->all();
+            $rfqs = ArrayHelper::map($rfqs, 'id', 'id');
+
+            $bids = Bid::find()->where(['rfq_id' => $rfqs])->all();
+            $bids = ArrayHelper::map($bids, 'id', 'id');
+
+            $suppliers = BidWinner::find()->select(['supplier_id'])
+                        ->andWhere(['bid_id' => $bids])
+                        ->andWhere(['status' => 'Awarded'])
+                        ->asArray()
+                        ->all();
+            $suppliers = ArrayHelper::map($suppliers, 'supplier_id', 'supplier_id');
+            $suppliers = Supplier::findAll($suppliers);
+
+            return $this->renderAjax('\menu\submenu\create-purchase-orders', [
+                'model' => $model,
+                'suppliers' => $suppliers,
+            ]);
+        }else if($step == 'generateReports')
+        {
+            return $this->renderAjax('\menu\submenu\generate-reports', [
+                'model' => $model,
+            ]);
+        }
+    }
+
     public function actionHome($id)
     {
         return $this->renderAjax('_home', [
@@ -141,6 +195,7 @@ class PrController extends Controller
         ]);
     }
 
+    // Select Items
     public function actionItems($id)
     {
         $model = $this->findModel($id);
@@ -166,17 +221,18 @@ class PrController extends Controller
         
         $rises = ArrayHelper::map($rises, 'id', 'title', 'groupTitle');
 
-        return $this->renderAjax('_items', [
+        return $this->renderAjax('\steps\select-items\items', [
             'model' => $model,
             'rises' => $rises
         ]);
     }
 
-    public function actionLoadRisItems($id, $ris_id)
+    // Select Items -> Select RIS Items
+    public function actionSelectRisItems($id, $ris_id)
     {
         $model = $this->findModel($id);
 
-        $existingItems = PrItem::find()->asArray()->all();
+        $existingItems = PrItem::find()->where(['pr_id' => $model->id])->asArray()->all();
         $existingItems = ArrayHelper::map($existingItems, 'ris_item_id', 'ris_item_id');
 
         $ris = Ris::findOne($ris_id);
@@ -197,6 +253,17 @@ class PrController extends Controller
                         ppmp_pap.code,"000-",
                         ppmp_activity.code," - ",
                         ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -208,6 +275,7 @@ class PrController extends Controller
                     'sum(quantity) as total',
                     'ppmp_ris_item.type'
                 ])
+                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_ris_item.ris_id')
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
@@ -218,12 +286,17 @@ class PrController extends Controller
                 ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
                 ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
                 ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
-                ->andWhere([
-                    'ris_id' => $ris->id,
-                ])
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris_item.ris_id and 
+                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                    s.item_id = ppmp_ppmp_item.item_id and 
+                                                    s.cost = ppmp_ris_item.cost and 
+                                                    s.type = ppmp_ris_item.type')
+                ->andWhere(['ppmp_ris.id' => $ris->id])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                 ->andWhere(['not in', 'ppmp_ris_item.id', $existingItems])
-                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_ris_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -234,7 +307,7 @@ class PrController extends Controller
         {
             foreach($items as $item)
             {
-                $risItems[$item['prexc']][] = $item;
+                $risItems[$item['activity']][$item['prexc']][] = $item;
                 $prItem = new PrItem();
                 $prItem->pr_id = $model->id;
                 $prItem->ris_id = $ris->id;
@@ -248,6 +321,7 @@ class PrController extends Controller
                 $spec = RisItemSpec::findOne([
                     'ris_id' => $item['ris_id'],
                     'activity_id' => $item['activityId'],
+                    'sub_activity_id' => $item['subActivityId'],
                     'item_id' => $item['stockNo'],
                     'cost' => $item['cost'],
                     'type' => $item['type'],
@@ -277,13 +351,15 @@ class PrController extends Controller
                             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                             ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
                             ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
-                            ->where([
+                            ->andWhere([
                                 'ppmp_ris_item.ris_id' => $risItem->ris_id,
-                                'ppmp_activity.id' => $risItem->ppmpItem->activity_id,
                                 'ppmp_item.id' => $risItem->ppmpItem->item_id,
+                                'ppmp_activity.id' => $risItem->ppmpItem->activity_id,
+                                'ppmp_sub_activity.id' => $risItem->ppmpItem->sub_activity_id,
                                 'ppmp_ris_item.cost' => $risItem->cost,
                                 'ppmp_ris_item.type' => $risItem->type,
                             ])
+                            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                             ->all();
 
                         if($includedItems)
@@ -306,8 +382,7 @@ class PrController extends Controller
                 }
             }
         }
-
-        return $this->renderAjax('_items-ris_items', [
+        return $this->renderAjax('\steps\select-items\ris_items', [
             'model' => $model,
             'risItems' => $risItems,
             'prItems' => $prItems,
@@ -316,17 +391,45 @@ class PrController extends Controller
         ]);
     }
 
-    public function actionPrItems($id)
+    // Select Items -> Select PR Items
+    public function actionSelectPrItems($id)
     {
         $model = $this->findModel($id);
         $prItems = [];
+        $risItems = [];
         $specifications = [];
         $items = PrItem::find()
                 ->select([
                     'ppmp_pr_item.id as id',
                     's.id as ris_item_spec_id',
+                    'ppmp_ris.ris_no as ris_no',
                     'ppmp_item.id as item_id',
                     'ppmp_item.title as item',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code," - ",
+                        ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    ) as prexc',
+                    'ppmp_activity.id as activityId',
+                    'ppmp_activity.title as activityTitle',
+                    'ppmp_sub_activity.id as subActivityId',
+                    'ppmp_sub_activity.title as subActivityTitle',
                     'ppmp_item.unit_of_measure as unit',
                     'ppmp_pr_item.cost as cost',
                     'sum(ppmp_pr_item.quantity) as total',
@@ -334,16 +437,26 @@ class PrController extends Controller
                 ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
                 ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_pr_item.ris_id and 
                                                     s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
                                                     s.item_id = ppmp_ppmp_item.item_id and 
                                                     s.cost = ppmp_pr_item.cost and 
                                                     s.type = ppmp_pr_item.type')
-                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                 ->andWhere([
                     'ppmp_pr_item.pr_id' => $model->id,
                 ])
-                ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'item' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -351,6 +464,7 @@ class PrController extends Controller
         {
             foreach($items as $item)
             {
+                $risItems[$item['activity']][$item['prexc']][] = $item;
                 $prItem = PrItem::findOne($item['id']);
                 $prItems[$item['id']] = $prItem;
 
@@ -393,327 +507,20 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_items-pr_items', [
+        return $this->renderAjax('\steps\select-items\pr_items', [
             'model' => $model,
-            'items' => $items,
+            'risItems' => $risItems,
             'prItems' => $prItems,
             'specifications' => $specifications,
         ]);
     }
 
-    public function actionPr($id)
+    // Group Items -> Group APR Items
+    public function actionGroupAprItems($id)
     {
         $model = $this->findModel($id);
+
         $prItems = [];
-        $specifications = [];
-        $entityName = Settings::findOne(['title' => 'Entity Name']);
-        $fundCluster = FundCluster::findOne($model->fund_cluster_id);
-        $rccs = Pritem::find()
-                ->select(['concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code
-                ) as prexc',])
-                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
-                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
-                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
-                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
-                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
-                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
-                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
-                ->andWhere([
-                    'ppmp_pr_item.pr_id' => $model->id,
-                ])
-                ->groupBy(['ppmp_activity.id'])
-                ->asArray()
-                ->all();
-        
-        $rccs = ArrayHelper::map($rccs, 'prexc', 'prexc');
-        
-        $items = PrItem::find()
-                ->select([
-                    'ppmp_pr_item.id as id',
-                    's.id as ris_item_spec_id',
-                    'ppmp_item.id as item_id',
-                    'ppmp_item.title as item',
-                    'ppmp_item.unit_of_measure as unit',
-                    'ppmp_pr_item.cost as cost',
-                    'sum(ppmp_pr_item.quantity) as total'
-                ])
-                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                    s.item_id = ppmp_ppmp_item.item_id and 
-                                                    s.cost = ppmp_pr_item.cost and 
-                                                    s.type = ppmp_pr_item.type')
-                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                ->andWhere([
-                    'ppmp_pr_item.pr_id' => $model->id,
-                ])
-                ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-                ->asArray()
-                ->all();
-        
-        if(!empty($items))
-        {
-            foreach($items as $item)
-            {
-                $prItem = new PrItem();
-                $prItem->id = $item['id'];
-                $prItems[$item['id']] = $prItem;
-
-                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
-                if($specs){ $specifications[$item['id']] = $specs; }
-            }
-        }
-
-        return $this->renderAjax('_pr', [
-            'model' => $model,
-            'entityName' => $entityName,
-            'fundCluster' => $fundCluster,
-            'rccs' => $rccs,
-            'items' => $items,
-            'prItems' => $prItems,
-            'specifications' => $specifications,
-        ]);
-    }
-
-    public function actionPrintPr($id, $date_prepared)
-    {
-        $model = $this->findModel($id);
-        $prItems = [];
-        $specifications = [];
-        $entityName = Settings::findOne(['title' => 'Entity Name']);
-        $fundCluster = FundCluster::findOne($model->fund_cluster_id);
-        $rccs = Pritem::find()
-                ->select(['concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code
-                ) as prexc',])
-                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
-                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
-                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
-                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
-                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
-                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
-                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
-                ->andWhere([
-                    'ppmp_pr_item.pr_id' => $model->id,
-                ])
-                ->groupBy(['ppmp_activity.id'])
-                ->asArray()
-                ->all();
-        
-        $rccs = ArrayHelper::map($rccs, 'prexc', 'prexc');
-        
-        $items = PrItem::find()
-                ->select([
-                    'ppmp_pr_item.id as id',
-                    's.id as ris_item_spec_id',
-                    'ppmp_item.id as item_id',
-                    'ppmp_item.title as item',
-                    'ppmp_item.unit_of_measure as unit',
-                    'ppmp_pr_item.cost as cost',
-                    'sum(ppmp_pr_item.quantity) as total'
-                ])
-                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                    s.item_id = ppmp_ppmp_item.item_id and 
-                                                    s.cost = ppmp_pr_item.cost and 
-                                                    s.type = ppmp_pr_item.type')
-                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                ->andWhere([
-                    'ppmp_pr_item.pr_id' => $model->id,
-                ])
-                ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-                ->asArray()
-                ->all();
-        
-        if(!empty($items))
-        {
-            foreach($items as $item)
-            {
-                $prItem = new PrItem();
-                $prItem->id = $item['id'];
-                $prItems[$item['id']] = $prItem;
-
-                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
-                if($specs){ $specifications[$item['id']] = $specs; }
-            }
-        }
-
-        return $this->renderAjax('_file-pr', [
-            'model' => $model,
-            'entityName' => $entityName,
-            'fundCluster' => $fundCluster,
-            'rccs' => $rccs,
-            'items' => $items,
-            'prItems' => $prItems,
-            'specifications' => $specifications,
-            'date_prepared' => $date_prepared,
-        ]);
-    }
-
-    public function actionDbmItems($id)
-    {
-        $model = $this->findModel($id);
-
-        return $this->renderAjax('_dbm-items', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionDbmPricing($id)
-    {
-        $model = $this->findModel($id);
-
-        return $this->renderAjax('_dbm-pricing', [
-            'model' => $model,
-        ]);
-    }
-
-    public function actionViewDbmPrice($id)
-    {
-        $model = $this->findModel($id);
-
-        $aprItems = [];
-        $specifications = [];
-        $costModels = [];
-
-        $supplier = Supplier::findOne(['id' => 1]);
-
-        $aprItemIDs = AprItem::find()
-                    ->select(['pr_item_id'])
-                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
-                    ->where(['pr_id' => $model->id])
-                    ->asArray()
-                    ->all();
-
-        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
-
-        $aprItems = PrItem::find()
-            ->select([
-                'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
-                'ppmp_item.id as item_id',
-                'ppmp_item.title as item',
-                'ppmp_item.unit_of_measure as unit',
-                'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total',
-                'ppmp_pr_item_cost.cost as price'
-            ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_pr_item_cost', 'ppmp_pr_item_cost.pr_item_id = ppmp_pr_item.id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
-            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere([
-                'ppmp_pr_item.pr_id' => $model->id,
-            ])
-            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-            ->asArray()
-            ->all();
-
-        $itemIDs = ArrayHelper::map($aprItems, 'id', 'id');
-        
-        if(!empty($aprItems))
-        {
-            foreach($aprItems as $item)
-            {
-                $cost = PrItemCost::findOne(['pr_item_id' => $item['id']]) ? PrItemCost::findOne(['pr_item_id' => $item['id']]) : new PrItemCost();
-                $cost->pr_id = $model->id;
-                $cost->pr_item_id = $item['id'];
-                $cost->supplier_id = $supplier->id;
-
-                $costModels[$item['id']] = $cost; 
-
-                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
-                if($specs){ $specifications[$item['id']] = $specs; }
-            }
-        }
-
-        if(MultipleModel::loadMultiple($costModels, Yii::$app->request->post()))
-        {
-            if(!empty($costModels))
-            {
-                foreach($costModels as $costModel)
-                {
-                    $item = PrItem::findOne($costModel->pr_item_id);
-
-                    $includedItems = PrItem::find()
-                        ->select(['ppmp_pr_item.id as id'])
-                        ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                        ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                        ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                        ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                        ->andWhere([
-                            'ppmp_pr_item.pr_id' => $costModel->pr_id,
-                            'ppmp_item.id' => $item->ppmpItem->item_id,
-                            'ppmp_pr_item.cost' => $item->cost,
-                        ])
-                        ->all();
-                    
-                    $includedItems = ArrayHelper::map($includedItems, 'id', 'id');
-
-                    if(!empty($includedItems))
-                    {
-                        foreach($includedItems as $includedItem)
-                        {
-                            $cost = new PrItemCost();
-                            $cost->pr_id = $costModel->pr_id;
-                            $cost->pr_item_id = $includedItem;
-                            $cost->supplier_id = 1;
-                            $cost->cost = $costModel->cost;
-                            $cost->save();
-                        }
-                    }
-
-                    /* $itemCost = ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) ? ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) : new ItemCost();
-                    $itemCost->item_id = $item->ppmpItem->item_id;
-                    $itemCost->cost = $costModel->cost;
-                    $itemCost->source_model = 'PrItemCost';
-                    $itemCost->source_id = $costModel->pr_item_id;
-                    $itemCost->save(); */
-                }
-            }
-        }
-
-        return $this->renderAjax('_dbm-pricing-form', [
-            'model' => $model,
-            'aprItems' => $aprItems,
-            'costModels' => $costModels,
-            'specifications' => $specifications,
-            'supplier' => $supplier,
-            'itemIDs' => $itemIDs,
-        ]);
-    }
-
-    public function actionAprItems($id)
-    {
-        $model = $this->findModel($id);
-
         $aprItems = [];
         $specifications = [];
 
@@ -727,36 +534,73 @@ class PrController extends Controller
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
         $forAprs = PrItem::find()
-            ->select([
-                'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
-                'ppmp_item.id as item_id',
-                'ppmp_item.title as item',
-                'ppmp_item.unit_of_measure as unit',
-                'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total'
-            ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
-            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere([
-                'ppmp_pr_item.pr_id' => $model->id,
-            ])
-            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-            ->asArray()
-            ->all();
+                ->select([
+                    'ppmp_pr_item.id as id',
+                    's.id as ris_item_spec_id',
+                    'ppmp_ris.ris_no as ris_no',
+                    'ppmp_item.id as item_id',
+                    'ppmp_item.title as item',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code," - ",
+                        ppmp_activity.title
+                    ) as activity',
+                    'concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    ) as prexc',
+                    'ppmp_activity.id as activityId',
+                    'ppmp_activity.title as activityTitle',
+                    'ppmp_sub_activity.id as subActivityId',
+                    'ppmp_sub_activity.title as subActivityTitle',
+                    'ppmp_item.unit_of_measure as unit',
+                    'ppmp_pr_item.cost as cost',
+                    'sum(ppmp_pr_item.quantity) as total',
+                ])
+                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_pr_item.ris_id and 
+                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                    s.item_id = ppmp_ppmp_item.item_id and 
+                                                    s.cost = ppmp_pr_item.cost and 
+                                                    s.type = ppmp_pr_item.type')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $model->id,
+                ])
+                ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+                ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'item' => SORT_ASC])
+                ->asArray()
+                ->all();
 
         if(!empty($forAprs))
         {
             foreach($forAprs as $item)
             {
+                $prItems[$item['activity']][$item['prexc']][] = $item;
                 $aprItem = new AprItem();
                 $aprItem->id = $item['id'];
                 $aprItems[$item['id']] = $aprItem;
@@ -788,19 +632,26 @@ class PrController extends Controller
                     if($prItem['id'] != 0)
                     {
                         $item = PrItem::findOne($prItem['id']);
-  
+                        
                         $includedItems = PrItem::find()
-                            ->select(['ppmp_pr_item.id as id'])
-                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                            ->andWhere([
-                                'ppmp_pr_item.pr_id' => $item->pr_id,
-                                'ppmp_item.id' => $item->ppmpItem->item_id,
-                                'ppmp_pr_item.cost' => $item->cost,
-                            ])
-                            ->all();
+                        ->select(['ppmp_pr_item.id as id'])
+                        ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                        ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                        ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                        ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                        ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                        ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                        ->andWhere([
+                            'ppmp_pr_item.pr_id' => $item->pr_id,
+                            'ppmp_pr_item.ris_id' => $item->ris_id,
+                            'ppmp_item.id' => $item->ppmpItem->item_id,
+                            'ppmp_activity.id' => $item->ppmpItem->activity_id,
+                            'ppmp_sub_activity.id' => $item->ppmpItem->sub_activity_id,
+                            'ppmp_pr_item.cost' => $item->cost,
+                            'ppmp_pr_item.type' => $item->type,
+                        ])
+                        ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+                        ->all();
                         
                         $includedItems = ArrayHelper::map($includedItems, 'id', 'id');
 
@@ -830,18 +681,21 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_apr-items', [
+        return $this->renderAjax('\steps\group-items\apr-items', [
             'model' => $model,
             'forAprs' => $forAprs,
+            'prItems' => $prItems,
             'aprItems' => $aprItems,
             'specifications' => $specifications,
         ]);
     }
 
-    public function actionRfqItems($id)
+    // Group Items -> Group RFQ Items
+    public function actionGroupRfqItems($id)
     {
         $model = $this->findModel($id);
 
+        $prItems = [];
         $rfqItems = [];
         $specifications = [];
 
@@ -857,9 +711,35 @@ class PrController extends Controller
         $forRfqs = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
+                'ppmp_ris.ris_no as ris_no',
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
                 'sum(ppmp_pr_item.quantity) as total'
@@ -867,8 +747,17 @@ class PrController extends Controller
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
             ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
                                                 s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
                                                 s.item_id = ppmp_ppmp_item.item_id and 
                                                 s.cost = ppmp_pr_item.cost and 
                                                 s.type = ppmp_pr_item.type')
@@ -877,7 +766,8 @@ class PrController extends Controller
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'item' => SORT_ASC])
             ->asArray()
             ->all();
         
@@ -886,6 +776,7 @@ class PrController extends Controller
             foreach($forRfqs as $item)
             {
 
+                $prItems[$item['activity']][$item['prexc']][] = $item;
                 $rfqItem = new AprItem();
                 $rfqItem->id = $item['id'];
                 $rfqItems[$item['id']] = $rfqItem;
@@ -923,12 +814,19 @@ class PrController extends Controller
                             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
                             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
                             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                             ->andWhere([
                                 'ppmp_pr_item.pr_id' => $item->pr_id,
+                                'ppmp_pr_item.ris_id' => $item->ris_id,
                                 'ppmp_item.id' => $item->ppmpItem->item_id,
+                                'ppmp_activity.id' => $item->ppmpItem->activity_id,
+                                'ppmp_sub_activity.id' => $item->ppmpItem->sub_activity_id,
                                 'ppmp_pr_item.cost' => $item->cost,
+                                'ppmp_pr_item.type' => $item->type,
                             ])
+                            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                             ->all();
                         
                         $includedItems = ArrayHelper::map($includedItems, 'id', 'id');
@@ -962,15 +860,17 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_rfq-items', [
+        return $this->renderAjax('\steps\group-items\rfq-items', [
             'model' => $model,
             'forRfqs' => $forRfqs,
+            'prItems' => $prItems,
             'rfqItems' => $rfqItems,
             'specifications' => $specifications,
         ]);
     }
 
-    public function actionApr($id)
+    // Request Quotation -> Request APR
+    public function actionRequestApr($id)
     {
         $model = $this->findModel($id);
         $agency = Settings::findOne(['title' => 'Agency Name']);
@@ -990,10 +890,71 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $aprItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+
+        $aprItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
@@ -1003,35 +964,37 @@ class PrController extends Controller
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
             ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
 
-        if(!empty($aprItems))
+        if(!empty($unmergedItems))
         {
-            foreach($aprItems as $item)
+            foreach($unmergedItems as $item)
             {
                 $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
                 if($specs){ $specifications[$item['id']] = $specs; }
             }
         }
 
-        return $this->renderAjax('_apr',[
+        if($apr->load(Yii::$app->request->post()))
+        {
+            $apr->save(false);
+        }
+
+        return $this->renderAjax('\steps\request-quotations\request-apr',[
             'model' => $model,
             'agency' => $agency,
             'regionalOffice' => $regionalOffice,
             'address' => $address,
             'apr' => $apr,
+            'unmergedItems' => $unmergedItems,
             'aprItems' => $aprItems,
             'supplier' => $supplier,
             'specifications' => $specifications,
@@ -1039,7 +1002,8 @@ class PrController extends Controller
         ]);
     }
 
-    public function actionPrintApr($id, $rad_no, $rad_month, $rad_year, $pl_month, $pl_year, $telefax, $check_1, $check_2, $check_3, $check_4, $check_5, $check_6, $other, $date_generated)
+    // Request Quotation -> Save and Print APR
+    public function actionSaveAndPrintApr($id, $rad_no, $rad_month, $rad_year, $pl_month, $pl_year, $telefax, $check_1, $check_2, $check_3, $check_4, $check_5, $check_6, $other, $date_generated)
     {
         $model = $this->findModel($id);
         $agency = Settings::findOne(['title' => 'Agency Name']);
@@ -1050,6 +1014,22 @@ class PrController extends Controller
         $supplier = Supplier::findOne(['id' => 1]);
         $specifications = [];
 
+        $apr->date_prepared = $date_generated;
+        $apr->rad_no = $rad_no;
+        $apr->rad_month = $rad_month;
+        $apr->rad_year = $rad_year;
+        $apr->pl_month = $pl_month;
+        $apr->pl_year = $pl_year;
+        $apr->checklist_1 = $check_1;
+        $apr->checklist_2 = $check_2;
+        $apr->checklist_3 = $check_3;
+        $apr->checklist_4 = $check_4;
+        $apr->checklist_5 = $check_5;
+        $apr->checklist_6 = $check_6;
+        $apr->others = $other;
+        $apr->telefax = $telefax;
+        $apr->save(false);
+
         $aprItemIDs = AprItem::find()
                     ->select(['pr_item_id'])
                     ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
@@ -1059,7 +1039,7 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $aprItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
@@ -1072,8 +1052,11 @@ class PrController extends Controller
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
             ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
                                                 s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
                                                 s.item_id = ppmp_ppmp_item.item_id and 
                                                 s.cost = ppmp_pr_item.cost and 
                                                 s.type = ppmp_pr_item.type')
@@ -1082,20 +1065,43 @@ class PrController extends Controller
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
             ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+        
+        $aprItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
 
-        if(!empty($aprItems))
+        if(!empty($unmergedItems))
         {
-            foreach($aprItems as $item)
+            foreach($unmergedItems as $item)
             {
                 $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
                 if($specs){ $specifications[$item['id']] = $specs; }
             }
         }
 
-        return $this->renderAjax('_file-apr',[
+        return $this->renderAjax('\reports\apr',[
             'model' => $model,
             'agency' => $agency,
             'regionalOffice' => $regionalOffice,
@@ -1122,7 +1128,8 @@ class PrController extends Controller
         ]);
     }
 
-    public function actionQuotation($id)
+    // Request Quotation -> Request RFQ
+    public function actionRequestRfq($id)
     {
         $model = $this->findModel($id);
 
@@ -1149,13 +1156,63 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_quotation', [
+        return $this->renderAjax('\steps\request-quotations\request-rfq', [
             'model' => $model,
             'rfqs' => $rfqs,
             'items' => $items,
         ]);
     }
 
+    // Request Quotation -> Create RFQ
+    public function actionCreateRfq($id)
+    {
+        $model = $this->findModel($id);
+
+        $rfqModel = new Rfq();
+        $rfqModel->pr_id = $model->id;
+
+        if($rfqModel->load(Yii::$app->request->post()))
+        {
+            $time = str_pad($rfqModel->deadline_time, 2, '0', STR_PAD_LEFT).':'.str_pad($rfqModel->minute, 2, '0', STR_PAD_LEFT).' '.$rfqModel->meridian;
+            $lastRfq = Rfq::find()->orderBy(['id' => SORT_DESC])->one();
+            $lastNumber = $lastRfq ? intval(substr($lastRfq->rfq_no, -3)) : '001';
+            $rfqModel->rfq_no = $lastRfq ? substr(date("Y"), -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("m").'-'.$lastNumber;
+            $rfqModel->deadline_time = $time;
+            $rfqModel->save();
+        }
+
+        return $this->renderAjax('\steps\request-quotations\rfq-form', [
+            'model' => $model,
+            'rfqModel' => $rfqModel,
+        ]);
+    }
+
+    // Request Quotation -> Update RFQ
+    public function actionUpdateRfq($id)
+    {
+        $rfqModel = Rfq::findOne($id);
+
+        $model = $rfqModel->pr;
+        $timeArray = explode(" ",$rfqModel->deadline_time);
+        $time = explode(":", $timeArray[0]);
+        $rfqModel->deadline_time = $time[0];
+        $rfqModel->minute = isset($time[1]) ? $time[1] : '00';
+        $rfqModel->meridian = isset($timeArray[1]) ? $timeArray[1] : 'AM';
+
+        if($rfqModel->load(Yii::$app->request->post()))
+        {
+            $time = str_pad($rfqModel->deadline_time, 2, '0', STR_PAD_LEFT).':'.str_pad($rfqModel->minute, 2, '0', STR_PAD_LEFT).' '.$rfqModel->meridian;
+            $rfqModel->deadline_time = $time;
+            $rfqModel->save();
+        }
+
+        return $this->renderAjax('\steps\request-quotations\rfq-form', [
+            'model' => $model,
+            'rfqModel' => $rfqModel,
+        ]);
+    }
+
+    // Request Quotation -> View RFQ
     public function actionViewRfq($id)
     {
         $rfq = Rfq::findOne(['id' => $id]);
@@ -1182,10 +1239,71 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $rfqItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
@@ -1195,23 +1313,19 @@ class PrController extends Controller
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
         
-        if(!empty($rfqItems))
+        if(!empty($unmergedItems))
         {
-            foreach($rfqItems as $item)
+            foreach($unmergedItems as $item)
             {
                 $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
                 if($specs){ $specifications[$item['id']] = $specs; }
@@ -1221,7 +1335,7 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_rfq', [
+        return $this->renderAjax('\steps\request-quotations\rfq', [
             'model' => $model,
             'rfq' => $rfq,
             'rfqItems' => $rfqItems,
@@ -1235,7 +1349,8 @@ class PrController extends Controller
             'forContractItems' => $forContractItems,
         ]);
     }
-    
+
+    // Request Quotation -> Print RFQ
     public function actionPrintRfq($id)
     {
         $rfq = Rfq::findOne(['id' => $id]);
@@ -1263,10 +1378,71 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $rfqItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
@@ -1276,23 +1452,19 @@ class PrController extends Controller
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
         
-        if(!empty($rfqItems))
+        if(!empty($unmergedItems))
         {
-            foreach($rfqItems as $item)
+            foreach($unmergedItems as $item)
             {
                 $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
                 if($specs){ $specifications[$item['id']] = $specs; }
@@ -1302,7 +1474,7 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_file-rfq', [
+        return $this->renderAjax('\reports\rfq', [
             'model' => $model,
             'rfq' => $rfq,
             'rfqItems' => $rfqItems,
@@ -1317,6 +1489,7 @@ class PrController extends Controller
         ]);
     }
 
+    // Request Quotation -> Delete RFQ
     public function actionDeleteRfq($id, $rfq_id)
     {
         $model = $this->findModel($id);
@@ -1325,163 +1498,31 @@ class PrController extends Controller
 
         if($rfq->delete())
         {
-            
+            RfqInfo::deleteAll(['rfq_id' => $rfq_id]);
+            PrItemCost::deleteAll(['rfq_id' => $rfq_id]);
         }
     }
 
-    public function actionGenerateRfq($id)
+    // Retrieve Quotations -> Retrieve APR
+    public function actionRetrieveApr($id)
     {
         $model = $this->findModel($id);
 
-        $rfqModel = new Rfq();
-        $rfqModel->pr_id = $model->id;
-
-        if($rfqModel->load(Yii::$app->request->post()))
-        {
-            $time = str_pad($rfqModel->deadline_time, 2, '0', STR_PAD_LEFT).':'.str_pad($rfqModel->minute, 2, '0', STR_PAD_LEFT).' '.$rfqModel->meridian;
-            $lastRfq = Rfq::find()->orderBy(['id' => SORT_DESC])->one();
-            $lastNumber = $lastRfq ? intval(substr($lastRfq->rfq_no, -3)) : '001';
-            $rfqModel->rfq_no = $lastRfq ? substr(date("Y"), -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("m").'-'.$lastNumber;
-            $rfqModel->deadline_time = $time;
-            $rfqModel->save();
-        }
-
-        return $this->renderAjax('_rfq-form', [
+        return $this->renderAjax('\steps\retrieve-quotations\retrieve-apr', [
             'model' => $model,
-            'rfqModel' => $rfqModel,
         ]);
     }
 
-    public function actionUpdateRfq($id)
-    {
-        $rfqModel = Rfq::findOne($id);
-
-        $model = $rfqModel->pr;
-        $timeArray = explode(" ",$rfqModel->deadline_time);
-        $time = explode(":", $timeArray[0]);
-        $rfqModel->deadline_time = $time[0];
-        $rfqModel->minute = isset($time[1]) ? $time[1] : '00';
-        $rfqModel->meridian = isset($timeArray[1]) ? $timeArray[1] : 'AM';
-
-        if($rfqModel->load(Yii::$app->request->post()))
-        {
-            $time = str_pad($rfqModel->deadline_time, 2, '0', STR_PAD_LEFT).':'.str_pad($rfqModel->minute, 2, '0', STR_PAD_LEFT).' '.$rfqModel->meridian;
-            $rfqModel->deadline_time = $time;
-            $rfqModel->save();
-        }
-
-        return $this->renderAjax('_rfq-form', [
-            'model' => $model,
-            'rfqModel' => $rfqModel,
-        ]);
-    }
-
-    public function actionRfq($id)
+    // Retrieve Quotations -> Input Quotation from APR 
+    public function actionAprQuotation($id)
     {
         $model = $this->findModel($id);
 
-        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+        $aprItems = [];
+        $specifications = [];
+        $costModels = [];
 
-        $items = [];
-
-        if($rfqs)
-        {
-            foreach($rfqs as $key => $rfq)
-            {
-                $bac = Settings::findOne(['title' => 'BAC Chairperson']);
-                $agency = Settings::findOne(['title' => 'Agency Name']);
-                $regionalOffice = Settings::findOne(['title' => 'Regional Office']);
-                $address = Settings::findOne(['title' => 'Address']);
-                $email = Settings::findOne(['title' => 'Email']);
-                $telephoneNos = Settings::findOne(['title' => 'Telephone Nos.']);
-
-                $bacChairperson = Signatory::findOne(['emp_id' => $bac->value]);
-
-                $specifications = [];
-                $forContractItems = [];
-
-                $aprItemIDs = AprItem::find()
-                            ->select(['pr_item_id'])
-                            ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
-                            ->where(['pr_id' => $model->id])
-                            ->asArray()
-                            ->all();
-
-                $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
-
-                $rfqItems = PrItem::find()
-                    ->select([
-                        'ppmp_pr_item.id as id',
-                        's.id as ris_item_spec_id',
-                        'ppmp_item.id as item_id',
-                        'ppmp_item.title as item',
-                        'ppmp_item.unit_of_measure as unit',
-                        'ppmp_pr_item.cost as cost',
-                        'sum(ppmp_pr_item.quantity) as total'
-                    ])
-                    ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                    ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                    ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                    ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                        s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                        s.item_id = ppmp_ppmp_item.item_id and 
-                                                        s.cost = ppmp_pr_item.cost and 
-                                                        s.type = ppmp_pr_item.type')
-                    ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                    ->andWhere([
-                        'ppmp_pr_item.pr_id' => $model->id,
-                    ])
-                    ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-                    ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-                    ->asArray()
-                    ->all();
-
-                    if(!empty($rfqItems))
-                    {
-                        foreach($rfqItems as $item)
-                        {
-                            $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
-                            if($specs){ $specifications[$item['id']] = $specs; }
-            
-                            $forContractItem = ForContractItem::findOne(['item_id' => $item['item_id']]);
-                            if($forContractItem){ $forContractItems[$item['id']] = $forContractItem; }
-                        }
-                    }
-
-                $items[$key]['label'] = '<table style="width:100%;" id="rfq-table-modal-'.$rfq->id.'">';
-                $items[$key]['label'] .= '<tr>';
-                $items[$key]['label'] .= '<td>RFQ No. '.$rfq->rfq_no.'</td>';
-                $items[$key]['label'] .= '</tr>';
-                $items[$key]['label'] .= '</table>';
-                $items[$key]['content'] = $this->renderAjax('_rfq', [
-                    'model' => $model,
-                    'rfq' => $rfq,
-                    'rfqItems' => $rfqItems,
-                    'specifications' => $specifications,
-                    'bacChairperson' => $bacChairperson,
-                    'agency' => $agency,
-                    'regionalOffice' => $regionalOffice,
-                    'address' => $address,
-                    'email' => $email,
-                    'telephoneNos' => $telephoneNos,
-                    'forContractItems' => $forContractItems,
-                ]);
-                $items[$key]['options'] = ['class' => 'panel panel-info'];
-            }
-        }
-
-        return $this->renderAjax('_rfq-modal', [
-            'model' => $model,
-            'rfqs' => $rfqs,
-            'items' => $items,
-        ]);
-    }
-
-    public function actionRetrieveQuotation($id)
-    {
-        $model = $this->findModel($id);
-
-        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+        $supplier = Supplier::findOne(['id' => 1]);
 
         $aprItemIDs = AprItem::find()
                     ->select(['pr_item_id'])
@@ -1491,98 +1532,192 @@ class PrController extends Controller
                     ->all();
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
-        $bids = [];
-        $suppliers = [];
-        $winners = [];
-        if($rfqs)
+
+        $unmergedItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                's.id as ris_item_spec_id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                s.item_id = ppmp_ppmp_item.item_id and 
+                                                s.cost = ppmp_pr_item.cost and 
+                                                s.type = ppmp_pr_item.type')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+
+        $aprItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+
+        $itemIDs = ArrayHelper::map($aprItems, 'id', 'id');
+        
+        if(!empty($unmergedItems))
         {
-            foreach($rfqs as $rfq)
+            foreach($unmergedItems as $item)
             {
-                $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
-                $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                if($specs){ $specifications[$item['id']] = $specs; }
+            }
+        }
 
-                $supplierList = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+        if(!empty($aprItems))
+        {
+            foreach($aprItems as $item)
+            {
+                $cost = PrItemCost::findOne(['pr_item_id' => $item['id']]) ? PrItemCost::findOne(['pr_item_id' => $item['id']]) : new PrItemCost();
+                $cost->pr_id = $model->id;
+                $cost->pr_item_id = $item['id'];
+                $cost->supplier_id = $supplier->id;
 
-                $suppliers[$rfq->id] = $supplierList;
-                $bids[$rfq->id] = Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]) ? Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]) : [];
+                $costModels[$item['id']] = $cost; 
+            }
+        }
 
-                $bidWinners = !empty($bids[$rfq->id]) ? BidWinner::find()->andWhere(['bid_id' => $bids[$rfq->id]->id])->asArray()->all() : [];
-                if(!empty($bidWinners))
+        if(MultipleModel::loadMultiple($costModels, Yii::$app->request->post()))
+        {
+            if(!empty($costModels))
+            {
+                foreach($costModels as $costModel)
                 {
-                    foreach($bidWinners as $bidWinner)
+                    $item = PrItem::findOne($costModel->pr_item_id);
+
+                    $includedItems = PrItem::find()
+                        ->select(['ppmp_pr_item.id as id'])
+                        ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                        ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                        ->andWhere([
+                            'ppmp_pr_item.pr_id' => $costModel->pr_id,
+                            'ppmp_item.id' => $item->ppmpItem->item_id,
+                        ])
+                        ->all();
+                    
+                    $includedItems = ArrayHelper::map($includedItems, 'id', 'id');
+
+                    if(!empty($includedItems))
                     {
-                        if(!empty($bidWinner)){
-                            $winners[$rfq->id][$bidWinner['pr_item_id']][$bidWinner['supplier_id']] = $bidWinner; 
-                            $winners[$rfq->id][$bidWinner['pr_item_id']]['justification'] = $bidWinner['justification']; 
+                        foreach($includedItems as $includedItem)
+                        {
+                            $cost = PrItemCost::findOne(['pr_item_id' => $includedItem]) ? PrItemCost::findOne(['pr_item_id' => $includedItem]) : new PrItemCost();
+                            $cost->pr_id = $costModel->pr_id;
+                            $cost->pr_item_id = $includedItem;
+                            $cost->supplier_id = 1;
+                            $cost->cost = $costModel->cost;
+                            $cost->save();
                         }
-                        $winners[$rfq->id][$bidWinner['pr_item_id']]['winner'] = Supplier::findOne($bidWinner['supplier_id']) ? Supplier::findOne($bidWinner['supplier_id']) : []; 
                     }
+
+                    /* if($costModel->cost > 0)
+                    {
+                        $itemCost = ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) ? ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) : new ItemCost();
+                        $itemCost->item_id = $item->ppmpItem->item_id;
+                        $itemCost->cost = $costModel->cost;
+                        $itemCost->source_model = 'PrItemCost';
+                        $itemCost->source_id = $costModel->pr_item_id;
+                        $itemCost->save();
+                    } */
                 }
             }
         }
 
-        $rfqItems = PrItem::find()
-                    ->select([
-                        'ppmp_pr_item.id as id',
-                        's.id as ris_item_spec_id',
-                        'ppmp_item.id as item_id',
-                        'ppmp_item.title as item',
-                        'ppmp_item.unit_of_measure as unit',
-                        'ppmp_pr_item.cost as cost',
-                        'sum(ppmp_pr_item.quantity) as total'
-                    ])
-                    ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                    ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-                    ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-                    ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                        s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                        s.item_id = ppmp_ppmp_item.item_id and 
-                                                        s.cost = ppmp_pr_item.cost and 
-                                                        s.type = ppmp_pr_item.type')
-                    ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-                    ->andWhere([
-                        'ppmp_pr_item.pr_id' => $model->id,
-                    ])
-                    ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-                    ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-                    ->asArray()
-                    ->all();
-        
-        $rfqItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
-        
-        $itemCosts = PrItemCost::find()
-                    ->andWhere(['in', 'pr_item_id', $rfqItemIDs])
-                    ->asArray()
-                    ->all();
-        
-        $costs = [];
-                
-        if(!empty($itemCosts))
-        {
-            foreach($itemCosts as $cost)
-            {
-                $costs[$cost['rfq_id']][$cost['pr_item_id']][$cost['supplier_id']] = $cost;
-            }
-        }
-
-        return $this->renderAjax('_retrieve-quotation', [
+        return $this->renderAjax('\steps\retrieve-quotations\apr-quotation-form', [
             'model' => $model,
-            'rfqs' => $rfqs,
-            'bids' => $bids,
-            'rfqItems' => $rfqItems,
-            'costs' => $costs,
-            'suppliers' => $suppliers,
-            'winners' => $winners,
+            'aprItems' => $aprItems,
+            'costModels' => $costModels,
+            'specifications' => $specifications,
+            'supplier' => $supplier,
+            'itemIDs' => $itemIDs,
         ]);
     }
 
+    // Retrieve Quotations -> Retrieve RFQ
     public function actionRetrieveRfq($id)
+    {
+        $model = $this->findModel($id);
+
+        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+
+        return $this->renderAjax('\steps\retrieve-quotations\retrieve-rfq', [
+            'model' => $model,
+            'rfqs' => $rfqs,
+        ]);
+    }
+
+    // Retrieve Quotations -> Retrieve Quotation
+    public function actionRetrieveRfqQuotation($id)
     {
         $model = $this->findModel($id);
 
         $rfqInfoModel = new RfqInfo();
 
-        $existingSupplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+        $existingSupplierIDs = PrItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
         $existingSupplierIDs = ArrayHelper::map($existingSupplierIDs, 'supplier_id', 'supplier_id');
 
         $suppliers = Supplier::find()->select(['id', 'concat(business_name," (",business_address,")") as title'])->where(['not in', 'id', $existingSupplierIDs])->andWhere(['<>', 'id', 1])->asArray()->all();
@@ -1600,49 +1735,113 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $rfqItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total',
+                'sum(ppmp_pr_item.quantity) as total'
             ])
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
             ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
                                                 s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
                                                 s.item_id = ppmp_ppmp_item.item_id and 
                                                 s.cost = ppmp_pr_item.cost and 
                                                 s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();        
 
         $itemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
         
         $costModels = [];
         $specifications = [];
 
+        if(!empty($unmergedItems))
+        {
+            foreach($unmergedItems as $item)
+            {
+                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                if($specs){ $specifications[$item['id']] = $specs; }
+            }
+        }
+
         if(!empty($rfqItems))
         {
             foreach($rfqItems as $item)
             {
-                $cost = new PrItemCost();
+                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]) ? PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]) : new PrItemCost();
                 $cost->pr_id = $model->id;
                 $cost->pr_item_id = $item['id'];
 
                 $costModels[$item['id']] = $cost;
-
-                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
-                if($specs){ $specifications[$item['id']] = $specs; }
             }
         }
 
@@ -1658,14 +1857,14 @@ class PrController extends Controller
   
                         $includedItems = PrItem::find()
                             ->select(['ppmp_pr_item.id as id'])
-                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                             ->andWhere([
                                 'ppmp_pr_item.pr_id' => $costModel->pr_id,
                                 'ppmp_item.id' => $item->ppmpItem->item_id,
                                 'ppmp_pr_item.cost' => $item->cost,
+                                'ppmp_ppmp_item.id' => $item->risItem->ppmp_item_id
                             ])
                             ->all();
                         
@@ -1675,28 +1874,32 @@ class PrController extends Controller
                         {
                             foreach($includedItems as $includedItem)
                             {
-                                $cost = new PrItemCost();
+                                $cost = PrItemCost::findOne(['pr_item_id' => $includedItem]) ? PrItemCost::findOne(['pr_item_id' => $includedItem]) : new PrItemCost();
                                 $cost->pr_id = $model->id;
                                 $cost->pr_item_id = $includedItem;
                                 $cost->supplier_id = $rfqInfoModel->supplier_id;
                                 $cost->rfq_id = $rfqInfoModel->rfq_id;
+                                $cost->rfq_info_id = $rfqInfoModel->id;
                                 $cost->cost = $costModel->cost;
                                 $cost->save(false);
                             }
                         }
 
-                        /* $itemCost = ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) ? ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) : new ItemCost();
-                        $itemCost->item_id = $item->ppmpItem->item_id;
-                        $itemCost->cost = $costModel->cost;
-                        $itemCost->source_model = 'PrItemCost';
-                        $itemCost->source_id = $costModel->pr_item_id;
-                        $itemCost->save(); */
+                        /* if($costModel->cost > 0)
+                        {
+                            $itemCost = ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) ? ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) : new ItemCost();
+                            $itemCost->item_id = $item->ppmpItem->item_id;
+                            $itemCost->cost = $costModel->cost;
+                            $itemCost->source_model = 'PrItemCost';
+                            $itemCost->source_id = $costModel->pr_item_id;
+                            $itemCost->save();
+                        } */
                     }
                 }
             }
         }
 
-        return $this->renderAjax('_retrieve-rfq-form', [
+        return $this->renderAjax('\steps\retrieve-quotations\rfq-quotation-form', [
             'model' => $model,
             'rfqInfoModel' => $rfqInfoModel,
             'rfqs' => $rfqs,
@@ -1705,10 +1908,12 @@ class PrController extends Controller
             'costModels' => $costModels,
             'specifications' => $specifications,
             'itemIDs' => $itemIDs,
+            'action' => 'create'
         ]);
     }
 
-    public function actionUpdateRetrieveRfq($id, $rfq_id, $supplier_id)
+    // Retrieve Quotations -> Update Retrieved Quotation
+    public function actionUpdateRfqQuotation($id, $rfq_id, $supplier_id)
     {
         $model = $this->findModel($id);
 
@@ -1732,70 +1937,137 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $rfqItems = PrItem::find()
+        $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                ) as activity',
+                'concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code,"-",
+                    ppmp_sub_activity.code," - ",
+                    ppmp_sub_activity.title
+                ) as prexc',
+                'ppmp_activity.id as activityId',
+                'ppmp_activity.title as activityTitle',
+                'ppmp_sub_activity.id as subActivityId',
+                'ppmp_sub_activity.title as subActivityTitle',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total',
+                'sum(ppmp_pr_item.quantity) as total'
             ])
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
             ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
                                                 s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
                                                 s.item_id = ppmp_ppmp_item.item_id and 
                                                 s.cost = ppmp_pr_item.cost and 
                                                 s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
+
+            $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();        
 
         $itemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
         
         $costModels = [];
         $specifications = [];
 
-        if(!empty($rfqItems))
+        if(!empty($unmergedItems))
         {
-            foreach($rfqItems as $item)
+            foreach($unmergedItems as $item)
             {
-                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]);
-
-                $costModels[$item['id']] = $cost;
-
                 $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
                 if($specs){ $specifications[$item['id']] = $specs; }
             }
         }
 
+        if(!empty($rfqItems))
+        {
+            foreach($rfqItems as $item)
+            {
+                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]) ? PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq_id, 'supplier_id' => $supplier_id, 'pr_item_id' => $item['id']]) : new PrItemCost();
+
+                $cost->pr_id = $model->id;
+                $cost->pr_item_id = $item['id'];
+
+                $costModels[$item['id']] = $cost;
+            }
+        }
+
         if($rfqInfoModel->load(Yii::$app->request->post()) && MultipleModel::loadMultiple($costModels, Yii::$app->request->post()))
         {
-            if($rfqInfoModel->save())
+            if($rfqInfoModel->save(false))
             {
                 if(!empty($costModels))
                 {
                     foreach($costModels as $costModel)
                     {
                         $item = PrItem::findOne($costModel->pr_item_id);
-  
+
                         $includedItems = PrItem::find()
                             ->select(['ppmp_pr_item.id as id'])
-                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
                             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
                             ->andWhere([
                                 'ppmp_pr_item.pr_id' => $costModel->pr_id,
                                 'ppmp_item.id' => $item->ppmpItem->item_id,
                                 'ppmp_pr_item.cost' => $item->cost,
+                                'ppmp_ppmp_item.id' => $item->risItem->ppmp_item_id
                             ])
                             ->all();
                         
@@ -1805,17 +2077,32 @@ class PrController extends Controller
                         {
                             foreach($includedItems as $includedItem)
                             {
-                                $cost = PrItemCost::findOne(['pr_id' => $model->id, 'rfq_id' => $rfqInfoModel->rfq_id, 'supplier_id' => $rfqInfoModel->supplier_id, 'pr_item_id' => $includedItem]);
+                                $cost = PrItemCost::findOne(['pr_item_id' => $includedItem, 'pr_id' => $model->id, 'supplier_id' => $rfqInfoModel->supplier_id, 'rfq_id' => $rfqInfoModel->rfq_id]) ? PrItemCost::findOne(['pr_item_id' => $includedItem, 'pr_id' => $model->id, 'supplier_id' => $rfqInfoModel->supplier_id, 'rfq_id' => $rfqInfoModel->rfq_id]) : new PrItemCost();
+                                $cost->pr_id = $model->id;
+                                $cost->pr_item_id = $includedItem;
+                                $cost->supplier_id = $rfqInfoModel->supplier_id;
+                                $cost->rfq_id = $rfqInfoModel->rfq_id;
+                                $cost->rfq_info_id = $rfqInfoModel->id;
                                 $cost->cost = $costModel->cost;
                                 $cost->save(false);
                             }
                         }
+
+                        /* if($costModel->cost > 0)
+                        {
+                            $itemCost = ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) ? ItemCost::findOne(['source_model' => 'PrItemCost', 'source_id' => $costModel->pr_item_id]) : new ItemCost();
+                            $itemCost->item_id = $item->ppmpItem->item_id;
+                            $itemCost->cost = $costModel->cost;
+                            $itemCost->source_model = 'PrItemCost';
+                            $itemCost->source_id = $costModel->pr_item_id;
+                            $itemCost->save();
+                        } */
                     }
                 }
             }
         }
 
-        return $this->renderAjax('_retrieve-rfq-form', [
+        return $this->renderAjax('\steps\retrieve-quotations\rfq-quotation-form', [
             'model' => $model,
             'rfqInfoModel' => $rfqInfoModel,
             'rfqs' => $rfqs,
@@ -1824,12 +2111,121 @@ class PrController extends Controller
             'costModels' => $costModels,
             'specifications' => $specifications,
             'itemIDs' => $itemIDs,
+            'action' => 'update'
         ]);
     }
 
-    public function actionBid($id, $rfq_id)
+    // Retrieve Quotations -> Delete RFQ Info
+    public function actionDeleteRfqInfo($id, $supplier_id)
+    {
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $rfq_id, 'supplier_id' => $supplier_id]);
+        $rfq_info_id = $rfqInfo->id;
+
+        if($rfqInfo->delete())
+        {
+            PrItemCost::deleteAll(['rfq_info_id' => $rfq_info_id]);
+        }
+    }
+
+    // Canvass/Bid Items -> Bid Selected RFQ
+    public function actionBidRfq($id, $rfq_id, $i)
     {
         $model = $this->findModel($id);
+        $rfq = Rfq::findOne($rfq_id);
+        $bid = Bid::findOne(['pr_id' => $model->id, 'rfq_id' => $rfq->id]);
+
+        $aprItemIDs = AprItem::find()
+                    ->select(['pr_item_id'])
+                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+                    ->where(['pr_id' => $model->id])
+                    ->asArray()
+                    ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $suppliers = [];
+        $winners = [];
+
+        if($rfq)
+        {
+            $supplierIDs = PRItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+
+            $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+
+            $suppliers = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+
+            $bidWinners = $bid ? BidWinner::find()->andWhere(['bid_id' => $bid->id])->asArray()->all() : [];
+
+            if(!empty($bidWinners))
+            {
+                foreach($bidWinners as $bidWinner)
+                {
+                    if(!empty($bidWinner)){
+                        $winners[$bidWinner['pr_item_id']][$bidWinner['supplier_id']] = $bidWinner; 
+                        $winners[$bidWinner['pr_item_id']]['justification'] = $bidWinner['justification']; 
+                    }
+                    
+                    $winners[$bidWinner['pr_item_id']]['winner'] = Supplier::findOne($bidWinner['supplier_id']) ? Supplier::findOne($bidWinner['supplier_id']) : []; 
+                }
+            }
+        }
+
+        $rfqItems = PrItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all(); 
+        
+        $rfqItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
+
+        $itemCosts = PrItemCost::find()
+                    ->andWhere(['in', 'pr_item_id', $rfqItemIDs])
+                    ->asArray()
+                    ->all();
+        
+        $costs = [];
+                
+        if(!empty($itemCosts))
+        {
+            foreach($itemCosts as $cost)
+            {
+                $costs[$cost['pr_item_id']][$cost['supplier_id']] = $cost;
+            }
+        }
+
+        return $this->renderAjax('\steps\bid-items\bid', [
+            'model' => $model,
+            'bid' => $bid,
+            'i' => $i,
+            'rfq' => $rfq,
+            'suppliers' => $suppliers,
+            'winners' => $winners,
+            'rfqItems' => $rfqItems,
+            'costs' => $costs,
+        ]);
+    }
+
+    // Canvass/Bid Items -> Create Bid
+    public function actionCreateBid($id, $rfq_id, $i)
+    {
+        $model = $this->findModel($id);
+        $rfq = Rfq::findOne($rfq_id);
 
         $chair = Settings::findOne(['title' => 'BAC Chairperson']);
         $viceChair = Settings::findOne(['title' => 'BAC Vice-Chairperson']);
@@ -1911,8 +2307,10 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_bid-form', [
+        return $this->renderAjax('\steps\bid-items\bid-form', [
             'model' => $model,
+            'rfq' => $rfq,
+            'i' => $i,
             'signatories' => $signatories,
             'experts' => $experts,
             'endUsers' => $endUsers,
@@ -1926,9 +2324,11 @@ class PrController extends Controller
         ]);
     }
 
-    public function actionUpdateBid($id)
+    // Canvass/Bid Items -> Edit Bid
+    public function actionUpdateBid($id, $i)
     {
         $bidModel = Bid::findOne(['id' => $id]);
+        $rfq = $bidModel->rfq;
         $model = $this->findModel($bidModel->pr_id);
 
         $chair = Settings::findOne(['title' => 'BAC Chairperson']);
@@ -2003,8 +2403,10 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_bid-form', [
+        return $this->renderAjax('\steps\bid-items\bid-form', [
             'model' => $model,
+            'rfq' => $rfq,
+            'i' => $i,
             'signatories' => $signatories,
             'experts' => $experts,
             'endUsers' => $endUsers,
@@ -2018,13 +2420,15 @@ class PrController extends Controller
         ]);
     }
 
+    // Canvass/Bid Items -> Delete Bid
     public function actionDeleteBid($id)
     {
         $bid = Bid::findOne(['id' => $id]);
         $bid->delete();
     }
 
-    public function actionWinner($id)
+    // Canvass/Bid Items -> Select Winners
+    public function actionSelectWinner($id, $i)
     {
         $bid = Bid::findOne(['id' => $id]);
         $rfq = Rfq::findOne(['id' => $bid->rfq_id]);
@@ -2058,28 +2462,24 @@ class PrController extends Controller
         $rfqItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total',
+                'sum(ppmp_pr_item.quantity) as total'
             ])
             ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere([
+                'ppmp_pr_item.pr_id' => $model->id,
+            ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
             ->asArray()
-            ->all();
+            ->all(); 
         
         $rfqItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');
         
@@ -2147,11 +2547,12 @@ class PrController extends Controller
             }
         }
 
-        return $this->renderAjax('_winner-form', [
+        return $this->renderAjax('\steps\bid-items\select-bidder-form', [
             'model' => $model,
             'winnerModels' => $winnerModels,
             'bid' => $bid,
             'rfq' => $rfq,
+            'i' => $i,
             'rfqItems' => $rfqItems,
             'suppliers' => $suppliers,
             'supplierList' => $supplierList,
@@ -2417,22 +2818,173 @@ class PrController extends Controller
         ]);
     }
 
-    public function actionPurchaseOrder($id)
+    public function actionPr($id)
     {
         $model = $this->findModel($id);
+        $prItems = [];
+        $specifications = [];
+        $entityName = Settings::findOne(['title' => 'Entity Name']);
+        $fundCluster = FundCluster::findOne($model->fund_cluster_id);
+        $rccs = Pritem::find()
+                ->select(['concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code
+                ) as prexc',])
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $model->id,
+                ])
+                ->groupBy(['ppmp_activity.id'])
+                ->asArray()
+                ->all();
+        
+        $rccs = ArrayHelper::map($rccs, 'prexc', 'prexc');
+        
+        $items = PrItem::find()
+                ->select([
+                    'ppmp_pr_item.id as id',
+                    's.id as ris_item_spec_id',
+                    'ppmp_item.id as item_id',
+                    'ppmp_item.title as item',
+                    'ppmp_item.unit_of_measure as unit',
+                    'ppmp_pr_item.cost as cost',
+                    'sum(ppmp_pr_item.quantity) as total'
+                ])
+                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.item_id = ppmp_ppmp_item.item_id and 
+                                                    s.cost = ppmp_pr_item.cost and 
+                                                    s.type = ppmp_pr_item.type')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $model->id,
+                ])
+                ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                ->asArray()
+                ->all();
+        
+        if(!empty($items))
+        {
+            foreach($items as $item)
+            {
+                $prItem = new PrItem();
+                $prItem->id = $item['id'];
+                $prItems[$item['id']] = $prItem;
 
-        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                if($specs){ $specifications[$item['id']] = $specs; }
+            }
+        }
 
-        return $this->renderAjax('_purchase-order', [
+        return $this->renderAjax('_pr', [
             'model' => $model,
-            'rfqs' => $rfqs
+            'entityName' => $entityName,
+            'fundCluster' => $fundCluster,
+            'rccs' => $rccs,
+            'items' => $items,
+            'prItems' => $prItems,
+            'specifications' => $specifications,
         ]);
     }
 
-    public function actionGeneratePo($id, $rfq_id)
+    public function actionPrintPr($id, $date_prepared)
     {
         $model = $this->findModel($id);
-        $rfq = Rfq::findOne($rfq_id);
+        $prItems = [];
+        $specifications = [];
+        $entityName = Settings::findOne(['title' => 'Entity Name']);
+        $fundCluster = FundCluster::findOne($model->fund_cluster_id);
+        $rccs = Pritem::find()
+                ->select(['concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code
+                ) as prexc',])
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $model->id,
+                ])
+                ->groupBy(['ppmp_activity.id'])
+                ->asArray()
+                ->all();
+        
+        $rccs = ArrayHelper::map($rccs, 'prexc', 'prexc');
+        
+        $items = PrItem::find()
+                ->select([
+                    'ppmp_pr_item.id as id',
+                    's.id as ris_item_spec_id',
+                    'ppmp_item.id as item_id',
+                    'ppmp_item.title as item',
+                    'ppmp_item.unit_of_measure as unit',
+                    'ppmp_pr_item.cost as cost',
+                    'sum(ppmp_pr_item.quantity) as total'
+                ])
+                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.item_id = ppmp_ppmp_item.item_id and 
+                                                    s.cost = ppmp_pr_item.cost and 
+                                                    s.type = ppmp_pr_item.type')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $model->id,
+                ])
+                ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                ->asArray()
+                ->all();
+        
+        if(!empty($items))
+        {
+            foreach($items as $item)
+            {
+                $prItem = new PrItem();
+                $prItem->id = $item['id'];
+                $prItems[$item['id']] = $prItem;
+
+                $specs = RisItemSpec::findOne(['id' => $item['ris_item_spec_id']]);
+                if($specs){ $specifications[$item['id']] = $specs; }
+            }
+        }
+
+        return $this->renderAjax('_file-pr', [
+            'model' => $model,
+            'entityName' => $entityName,
+            'fundCluster' => $fundCluster,
+            'rccs' => $rccs,
+            'items' => $items,
+            'prItems' => $prItems,
+            'specifications' => $specifications,
+            'date_prepared' => $date_prepared,
+        ]);
     }
 
     /**

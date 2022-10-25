@@ -14,74 +14,60 @@ use yii\bootstrap\Modal;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <?php $form = ActiveForm::begin([
-    'id' => 'retrieve-rfq-form',
+    'id' => 'apr-price-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<div class="row">
-    <div class="col-md-6 col-xs-12">
-        <?= $form->field($rfqInfoModel, 'rfq_id')->widget(Select2::classname(), [
-            'data' => $rfqs,
-            'options' => ['placeholder' => 'Select RFQ','multiple' => false, 'class'=>'rfq-select'],
-            'pluginOptions' => [
-                'allowClear' =>  true,
-            ],
-            ]);
-        ?>
-    </div>
-    <div class="col-md-6 col-xs-12">
-        <?= $form->field($rfqInfoModel, 'date_retrieved')->widget(DatePicker::classname(), [
-            'options' => ['placeholder' => 'Enter date', 'autocomplete' => 'off'],
-            'clientOptions' => [
-                'autoclose' => true,
-                'format' => 'yyyy-mm-dd',
-            ],
-        ])->label('Date Retrieved'); ?>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12 col-xs-12">
-        <?= $form->field($rfqInfoModel, 'supplier_id')->widget(Select2::classname(), [
-            'data' => $suppliers,
-            'options' => ['placeholder' => 'Select Supplier','multiple' => false, 'class'=>'supplier-select'],
-            'pluginOptions' => [
-                'allowClear' =>  true,
-            ],
-            ]);
-        ?>
-    </div>
-</div>
-<p><i class="fa fa-exclamation-circle"></i> Set amount to zero if supplier does not include the item.</p>
-<table class="table table-bordered table-responsive table-hover table-condensed">
+<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
         <tr>
             <th>#</th>
             <th>Unit</th>
             <th>Item</th>
-            <th>Quantity</th>
-            <th>PPMP Price</th>
-            <th>Unit Price</th>
-            <th>Total Cost</th>
+            <td align=right><b>Current Price</b></td>
+            <td align=center><b>Quantity</b></td>
+            <td align=right><b>Unit Price</b></td>
+            <td align=right><b>Total Cost</b></td>
         </tr>
     </thead>
     <tbody>
     <?php $i = 1; ?>
     <?php $total = 0; ?>
-    <?php if(!empty($rfqItems)){ ?>
-        <?php foreach($rfqItems as $item){ ?>
+    <?php if(!empty($aprItems)){ ?>
+        <?php foreach($aprItems as $item){ ?>
             <?php $id = $item['id']; ?>
-            <?= Html::hiddenInput('total-pricing-'.$item['id'].'-hidden', 0, ['id' => 'total-pricing-'.$item['id'].'-hidden']) ?>
+            <?= Html::hiddenInput('total-pricing-'.$item['id'].'-hidden', $item['total'] * $costModels[$item['id']]['cost'], ['id' => 'total-pricing-'.$item['id'].'-hidden']) ?>
             <tr>
                 <td align=center><?= $i ?></td>
                 <td align=center><?= $item['unit'] ?></td>
-                <td><?= $item['item'] ?><br><?= !empty($specifications[$item['id']]) ? \file\components\AttachmentsTable::widget(['model' => $specifications[$item['id']]]) : '' ?></td>
-                <td align=center><?= number_format($item['total'], 0) ?></td>
+                <td><?= $item['item'] ?>
+                <br>
+                <?php if(isset($specifications[$item['id']])){ ?>
+                    <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+                    <table style="width: 100%">
+                    <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
+                        <tr>
+                        <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
+                        <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
+                                'data' => [
+                                    'confirm' => 'Are you sure you want to remove this item?',
+                                    'method' => 'post',
+                                ],
+                            ]) ?></td> -->
+                        </tr>
+                    <?php } ?>
+                    </table>
+                    <br>
+                    <?php } ?>
+                    <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
+                <?php } ?>
+                </td>
                 <td align=right><?= number_format($item['cost'], 2) ?></td>
+                <td align=center><?= number_format($item['total'], 0) ?></td>
                 <td style="width: 20%;"><?= $form->field($costModels[$item['id']], "[$id]cost")->widget(MaskedInput::classname(), [
                     'options' => [
                         'autocomplete' => 'off',
-                        'onKeyup' => 'getRetrievedPriceTotal('.$item['id'].','.$item['total'].','.json_encode($itemIDs).')',
+                        'onKeyup' => 'getPriceTotal('.$item['id'].','.$item['total'].','.json_encode($itemIDs).')',
                     ],
                     'clientOptions' => [
                         'alias' =>  'decimal',
@@ -110,11 +96,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= Html::submitButton('Save Quotation', ['class' => 'btn btn-success', 'id' => 'retrieve-quotation-submit-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= Html::submitButton('Save Prices', ['class' => 'btn btn-success', 'id' => 'dbm-pricing-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ]]) ?>
 </div>
-<div class="clearfix"></div>
 
 <?php ActiveForm::end(); ?>
 
@@ -142,7 +127,7 @@ use yii\bootstrap\Modal;
         return s.join(dec);
     }
 
-    function getRetrievedPriceTotal(id, quantity, ids)
+    function getPriceTotal(id, quantity, ids)
     {
       var cost = $("#pritemcost-"+id+"-cost").val().split(",").join("");
           cost = parseFloat(cost);
@@ -153,10 +138,10 @@ use yii\bootstrap\Modal;
       $("#total-pricing-"+id).empty();
       $("#total-pricing-"+id).html(number_format(total, 2, ".", ","));    
       
-      getRetrievedPriceGrandTotal(ids);
+      getPriceGrandTotal(ids);
     }
 
-    function getRetrievedPriceGrandTotal(ids)
+    function getPriceGrandTotal(ids)
     {
       var grandTotal = 0;
 
@@ -173,7 +158,7 @@ use yii\bootstrap\Modal;
       $("#grandtotal-pricing-hidden").val(grandTotal);  
     }
 
-    $("#retrieve-rfq-form").on("beforeSubmit", function(e) {
+    $("#apr-price-form").on("beforeSubmit", function(e) {
         e.preventDefault();
         var form = $(this);
         var formData = form.serialize();
@@ -184,11 +169,8 @@ use yii\bootstrap\Modal;
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("Quotation saved successfully");
-                $(".modal").remove();
-                $(".modal-backdrop").remove();
-                $("body").removeClass("modal-open");
-                retrieveQuotations('.$model->id.');
+                alert("APR pricing saved successfully");
+                aprRetrieveQuotation('.$model->id.');
             },
             error: function (err) {
                 console.log(err);
@@ -197,10 +179,6 @@ use yii\bootstrap\Modal;
         
         return false;
     });
-
-    $("#create-supplier-button").click(function(){
-        $("#create-supplier-modal").modal("show").find("#create-supplier-modal-content").load($(this).attr("value"));
-      });
     ';
 
     $this->registerJs($script, View::POS_END);

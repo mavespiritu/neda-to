@@ -18,12 +18,16 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<table class="table table-bordered table-responsive table-hover table-condensed">
+<h4>2.2 Set Supplier Items</h4>
+<p><i class="fa fa-exclamation-circle"></i> All items included will be checked availability on outside suppliers and service providers</p>
+<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
         <tr>
             <th>#</th>
+            <th>RIS No.</th>
             <th>Unit</th>
             <th>Item</th>
+            <th>Specification</th>
             <th>Quantity</th>
             <th>Unit Cost</th>
             <td align=center><b>Total Cost</b></td>
@@ -33,20 +37,37 @@ use yii\bootstrap\Modal;
     <tbody>
     <?php $i = 1; ?>
     <?php $total = 0; ?>
-    <?php if(!empty($forRfqs)){ ?>
-        <?php foreach($forRfqs as $item){ ?>
-            <?php $id = $item['id'] ?>
-            <?= $this->render('_rfq-item', [
-                'i' => $i,
-                'id' => $id,
-                'model' => $model,
-                'item' => $item,
-                'rfqItems' => $rfqItems,
-                'specifications' => $specifications,
-                'form' => $form,
-            ]) ?>
-            <?php $total += $item['total'] * $item['cost'] ?>
-            <?php $i++; ?>
+    <?php if(!empty($prItems)){ ?>
+        <?php foreach($prItems as $activity => $activityItems){ ?>
+            <tr>
+                <th>&nbsp;</th>
+                <th colspan=8><?= $activity ?></th>
+            </tr>
+            <?php if(!empty($activityItems)){ ?>
+                <?php foreach($activityItems as $subActivity => $subActivityItems){ ?>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th colspan=7><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                    </tr>
+                    <?php if(!empty($subActivityItems)){ ?>
+                        <?php foreach($subActivityItems as $item){ ?>
+                            <?php $id = $item['id'] ?>
+                            <?= $this->render('rfq-item', [
+                                'i' => $i,
+                                'id' => $id,
+                                'model' => $model,
+                                'item' => $item,
+                                'rfqItems' => $rfqItems,
+                                'specifications' => $specifications,
+                                'form' => $form,
+                            ]) ?>
+                            <?php $total += $item['total'] * $item['cost'] ?>
+                            <?php $i++; ?>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
         <?php } ?>
     <?php }else{ ?>
         <tr>
@@ -54,14 +75,15 @@ use yii\bootstrap\Modal;
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=6 align=right><b>ABC:</b></td>
+        <td colspan=7 align=right><b>ABC:</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
+        <td>&nbsp;</td>
     </tr>
     </tbody>
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forRfqs) ? Html::submitButton('Add to APR', ['class' => 'btn btn-success', 'id' => 'remove-rfq-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($prItems) ? Html::submitButton('Transfer to Agency Procurement', ['class' => 'btn btn-success', 'id' => 'remove-rfq-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -107,9 +129,8 @@ use yii\bootstrap\Modal;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    alert("Items added to APR");
-                    aprItems('.$model->id.');
-                    rfqItems('.$model->id.');
+                    alert("Items transferred to APR");
+                    groupRfqItems('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);

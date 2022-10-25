@@ -8,8 +8,30 @@ use yii\web\View;
 
 <tr>
     <td><?= $i ?></td>
+    <td><?= $item['ris_no'] ?></td>
     <td><?= $item['unit'] ?></td>
-    <td style="width: 20%;"><?= $item['item'] ?><br><?= !empty($specifications[$item['id']]) ? \file\components\AttachmentsTable::widget(['model' => $specifications[$item['id']]]) : '' ?></td>
+    <td><?= $item['item'] ?></td>
+    <td>
+    <?php if(isset($specifications[$item['id']])){ ?>
+        <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+        <table style="width: 100%">
+        <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
+            <tr>
+            <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
+            <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
+                    'data' => [
+                        'confirm' => 'Are you sure you want to remove this item?',
+                        'method' => 'post',
+                    ],
+                ]) ?></td> -->
+            </tr>
+        <?php } ?>
+        </table>
+        <br>
+        <?php } ?>
+        <?= $specifications[$item['id']]->risItemSpecValueString ?>
+    <?php } ?>
+    </td>
     <td align=center><?= number_format($item['total'], 0) ?></td>
     <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>

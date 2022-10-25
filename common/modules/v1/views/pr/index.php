@@ -44,7 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-header panel-title"><i class="fa fa-list"></i> PR List</div>
                 <div class="box-body">
                     <?= GridView::widget([
-                        'options' => ['class' => 'table table-hover table-responsive gridview'],
+                        'options' => ['class' => 'gridview'],
+                        'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive'],
                         'dataProvider' => $dataProvider,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
@@ -54,6 +55,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'value' => function($model){
                                     return '<b>'.Html::a($model->pr_no, ['/v1/pr/view', 'id' => $model->id]).'</b>';
+                                }
+                            ],
+                            [
+                                'header' => 'RIS',
+                                'attribute' => 'risNos',
+                                'format' => 'raw',
+                                'contentOptions' => ['style' => 'width: 7%; font-size: 10px;'],
+                                'value' => function($model){
+                                    return $model->risNos;
                                 }
                             ],
                             [
@@ -86,15 +96,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'creatorName',
                             'requesterName',
                             'date_requested',
-                            [
-                                'header' => 'RIS',
-                                'attribute' => 'risNos',
-                                'format' => 'raw',
-                                'contentOptions' => ['style' => 'width: 7%; font-size: 10px;'],
-                                'value' => function($model){
-                                    return $model->risNos;
-                                }
-                            ],
                             [
                                 'header' => 'Total', 
                                 'attribute' => 'total',

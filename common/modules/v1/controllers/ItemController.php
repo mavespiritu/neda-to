@@ -18,6 +18,7 @@ use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use kartik\mpdf\Pdf;
 /**
  * ItemController implements the CRUD actions for Item model.
  */
@@ -125,6 +126,132 @@ class ItemController extends Controller
             'categories' => $categories,
             'classifications' => $classifications,
         ]);
+    }
+
+    public function actionDownload($type, $params)
+    {
+        $params = json_decode($params, true);
+        $params = isset($params['ItemSearch']) ? $params['ItemSearch'] : [];
+
+        $items = Item::find()
+                ->select([
+                    'ppmp_procurement_mode.title as procurement_mode',
+                    'ppmp_item.category as dbm_category',
+                    'ppmp_item.code as dbm_code',
+                    'ppmp_item.title',
+                    'ppmp_item.unit_of_measure',
+                    'IF(costPerUnit.cost IS NOT NULL, costPerUnit.cost, ppmp_item.cost_per_unit) as cost_per_unit',
+                    'ppmp_item.cse',
+                    'ppmp_item.classification'
+                ])
+                ->leftJoin('ppmp_procurement_mode', 'ppmp_procurement_mode.id = ppmp_item.procurement_mode_id')
+                ->leftJoin(['costPerUnit' => '(
+                    select
+                        ppmp_item_cost.id,
+                        ppmp_item_cost.item_id,
+                        ppmp_item_cost.cost
+                    from ppmp_item_cost
+                    inner join
+                    (select max(id) as id from ppmp_item_cost group by item_id) latest on latest.id = ppmp_item_cost.id
+                    )'], 'costPerUnit.item_id = ppmp_item.id');
+
+        if(isset($params['procurement_mode_id']) && $params['procurement_mode_id'] != '')
+        {
+            $items->andWhere(['ppmp_item.procurement_mode_id' => $params['procurement_mode_id']]);
+        }
+
+        if(isset($params['category']) && $params['category'] != '')
+        {
+            $items->andWhere(['ppmp_item.category' => $params['category']]);
+        }
+
+        if(isset($params['code']) && $params['code'] != '')
+        {
+            $items->andWhere(['ppmp_item.code' => $params['code']]);
+        }
+
+        if(isset($params['title']) && $params['title'] != '')
+        {
+            $items->andWhere(['like', 'ppmp_item.title', $params['title']]);
+        }
+
+        if(isset($params['unit_of_measure']) && $params['unit_of_measure'] != '')
+        {
+            $items->andWhere(['ppmp_item.unit_of_measure' => $params['unit_of_measure']]);
+        }
+        
+        if(isset($params['cse']) && $params['cse'] != '')
+        {
+            $items->andWhere(['ppmp_item.cse' => $params['cse']]);
+        }
+
+        if(isset($params['category']) && $params['category'] != '')
+        {
+            $items->andWhere(['ppmp_item.category' => $params['category']]);
+        }
+
+        if(isset($params['classification']) && $params['classification'] != '')
+        {
+            $items->andWhere(['ppmp_item.classification' => $params['classification']]);
+        }
+
+        $items = $items
+        ->orderBy(['ppmp_item.title' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+        $filename = 'OPMS_Item_List_as_of_'.date("mdYHis");
+
+        if($type == 'excel')
+        {
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=".$filename.".xls");
+            return $this->renderPartial('_file', [
+                'type' => $type,
+                'items' => $items
+            ]);
+        }else if($type == 'pdf')
+        {
+            $content = $this->renderPartial('_file', [
+                'type' => $type,
+                'items' => $items
+            ]);
+
+            $pdf = new Pdf([
+                'mode' => Pdf::MODE_CORE,
+                'format' => Pdf::FORMAT_LEGAL, 
+                'orientation' => Pdf::ORIENT_LANDSCAPE, 
+                'destination' => Pdf::DEST_DOWNLOAD, 
+                'filename' => $filename.'.pdf', 
+                'content' => $content,  
+                'marginLeft' => 11.4,
+                'marginRight' => 11.4,
+                'cssInline' => 'table{
+                                    font-family: "Arial";
+                                    border-collapse: collapse;
+                                }
+                                thead{
+                                    font-size: 12px;
+                                    text-align: center;
+                                }
+                            
+                                td{
+                                    font-size: 10px;
+                                    border: 1px solid black;
+                                }
+                            
+                                th{
+                                    text-align: center;
+                                    border: 1px solid black;
+                                }', 
+                ]);
+        
+                $response = Yii::$app->response;
+                $response->format = \yii\web\Response::FORMAT_RAW;
+                $headers = Yii::$app->response->headers;
+                $headers->add('Content-Type', 'application/pdf');
+                return $pdf->render();
+        }
     }
 
     /**
@@ -266,7 +393,7 @@ class ItemController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $return_url)
     {
         $model = $this->findModel($id);
 
@@ -311,6 +438,10 @@ class ItemController extends Controller
             'OTHER ITEMS' => 'OTHER ITEMS'
         ];
 
+        $urls = explode('/', $return_url);
+        $urls = array_splice($urls, 2, count($urls));
+        $urls = implode('/', $urls);
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
@@ -326,7 +457,7 @@ class ItemController extends Controller
             $cost->save();
 
             \Yii::$app->getSession()->setFlash('success', 'Record Updated');
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['/'.$urls]);
         }
 
         return $this->renderAjax('update', [

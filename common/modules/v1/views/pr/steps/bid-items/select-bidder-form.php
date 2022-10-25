@@ -98,7 +98,7 @@ $totals = [];
 </table>
 
 <div class="form-group pull-right"> 
-    <?= Html::submitButton('Save Winners', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= Html::submitButton('Save Bid Results', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ]]) ?>
 </div>
@@ -119,11 +119,11 @@ $totals = [];
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("Winners saved successfully");
+                alert("Bid results saved successfully");
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
-                retrieveQuotations('.$model->id.');
+                bidRfq('.$model->id.','.$rfq->id.','.$id.');
             },
             error: function (err) {
                 console.log(err);

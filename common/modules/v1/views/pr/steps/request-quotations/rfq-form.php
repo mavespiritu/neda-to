@@ -83,7 +83,7 @@ DisableButtonAsset::register($this);
 </div>
 
 <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-download"></i> Generate RFQ', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('Save RFQ', ['class' => 'btn btn-success']) ?>
 </div>
 
 <div class="clearfix"></div>
@@ -108,7 +108,7 @@ DisableButtonAsset::register($this);
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
-                quotations('.$model->id.');
+                rfqQuotation('.$model->id.');
             },
             error: function (err) {
                 console.log(err);

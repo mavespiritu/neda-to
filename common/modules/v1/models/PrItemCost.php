@@ -33,10 +33,11 @@ class PrItemCost extends \yii\db\ActiveRecord
     {
         return [
             [['cost'], 'required'],
-            [['pr_id', 'pr_item_id', 'rfq_id', 'supplier_id'], 'integer'],
+            [['pr_id', 'pr_item_id', 'rfq_id', 'rfq_info_id', 'supplier_id'], 'integer'],
             [['cost'], 'safe'],
             [['pr_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrItem::className(), 'targetAttribute' => ['pr_item_id' => 'id']],
             [['supplier_id'], 'exist', 'skipOnError' => true, 'targetClass' => Supplier::className(), 'targetAttribute' => ['supplier_id' => 'id']],
+            [['rfq_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => RfqInfo::className(), 'targetAttribute' => ['rfq_info_id' => 'id']],
             [['rfq_id'], 'exist', 'skipOnError' => true, 'targetClass' => Rfq::className(), 'targetAttribute' => ['supplier_id' => 'id']],
         ];
     }
@@ -52,6 +53,7 @@ class PrItemCost extends \yii\db\ActiveRecord
             'pr_item_id' => 'Pr Item ID',
             'supplier_id' => 'Supplier ID',
             'rfq_id' => 'Rfq ID',
+            'rfq_info_id' => 'Rfq Info ID',
             'cost' => 'Cost',
         ];
     }
@@ -84,5 +86,15 @@ class PrItemCost extends \yii\db\ActiveRecord
     public function getRfq()
     {
         return $this->hasOne(Rfq::className(), ['id' => 'rfq_id']);
+    }
+
+    /**
+     * Gets query for [[Supplier]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRfqInfo()
+    {
+        return $this->hasOne(RfqInfo::className(), ['id' => 'rfq_info_id']);
     }
 }

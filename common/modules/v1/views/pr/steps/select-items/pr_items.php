@@ -17,50 +17,70 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<table class="table table-bordered table-responsive table-hover table-condensed">
+<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
         <tr>
             <th>#</th>
+            <th>RIS No.</th>
             <th>Unit</th>
             <th>Item</th>
-            <th>Quantity</th>
-            <th>Unit Cost</th>
-            <td align=center><b>Total Cost</b></td>
+            <th>Specification</th>
+            <td align=center><b>Quantity</b></td>
+            <td align=right><b>Unit Cost</b></td>
+            <td align=right><b>Total Cost</b></td>
             <td align=center><input type=checkbox name="pr-items" class="check-pr-items" /></td>
         </tr>
     </thead>
     <tbody>
     <?php $i = 1; ?>
     <?php $total = 0; ?>
-    <?php if(!empty($items)){ ?>
-        <?php foreach($items as $item){ ?>
-            <?php $id = $item['id'] ?>
-            <?= $this->render('_items-pr_item', [
-                'i' => $i,
-                'id' => $id,
-                'model' => $model,
-                'item' => $item,
-                'prItems' => $prItems,
-                'specifications' => $specifications,
-                'form' => $form,
-            ]) ?>
-            <?php $total += $item['total'] * $item['cost'] ?>
-            <?php $i++; ?>
+    <?php if(!empty($risItems)){ ?>
+        <?php foreach($risItems as $activity => $activityItems){ ?>
+            <tr>
+                <th>&nbsp;</th>
+                <th colspan=8><?= $activity ?></th>
+            </tr>
+            <?php if(!empty($activityItems)){ ?>
+                <?php foreach($activityItems as $subActivity => $subActivityItems){ ?>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th colspan=7><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                    </tr>
+                    <?php if(!empty($subActivityItems)){ ?>
+                        <?php foreach($subActivityItems as $item){ ?>
+                            <?php $id = $item['id'] ?>
+                            <?= $this->render('pr_item', [
+                                'i' => $i,
+                                'id' => $id,
+                                'model' => $model,
+                                'item' => $item,
+                                'prItems' => $prItems,
+                                'specifications' => $specifications,
+                                'form' => $form,
+                            ]) ?>
+                            <?php $total += $item['total'] * $item['cost'] ?>
+                            <?php $i++; ?>
+                        <?php } ?>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
         <?php } ?>
     <?php }else{ ?>
         <tr>
-            <td colspan=8 align=center>No items included</td>
+            <td colspan=9 align=center>No items included</td>
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=5 align=right><b>ABC:</b></td>
+        <td colspan=7 align=right><b>ABC:</b></td>
         <td align=right><b><?= number_format($total, 2) ?></b></td>
+        <td>&nbsp;</td>
     </tr>
     </tbody>
 </table>
 
 <div class="form-group pull-right"> 
-    <?= Html::submitButton('Remove Selected', ['class' => 'btn btn-danger', 'id' => 'remove-pr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= Html::submitButton('Remove Selected from PR', ['class' => 'btn btn-danger', 'id' => 'remove-pr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) ?>
 </div>
@@ -107,7 +127,7 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items Removed");
-                    prItems('.$model->id.');
+                    items('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);

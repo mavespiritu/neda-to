@@ -17,6 +17,7 @@ class PrSearch extends Pr
     public $creatorName;
     public $requesterName;
     public $statusName;
+    public $risNo;
     /**
      * {@inheritdoc}
      */
@@ -24,7 +25,7 @@ class PrSearch extends Pr
     {
         return [
             [['id', 'fund_source_id', 'fund_cluster_id'], 'integer'],
-            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type', 'officeName', 'procurementModeName', 'creatorName', 'requesterName', 'statusName'], 'safe'],
+            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type', 'officeName', 'procurementModeName', 'creatorName', 'requesterName', 'statusName', 'risNo'], 'safe'],
         ];
     }
 
@@ -148,6 +149,29 @@ class PrSearch extends Pr
                 foreach($transactions as $transaction)
                 {
                     $ids[] = $transaction['id'];
+                }
+
+            }
+
+            $query->andWhere(['ppmp_pr.id' => $ids]); 
+        }
+
+        if(isset($params['PrSearch']['risNo']) && $params['PrSearch']['risNo'] != '')
+        {
+            $ids = [];
+            $transactions = PrItem::find()
+                            ->select(['ppmp_pr_item.pr_id'])
+                            ->leftJoin('ppmp_pr', 'ppmp_pr.id = ppmp_pr_item.pr_id')
+                            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                            ->andWhere(['ppmp_ris.ris_no' => $params['PrSearch']['risNo']])
+                            ->asArray()
+                            ->all();
+
+            if(!empty($transactions))
+            {
+                foreach($transactions as $transaction)
+                {
+                    $ids[] = $transaction['pr_id'];
                 }
 
             }

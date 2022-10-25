@@ -108,11 +108,11 @@ use yii\bootstrap\Modal;
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("Bidding details saved successfully");
+                alert("Bidding information saved successfully");
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
-                retrieveQuotations('.$model->id.');
+                bidRfq('.$model->id.','.$rfq->id.','.$i.');
             },
             error: function (err) {
                 console.log(err);

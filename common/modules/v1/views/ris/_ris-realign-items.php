@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 ]); ?>
 
 <?php if($items){ ?>
-  <table class="table table-bordered">
+  <table class="table table-bordered table-striped">
     <thead>
       <tr>
         <th rowspan=2 style="width: 20%;">Item</th>

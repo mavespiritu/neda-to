@@ -21,6 +21,7 @@
     </thead>
     <tbody>
     <?php if(!empty($originalItems)){ ?>
+        <?php $i = 1; ?>
         <?php foreach($originalItems as $activity => $activityItems){ ?>
             <tr>
                 <th colspan=7><?= $activity ?></th>
@@ -34,12 +35,14 @@
                     <?php if(!empty($subActivityItems)){ ?>
                         <?php foreach($subActivityItems as $item){ ?>
                             <?= $this->render('_item', [
+                                'i' => $i,
                                 'model' => $model,
                                 'item' => $item,
                                 'specifications' => $specifications,
                                 'type' => 'Original'
                             ]) ?>
                             <?php $total += ($item['cost'] * $item['total']); ?>
+                            <?php $i++; ?>
                         <?php } ?>
                     <?php } ?>
                 <?php } ?>

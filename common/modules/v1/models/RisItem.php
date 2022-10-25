@@ -126,4 +126,9 @@ class RisItem extends \yii\db\ActiveRecord
 
         return $details;
     }
+
+    public function getIncludedItems()
+    {
+        
+    }
 }

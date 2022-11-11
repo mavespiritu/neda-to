@@ -166,10 +166,10 @@ $totals = [];
             });
         }
 
-        function printAoq()
+        function printAoq(id)
         {
             var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-aoq']).'?id='.$bid->id.'", 
+                "'.Url::to(['/v1/pr/print-aoq']).'?id=" + id, 
                 "Print",
                 "left=200", 
                 "top=200", 

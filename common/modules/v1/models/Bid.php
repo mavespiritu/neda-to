@@ -59,10 +59,20 @@ class Bid extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[RRfq]].
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRfq()
+    {
+        return $this->hasOne(Rfq::className(), ['id' => 'rfq_id']);
+    }
+
+    /**
      * Gets query for [[PpmpBidMembers]].
      *
      * @return \yii\db\ActiveQuery
      */
+    
     public function getBidMembers()
     {
         return $this->hasMany(BidMember::className(), ['bid_id' => 'id']);
@@ -106,5 +116,10 @@ class Bid extends \yii\db\ActiveRecord
         $member = BidMember::findOne(['bid_id' => $this->id, 'position' => 'Provisional Member - End User']);
         $memberName = $member ? Signatory::findOne(['emp_id' => $member->emp_id]) : [];
         return !empty($memberName) ? $memberName->name : '';
+    }
+    
+    public function getPos()
+    {
+        return $this->hasMany(Po::className(), ['bid_id' => 'id']);
     }
 }

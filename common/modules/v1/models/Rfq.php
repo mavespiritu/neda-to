@@ -3,7 +3,7 @@
 namespace common\modules\v1\models;
 
 use Yii;
-
+use yii\helpers\ArrayHelper;
 /**
  * This is the model class for table "ppmp_rfq".
  *
@@ -72,5 +72,42 @@ class Rfq extends \yii\db\ActiveRecord
     public function getPr()
     {
         return $this->hasOne(Pr::className(), ['id' => 'pr_id']);
+    }
+
+    public function getRfqInfo($supplier_id)
+    {
+        $info = RfqInfo::findOne(['rfq_id' => $this->id, 'supplier_id' => $supplier_id]);
+
+        return $info;
+    }
+
+    public function getRfqInfoTotal($supplier_id)
+    {
+        $total = PrItemCost::find()
+                ->select([
+                    'sum(COALESCE(ppmp_pr_item_cost.cost * ppmp_pr_item.quantity, 0)) as total'
+                ])
+                ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+                ->where([
+                    'rfq_id' => $this->id,
+                    'supplier_id' => $supplier_id
+                ])
+                ->asArray()
+                ->one();
+
+        return $total['total'];
+    }
+
+    public function getSuppliers()
+    {
+        $ids = RfqInfo::find()
+                ->select(['supplier_id'])
+                ->where(['rfq_id' => $this->id])
+                ->asArray()
+                ->all();
+
+        $ids = ArrayHelper::map($ids, 'supplier_id', 'supplier_id');
+
+        return Supplier::findAll(['id' => $ids]);
     }
 }

@@ -11,14 +11,14 @@ use yii\web\View;
         <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to Item List', ['/v1/item/'], ['class' => 'btn btn-app']) ?>
     </div>
     <div class="pull-right">
-        <?= Html::button('<i class="fa fa-edit"></i> Edit Item', ['value' => Url::to(['/v1/item/update', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'update-button']) ?>
-        <?= Html::a('<i class="fa fa-trash"></i> Delete Item', ['delete', 'id' => $model->id], [
+        <?= Html::button('<i class="fa fa-edit"></i> Edit Item', ['value' => Url::to(['/v1/item/update', 'id' => $model->id, 'return_url' => Url::to()]), 'class' => 'btn btn-app', 'id' => 'update-button']) ?>
+        <?= empty($model->ppmpItems) ? Html::a('<i class="fa fa-trash"></i> Delete Item', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-app',
             'data' => [
                 'confirm' => 'Deleting this item will also delete all included items. Would you like to proceed?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ]) : '' ?>
     </div>
     <div class="clearfix"></div>
 </div>

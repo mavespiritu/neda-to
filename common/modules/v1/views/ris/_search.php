@@ -86,7 +86,15 @@ use yii\web\View;
         </div>
     </div>
 
-    <?= $form->field($model, 'purpose')->textarea(['rows' => 3]) ?>
+    <div class="row">
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'prNo') ?>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            <?= $form->field($model, 'purpose')->textarea(['rows' => 1]) ?>
+        </div>
+    </div>
+    
 
     <div class="form-group pull-right">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

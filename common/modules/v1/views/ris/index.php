@@ -44,7 +44,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="box-body">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
-                        'options' => ['class' => 'table table-hover table-responsive gridview'],
+                        'options' => ['class' => 'gridview'],
+                        'tableOptions' => ['class' => 'table table-hover table-bordered table-condensed table-striped table-responsive'],
                         'showFooter' => true,
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
@@ -54,6 +55,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'format' => 'raw',
                                 'value' => function($model){
                                     return '<b>'.Html::a($model->ris_no, ['/v1/ris/info', 'id' => $model->id]).'</b>';
+                                }
+                            ],
+                            [
+                                'header' => 'PR',
+                                'attribute' => 'prNos',
+                                'format' => 'raw',
+                                'contentOptions' => ['style' => 'width: 7%; font-size: 10px;'],
+                                'value' => function($model){
+                                    return $model->prNos;
                                 }
                             ],
                             [

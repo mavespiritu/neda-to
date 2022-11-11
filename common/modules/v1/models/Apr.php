@@ -41,9 +41,12 @@ class Apr extends \yii\db\ActiveRecord
     {
         return [
             [['pr_id'], 'integer'],
-            [['date_prepared'], 'safe'],
+            [['date_prepared', 'telefax', 'others', 'rad_no'], 'safe'],
             [['account_code', 'ps_apr_no', 'agency_ctrl_no'], 'string', 'max' => 100],
             [['stock_certified_by', 'fund_certified_by', 'approved_by'], 'string', 'max' => 10],
+            [['rad_year', 'pl_year'], 'integer'],
+            [['rad_month', 'pl_month'], 'string', 'max' => 20],
+            [['checklist_1', 'checklist_2', 'checklist_3', 'checklist_4', 'checklist_5', 'checklist_6'], 'string', 'max' => 2],
             [['pr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pr::className(), 'targetAttribute' => ['pr_id' => 'id']],
         ];
     }
@@ -60,9 +63,22 @@ class Apr extends \yii\db\ActiveRecord
             'ps_apr_no' => 'Ps Apr No',
             'agency_ctrl_no' => 'Agency Ctrl No',
             'date_prepared' => 'Date Prepared',
+            'checklist_1' => 'Checklist 1',
+            'checklist_2' => 'Checklist 2',
+            'checklist_3' => 'Checklist 3',
+            'checklist_4' => 'Checklist 4',
+            'checklist_5' => 'Checklist 5',
+            'checklist_6' => 'Checklist 6',
+            'others' => 'Others',
+            'rad_no' => 'PS RAD. No.',
+            'rad_month' => 'RAD Month',
+            'rad_year' => 'RAD Year',
+            'pl_month' => 'PL Month',
+            'pl_year' => 'PL Year',
             'stock_certified_by' => 'Stock Certified By',
             'fund_certified_by' => 'Fund Certified By',
             'approved_by' => 'Approved By',
+            'telefax' => 'Telefax No.',
         ];
     }
 

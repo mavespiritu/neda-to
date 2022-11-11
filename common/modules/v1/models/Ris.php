@@ -8,6 +8,7 @@ use markavespiritu\user\models\Section;
 use markavespiritu\user\models\Unit;
 use markavespiritu\user\models\UserInfo;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 /**
  * This is the model class for table "ppmp_ris".
  *
@@ -95,7 +96,9 @@ class Ris extends \yii\db\ActiveRecord
             'status' => 'Status',
             'statusName' => 'Status',
             'type' => 'Type',
-            'total' => 'Total'
+            'total' => 'Total',
+            'prNos' => 'PR',
+            'prNo' => 'PR No.',
         ];
     }
 
@@ -303,6 +306,44 @@ class Ris extends \yii\db\ActiveRecord
         $total = $this->getItemsTotal('Original') + $this->getItemsTotal('Supplemental');
 
         return $total;
+    }
+
+    public function getRisNos()
+    {
+        $prItems = PrItem::findAll(['pr_id' => $this->id]);
+        $risIDs = ArrayHelper::map($prItems, 'ris_id', 'ris_id');
+        
+        $risNos = Ris::find()->where(['id' => $risIDs])->all();
+        $ids = [];
+
+        if($risNos)
+        {
+            foreach($risNos as $ris)
+            {
+                $ids[] = Html::a($ris->ris_no, ['/v1/ris/info', 'id' => $ris->id], ['target' => '_blank']);
+            }
+        }
+
+        return implode('<br>', $ids);
+    }
+
+    public function getPrNos()
+    {
+        $prItems = PrItem::findAll(['ris_id' => $this->id]);
+        $prIDs = ArrayHelper::map($prItems, 'pr_id', 'pr_id');
+        
+        $prNos = Pr::find()->select(['id', 'pr_no'])->where(['id' => $prIDs])->asArray()->all();
+        $ids = [];
+
+        if(!empty($prNos))
+        {
+            foreach($prNos as $pr)
+            {
+                $ids[] = Html::a($pr['pr_no'], ['/v1/pr/view', 'id' => $pr['id']], ['target' => '_blank']);
+            }
+        }
+
+        return implode('<br>', $ids);
     }
 
     public function getPrexcs()

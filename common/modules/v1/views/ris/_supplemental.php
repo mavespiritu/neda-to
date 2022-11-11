@@ -57,6 +57,7 @@ $total = 0;
                         </thead>
                         <tbody>
                         <?php if(!empty($supplementalItems)){ ?>
+                            <?php $i = 1; ?>
                             <?php foreach($supplementalItems as $activity => $activityItems){ ?>
                                 <tr>
                                     <th colspan=7><?= $activity ?></th>
@@ -70,12 +71,14 @@ $total = 0;
                                         <?php if(!empty($subActivityItems)){ ?>
                                             <?php foreach($subActivityItems as $item){ ?>
                                                 <?= $this->render('_item', [
+                                                    'i' => $i,
                                                     'model' => $model,
                                                     'item' => $item,
                                                     'specifications' => $specifications,
                                                     'type' => 'Supplemental'
                                                 ]) ?>
                                                 <?php $total += ($item['cost'] * $item['total']); ?>
+                                                <?php $i++; ?>
                                             <?php } ?>
                                         <?php } ?>
                                     <?php } ?>

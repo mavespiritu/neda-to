@@ -19,7 +19,7 @@ $totals = [];
                     'method' => 'post',
                 ],]).'</div>'
     :
-    Html::button('Create Canvass/Bid', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-bid-button']) ?>
+    Html::button('<i class="fa fa-legal"></i> Create Canvass/Bid', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-bid-button']) ?>
 </div>
 <div class="clearfix"></div>
 <h4>Canvass/Bid Information</h4>

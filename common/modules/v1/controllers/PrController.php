@@ -2493,7 +2493,7 @@ class PrController extends Controller
     }
 
     // Retrieve Quotations -> Delete RFQ Info
-    public function actionDeleteRfqInfo($id, $supplier_id)
+    public function actionDeleteRfqInfo($rfq_id, $supplier_id)
     {
         $rfqInfo = RfqInfo::findOne(['rfq_id' => $rfq_id, 'supplier_id' => $supplier_id]);
         $rfq_info_id = $rfqInfo->id;

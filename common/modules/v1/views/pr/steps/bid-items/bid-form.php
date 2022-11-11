@@ -112,6 +112,7 @@ use yii\bootstrap\Modal;
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                menu('.$model->id.');
                 bidRfq('.$model->id.','.$rfq->id.','.$i.');
             },
             error: function (err) {

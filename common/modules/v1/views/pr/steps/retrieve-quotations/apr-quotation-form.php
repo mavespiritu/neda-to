@@ -169,7 +169,8 @@ use yii\bootstrap\Modal;
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("APR pricing saved successfully");
+                alert("APR quotation saved successfully");
+                menu('.$model->id.');
                 aprRetrieveQuotation('.$model->id.');
             },
             error: function (err) {

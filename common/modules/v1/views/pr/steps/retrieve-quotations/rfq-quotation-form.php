@@ -243,6 +243,7 @@ use yii\bootstrap\Modal;
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                menu('.$model->id.');
                 rfqRetrieveQuotation('.$model->id.');
             },
             error: function (err) {

@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>4. Retrieve Quotation</h4>
+<h4>4. Retrieve Quote</h4>
+<p><i class="fa fa-exclamation-circle"></i> Retrieve quotations from suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
     <li class="item">
         <div class="product-img">
@@ -14,6 +15,7 @@ use yii\bootstrap\ButtonDropdown;
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="aprRetrieveQuotation(<?= $model->id?>);" class="product-title">Agency Procurement Quotation
+            <?= $aprInfoCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
             <span class="product-description">Retrieve quotation from agency procurement</span>
         </div>
@@ -24,6 +26,7 @@ use yii\bootstrap\ButtonDropdown;
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="rfqRetrieveQuotation(<?= $model->id?>);" class="product-title">Supplier Quotation
+            <?= $rfqInfosCount > 0 ? '<span class="badge bg-green pull-right">'.$rfqInfosCount.'</span>' : '' ?>
             </a>
             <span class="product-description">Retrieve quotation from outside suppliers.</span>
         </div>

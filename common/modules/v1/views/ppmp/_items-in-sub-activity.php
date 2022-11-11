@@ -302,11 +302,7 @@ use fedemotta\datatables\DataTables;
                     method: "POST",
                     success: function (data) {
                         alert("Item Deleted");
-                        loadItems('.$model->id.','.$activity->id.','.$fundSource->id.');
-                        loadPpmpTotal('.$model->id.');
-                        loadOriginalTotal('.$model->id.');
-                        loadSupplementalTotal('.$model->id.');
-                        loadItemSummary('.$model->id.');
+                        loadItemsInSubActivity('.$model->id.','.$subActivity->id.','.$activity->id.','.$fundSource->id.');
                     },
                     error: function (err) {
                         console.log(err);

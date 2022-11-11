@@ -40,44 +40,56 @@ use yii\web\View;
                 <p style="text-align: center;">ACTION REQUEST ON THE ITEM(S) LISTED BELOW</p>
                 <table style="width: 100%; border-collapse: collapse; border-spacing: 0;" cellspacing=0>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_1]', false, ['id' => 'apr-check_1', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_1) ? '0' : $apr->checklist_1, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_1')->checkbox(['id' => 'apr-check_1', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_1) ? '0' : $aprModel->checklist_1, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?></td>
                         <td style="vertical-align: top; padding-left: 5px;">Please furnish us with Price Estimate (for office equipment/furniture & supplementary items)</td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_2]', false, ['id' => 'apr-check_2', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_2) ? '0' : $apr->checklist_2, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_2')->checkbox(['id' => 'apr-check_2', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_2) ? '0' : $aprModel->checklist_2, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?></td>
                         <td style="vertical-align: top; padding-left: 5px;">
-                        Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate (PS RAD No. <?= Html::input('text', 'Apr[rad_no]', '', ['id' => 'apr-rad_no']) ?> attached) dated 
-                        <?= Html::input('text', 'Apr[rad_month]', '', ['id' => 'apr-rad_month', 'placeholder' => 'Month', 'style' => 'width: 100px;']) ?> - <?= Html::input('text', 'Apr[rad_year]', '', ['id' => 'apr-rad_year', 'placeholder' => 'Year', 'style' => 'width: 80px;', 'type' => 'number', 'min' => (date("Y") - 1)]) ?>
+                        Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate (PS RAD No. <?= Html::input('text', 'Apr[rad_no]', $aprModel->rad_no, ['id' => 'apr-rad_no']) ?> attached) dated 
+                        <?= Html::input('text', 'Apr[rad_month]', $aprModel->rad_month, ['id' => 'apr-rad_month', 'placeholder' => 'Month', 'style' => 'width: 100px;']) ?> - <?= Html::input('text', 'Apr[rad_year]', $aprModel->rad_year, ['id' => 'apr-rad_year', 'placeholder' => 'Year', 'style' => 'width: 80px;', 'type' => 'number', 'min' => (date("Y") - 1)]) ?>
+                        <br>
+                        <br>
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_3]', false, ['id' => 'apr-check_3', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_3) ? '0' : $apr->checklist_3, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_3')->checkbox(['id' => 'apr-check_3', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_3) ? '0' : $aprModel->checklist_3, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?>
+                        </td>
                         <td style="vertical-align: top; padding-left: 5px;">
-                        Please issue common-use supplies/materials per PS Price List as of <?= Html::input('text', 'Apr[pl_month]', '', ['id' => 'apr-pl_month', 'placeholder' => 'Month', 'style' => 'width: 100px;']) ?> - <?= Html::input('text', 'Apr[pl_year]', '', ['id' => 'apr-pl_year', 'placeholder' => 'Year', 'style' => 'width: 80px;', 'type' => 'number', 'min' => (date("Y") - 1)]) ?>
+                        Please issue common-use supplies/materials per PS Price List as of <?= Html::input('text', 'Apr[pl_month]', $aprModel->pl_month, ['id' => 'apr-pl_month', 'placeholder' => 'Month', 'style' => 'width: 100px;']) ?> - <?= Html::input('text', 'Apr[pl_year]', $aprModel->pl_year, ['id' => 'apr-pl_year', 'placeholder' => 'Year', 'style' => 'width: 80px;', 'type' => 'number', 'min' => (date("Y") - 1)]) ?>
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_4]', false, ['id' => 'apr-check_4', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_4) ? '0' : $apr->checklist_4, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_4')->checkbox(['id' => 'apr-check_4', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_4) ? '0' : $aprModel->checklist_4, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?>
+                        </td>
                         <td style="vertical-align: top; padding-left: 5px;">
                         Please issue Certificate of Price Reasonableness
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_5]', false, ['id' => 'apr-check_5', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_5) ? '0' : $apr->checklist_5, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_5')->checkbox(['id' => 'apr-check_5', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_5) ? '0' : $aprModel->checklist_5, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?>
+                        </td>
                         <td style="vertical-align: top; padding-left: 5px;">
                         Please furnish us with your latest/updated Price list
                         </td>
                     </tr>
                     <tr>
-                        <td style="vertical-align: top;"><?= Html::checkbox('Apr[checklist_6]', false, ['id' => 'apr-check_6', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($apr->checklist_6) ? '0' : $apr->checklist_6, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)']) ?></td>
+                        <td style="vertical-align: top;">
+                            <?= $form->field($aprModel, 'checklist_6')->checkbox(['id' => 'apr-check_6', 'class' => 'apr-checklist', 'checked' => 'checked', 'value' => is_null($aprModel->checklist_6) ? '0' : $aprModel->checklist_6, 'onclick' => '$(this).attr("value", this.checked ? 1 : 0)', 'label' => ''])->label(false) ?>
+                        </td>
                         <td style="vertical-align: top; padding-left: 5px;">
-                        Others (specify) <?= Html::input('text', 'Apr[other]', '', ['id' => 'apr-other', 'style' => 'width: 200px;']) ?>
+                        Others (specify) <?= Html::input('text', 'Apr[other]', $aprModel->others, ['id' => 'apr-other', 'style' => 'width: 200px;']) ?>
                         </td>
                     </tr>
                 </table>
             </td>
             <td colspan=3 style="text-align: center; width: 25%;">
-            <?= $form->field($apr, 'date_prepared')->widget(DatePicker::classname(), [
+            <?= $form->field($aprModel, 'date_prepared')->widget(DatePicker::classname(), [
                 'options' => ['placeholder' => 'Enter date', 'autocomplete' => 'off', 'id' => 'apr-date_generated',],
                 'clientOptions' => [
                     'autoclose' => true,
@@ -155,7 +167,7 @@ use yii\web\View;
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= Html::input('text', 'telefax', '', ['id' => 'apr-telefax']) ?></td>
+            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= Html::input('text', 'Apr[telefax]', $aprModel->telefax, ['id' => 'apr-telefax']) ?></td>
             <td colspan=2 align=right>Total AMOUNT:</td>
             <td>&nbsp;</td>
         </tr>
@@ -171,7 +183,7 @@ use yii\web\View;
             TO BE WITHIN APPROVED PROGRAM: <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->stockCertifierName) ?></b><br><?= $apr->stockCertifier ? $apr->stockCertifier->position.' (Supply Officer)' : '' ?></p>
+            <p style="text-align: center"><b><?= strtoupper($aprModel->stockCertifierName) ?></b><br><?= $aprModel->stockCertifier ? $aprModel->stockCertifier->position.' (Supply Officer)' : '' ?></p>
         </td>
         <td style="width: 30%">
             FUNDS CERTIFIED AVAILABLE:
@@ -179,7 +191,7 @@ use yii\web\View;
             <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->fundsCertifierName) ?></b><br><?= $apr->fundsCertifier ? $apr->fundsCertifier->position : '' ?></p>
+            <p style="text-align: center"><b><?= strtoupper($aprModel->fundsCertifierName) ?></b><br><?= $aprModel->fundsCertifier ? $aprModel->fundsCertifier->position : '' ?></p>
         </td>
         <td style="width: 30%">
             APPROVED:
@@ -187,13 +199,13 @@ use yii\web\View;
             <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->approverName) ?></b><br><?= $apr->approver ? $apr->approver->position : '' ?></p>
+            <p style="text-align: center"><b><?= strtoupper($aprModel->approverName) ?></b><br><?= $aprModel->approver ? $aprModel->approver->position : '' ?></p>
         </td>
     </tr>
 </table>
 <br>
 <div class="pull-right">
-<?= Html::button('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success', 'onclick' => 'printApr()']) ?>
+<?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -208,25 +220,32 @@ use yii\web\View;
                 }
             });
         }
+
+        $("#apr-form").on("beforeSubmit", function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var formData = form.serialize();
+
+            $.ajax({
+                url: form.attr("action"),
+                type: form.attr("method"),
+                data: formData,
+                success: function (data) {
+                    form.enableSubmitButtons();
+                    printApr();
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            }); 
+            
+            return false;
+        });
+
         function printApr()
         {
-            var date_generated = $("#apr-date_generated").val();
-            var rad_no = $("#apr-rad_no").val();
-            var rad_month = $("#apr-rad_month").val();
-            var rad_year = $("#apr-rad_year").val();
-            var pl_month = $("#apr-pl_month").val();
-            var pl_year = $("#apr-pl_year").val();
-            var telefax = $("#apr-telefax").val();
-            var check_1 = $("#apr-check_1").val();
-            var check_2 = $("#apr-check_2").val();
-            var check_3 = $("#apr-check_3").val();
-            var check_4 = $("#apr-check_4").val();
-            var check_5 = $("#apr-check_5").val();
-            var check_6 = $("#apr-check_6").val();
-            var other = $("#apr-other").val();
-
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/save-and-print-apr']).'?id='.$model->id.'&rad_no=" + rad_no + "&rad_month=" + rad_month + "&rad_year=" + rad_year + "&pl_month=" + pl_month + "&pl_year=" + pl_year + "&telefax=" + telefax + "&check_1=" + check_1 + "&check_2=" + check_2 + "&check_3=" + check_3 + "&check_4=" + check_4 + "&check_5=" + check_5 + "&check_6=" + check_6 + "&other=" + other + "&date_generated=" + date_generated, 
+            "'.Url::to(['/v1/pr/print-apr']).'?id='.$model->id.'", 
             "Print",
             "left=200", 
             "top=200", 

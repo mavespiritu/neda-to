@@ -48,18 +48,18 @@
                 </p>
                 <p style="text-align: center;">ACTION REQUEST ON THE ITEM(S) LISTED BELOW</p>
                 <p>
-                    [<?= $check_1 == 1 ? '&#10004;' : '' ?>] Please furnish us with Price Estimate (for office equipment/furniture & supplementary items) <br>
-                    [<?= $check_2 == 1 ? '&#10004;' : '' ?>] Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate <br>
-                    &nbsp;&nbsp;&nbsp; (PS RAD No. <?= $rad_no != '' ? '<u>'.$rad_no.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> attached) dated 
-                    <?= $rad_month != '' ? '<u>'.$rad_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $rad_year != '' ? '<u>'.$rad_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
-                    [<?= $check_3 == 1 ? '&#10004;' : '' ?>] Please issue common-use supplies/materials per PS Price List as of <?= $pl_month != '' ? '<u>'.$pl_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $pl_year != '' ? '<u>'.$pl_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
-                    [<?= $check_4 == 1 ? '&#10004;' : '' ?>] Please issue Certificate of Price Reasonableness <br>
-                    [<?= $check_5 == 1 ? '&#10004;' : '' ?>] Please furnish us with your latest/updated Price list <br>
-                    [<?= $check_6 == 1 ? '&#10004;' : '' ?>] Others (specify) <?= $other != '' ? '<u>'.$other.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>
+                    [<?= $apr->checklist_1 == 1 ? '&#10004;' : '' ?>] Please furnish us with Price Estimate (for office equipment/furniture & supplementary items) <br>
+                    [<?= $apr->checklist_2 == 1 ? '&#10004;' : '' ?>] Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate <br>
+                    &nbsp;&nbsp;&nbsp; (PS RAD No. <?= $apr->rad_no != '' ? '<u>'.$apr->rad_no.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> attached) dated 
+                    <?= $apr->rad_month != '' ? '<u>'.$apr->rad_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $apr->rad_year != '' ? '<u>'.$apr->rad_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
+                    [<?= $apr->checklist_3 == 1 ? '&#10004;' : '' ?>] Please issue common-use supplies/materials per PS Price List as of <?= $apr->pl_month != '' ? '<u>'.$apr->pl_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $apr->pl_year != '' ? '<u>'.$apr->pl_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
+                    [<?= $apr->checklist_4 == 1 ? '&#10004;' : '' ?>] Please issue Certificate of Price Reasonableness <br>
+                    [<?= $apr->checklist_5 == 1 ? '&#10004;' : '' ?>] Please furnish us with your latest/updated Price list <br>
+                    [<?= $apr->checklist_6 == 1 ? '&#10004;' : '' ?>] Others (specify) <?= $apr->others != '' ? '<u>'.$apr->others.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>
                 </p>
             </td>
             <td colspan=3 style="text-align: center; vertical-align: top; width: 20%;">
-            <?= $date_generated != '' ? date("F j, Y", strtotime($date_generated)) : '' ?>
+            <?= $apr->date_prepared != '' ? date("F j, Y", strtotime($apr->date_prepared)) : '' ?>
             <br>
             <i>(Date Prepared)</i>
             </td>
@@ -113,7 +113,7 @@
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= $telefax != '' ? '<u>'.$telefax.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?></td>
+            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= $apr->telefax != '' ? '<u>'.$apr->telefax.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?></td>
             <td colspan=2 align=right>Total AMOUNT:</td>
             <td>&nbsp;</td>
         </tr>

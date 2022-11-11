@@ -108,6 +108,7 @@ DisableButtonAsset::register($this);
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                menu('.$model->id.');
                 rfqQuotation('.$model->id.');
             },
             error: function (err) {

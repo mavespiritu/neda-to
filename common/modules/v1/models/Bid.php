@@ -117,4 +117,9 @@ class Bid extends \yii\db\ActiveRecord
         $memberName = $member ? Signatory::findOne(['emp_id' => $member->emp_id]) : [];
         return !empty($memberName) ? $memberName->name : '';
     }
+    
+    public function getPos()
+    {
+        return $this->hasMany(Po::className(), ['bid_id' => 'id']);
+    }
 }

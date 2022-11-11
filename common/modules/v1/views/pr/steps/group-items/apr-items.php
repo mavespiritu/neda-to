@@ -83,7 +83,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to Supplier', ['class' => 'btn btn-success', 'id' => 'remove-apr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to Non-procurable', ['class' => 'btn btn-success', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+        'method' => 'post',
+    ], 'disabled' => true]) : '' ?>
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to Supplier', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -92,27 +95,28 @@ use yii\bootstrap\Modal;
 
 <?php
     $script = '
-    function enableAprRemoveButton()
+    function enableTransferButtons()
     {
-        $("#apr-items-form input:checkbox:checked").length > 0 ? $("#remove-apr-button").attr("disabled", false) : $("#remove-apr-button").attr("disabled", true);
+        $("#apr-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-supplier-button").attr("disabled", false) : $("#transfer-for-supplier-button").attr("disabled", true);
+        $("#apr-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-obligation-button").attr("disabled", false) : $("#transfer-for-obligation-button").attr("disabled", true);
         $("#apr-items-form input:checkbox:checked").length > 0 ? $("#add-apr-button").attr("disabled", false) : $("#add-apr-button").attr("disabled", true);
     }
 
     $(".check-apr-items").click(function(){
         $(".check-apr-item").not(this).prop("checked", this.checked);
-        enableAprRemoveButton();
+        enableTransferButtons();
     });
 
     $(".check-apr-item").click(function(){
-        enableAprRemoveButton();
+        enableTransferButtons();
     });
 
     $(document).ready(function(){
         $(".check-apr-item").removeAttr("checked");
-        enableAprRemoveButton();
+        enableTransferButtons();
     });
 
-    $("#remove-apr-button").on("click", function(e) {
+    $("#transfer-for-supplier-button").on("click", function(e) {
         e.preventDefault();
 
         var con = confirm("Are you sure you want to add these items to RFQ?");
@@ -124,12 +128,47 @@ use yii\bootstrap\Modal;
             var formData = form.serialize();
 
             $.ajax({
-                url: form.attr("action"),
+                //url: form.attr("action"),
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'APR', 'to' => 'RFQ']).'",
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to RFQ");
+                    menu('.$model->id.');
+                    groupItems('.$model->id.');
+                    groupAprItems('.$model->id.');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            }); 
+        }
+
+        return false;
+    });
+
+    $("#transfer-for-obligation-button").on("click", function(e) {
+        e.preventDefault();
+
+        var con = confirm("Are you sure you want to add these items to ORS?");
+        if(con == true)
+        {
+            
+
+            var form = $("#apr-items-form");
+            var formData = form.serialize();
+
+            $.ajax({
+                //url: form.attr("action"),
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'APR', 'to' => 'ORS']).'",
+                type: form.attr("method"),
+                data: formData,
+                success: function (data) {
+                    form.enableSubmitButtons();
+                    alert("Items transferred to ORS");
+                    menu('.$model->id.');
+                    groupItems('.$model->id.');
                     groupAprItems('.$model->id.');
                 },
                 error: function (err) {

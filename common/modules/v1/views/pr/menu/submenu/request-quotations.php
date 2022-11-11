@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>3. Request Quotation</h4>
+<h4>3. Quote Items</h4>
+<p><i class="fa fa-exclamation-circle"></i> Request quotations from suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
     <li class="item">
         <div class="product-img">
@@ -14,7 +15,7 @@ use yii\bootstrap\ButtonDropdown;
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="aprQuotation(<?= $model->id?>);" class="product-title">Agency Procurement Quotation
-            <span class="badge bg-green pull-right"><?= $model->aprCount ?></span>
+            <?= $model->aprCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
             <span class="product-description">Generate quotation for agency procurement</span>
         </div>
@@ -25,7 +26,7 @@ use yii\bootstrap\ButtonDropdown;
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="rfqQuotation(<?= $model->id?>);" class="product-title">Supplier Quotation
-            <span class="badge bg-green pull-right"><?= $model->rfqCount ?></span>
+            <?= $model->rfqCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
             <span class="product-description">Generate quotation for outside suppliers.</span>
         </div>

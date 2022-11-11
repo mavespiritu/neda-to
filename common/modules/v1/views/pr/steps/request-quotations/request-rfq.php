@@ -8,11 +8,9 @@ use yii\bootstrap\Collapse;
 ?>
 
 <h4>3.2 Request Supplier Quotation</h4>
-<p><i class="fa fa-exclamation-circle"></i> Create quotation to be given to suppliers.</p>
-<div class="pull-right">
-    <?= Html::button('Create Quotation', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-success', 'id' => 'create-rfq-button']) ?>
-</div>
-<div class="clearfix"></div>
+<p><i class="fa fa-exclamation-circle"></i> Create quotation to be provided to suppliers.</p>
+<?= Html::button('<i class="fa fa-envelope-o"></i> Create Quote', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'create-rfq-button']) ?>
+<br>
 <h4>Quotation List</h4>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
     <thead>
@@ -44,7 +42,7 @@ use yii\bootstrap\Collapse;
   Modal::begin([
     'id' => 'create-rfq-modal',
     'size' => "modal-lg",
-    'header' => '<div id="create-rfq-modal-header"><h4>Create Quotation</h4></div>',
+    'header' => '<div id="create-rfq-modal-header"><h4>Create Quote</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="create-rfq-modal-content"></div>';
@@ -54,7 +52,7 @@ use yii\bootstrap\Collapse;
   Modal::begin([
     'id' => 'update-rfq-modal',
     'size' => "modal-lg",
-    'header' => '<div id="update-rfq-modal-header"><h4>Edit Quotation</h4></div>',
+    'header' => '<div id="update-rfq-modal-header"><h4>Edit Quote</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="update-rfq-modal-content"></div>';
@@ -95,6 +93,7 @@ use yii\bootstrap\Collapse;
                     success: function (data) {
                         console.log(this.data);
                         alert("RFQ has been deleted");
+                        menu('.$model->id.');
                         rfqQuotation(id);
                     },
                     error: function (err) {

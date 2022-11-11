@@ -7,6 +7,7 @@ use yii\bootstrap\ButtonDropdown;
 ?>
 
 <h4>5. Canvas/Bid Items</h4>
+<p><i class="fa fa-exclamation-circle"></i> Canvass/bid items to select winning suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
 <?php if($rfqs){ ?>
     <?php $i = 1; ?>

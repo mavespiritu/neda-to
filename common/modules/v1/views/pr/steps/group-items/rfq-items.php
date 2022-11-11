@@ -83,7 +83,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($prItems) ? Html::submitButton('Transfer to Agency Procurement', ['class' => 'btn btn-success', 'id' => 'remove-rfq-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forRfqs) ? Html::submitButton('Transfer to Non-Procurable', ['class' => 'btn btn-success', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+        'method' => 'post',
+    ], 'disabled' => true]) : '' ?>
+    <?= !empty($forRfqs) ? Html::submitButton('Transfer to Agency Procurement', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -92,44 +95,76 @@ use yii\bootstrap\Modal;
 
 <?php
     $script = '
-    function enableRfqRemoveButton()
+    function enableTransferButtons()
     {
-        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#remove-rfq-button").attr("disabled", false) : $("#remove-rfq-button").attr("disabled", true);
+        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-agency-procurement-button").attr("disabled", false) : $("#transfer-for-agency-procurement-button").attr("disabled", true);
+        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-obligation-button").attr("disabled", false) : $("#transfer-for-obligation-button").attr("disabled", true);
         $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#add-rfq-button").attr("disabled", false) : $("#add-rfq-button").attr("disabled", true);
     }
 
     $(".check-rfq-items").click(function(){
         $(".check-rfq-item").not(this).prop("checked", this.checked);
-        enableRfqRemoveButton();
+        enableTransferButtons();
     });
 
     $(".check-rfq-item").click(function(){
-        enableRfqRemoveButton();
+        enableTransferButtons();
     });
 
     $(document).ready(function(){
         $(".check-rfq-item").removeAttr("checked");
-        enableRfqRemoveButton();
+        enableTransferButtons();
     });
 
-    $("#remove-rfq-button").on("click", function(e) {
+    $("#transfer-for-agency-procurement-button").on("click", function(e) {
         e.preventDefault();
 
         var con = confirm("Are you sure you want to add these items to APR?");
         if(con == true)
         {
-            
-
             var form = $("#rfq-items-form");
             var formData = form.serialize();
 
             $.ajax({
-                url: form.attr("action"),
+                //url: form.attr("action"),
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'RFQ', 'to' => 'APR']).'",
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to APR");
+                    menu('.$model->id.');
+                    groupItems('.$model->id.');
+                    groupRfqItems('.$model->id.');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            }); 
+        }
+
+        return false;
+    });
+
+    $("#transfer-for-obligation-button").on("click", function(e) {
+        e.preventDefault();
+
+        var con = confirm("Are you sure you want to add these items to ORS?");
+        if(con == true)
+        {
+            var form = $("#rfq-items-form");
+            var formData = form.serialize();
+
+            $.ajax({
+                //url: form.attr("action"),
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'RFQ', 'to' => 'ORS']).'",
+                type: form.attr("method"),
+                data: formData,
+                success: function (data) {
+                    form.enableSubmitButtons();
+                    alert("Items transferred to ORS");
+                    menu('.$model->id.');
+                    groupItems('.$model->id.');
                     groupRfqItems('.$model->id.');
                 },
                 error: function (err) {

@@ -7,95 +7,46 @@ use yii\bootstrap\ButtonDropdown;
 ?>
 
 <p><b>KEY STEPS</b></p>
-<ul class="products-list product-list-in-box navigation">
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">1</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="items(<?= $model->id?>);" class="product-title">Select Items
-            <span class="badge bg-green pull-right"><?= $model->itemCount ?></span>
-            </a>
-            <span class="product-description">Select items from approved RIS</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">2</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupItems(<?= $model->id?>);" class="product-title">Group Items</a>
-            <span class="product-description">Group selected items to prepare APR and RFQ</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">3</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="setQuotations(<?= $model->id?>);" class="product-title">Request Quotation
-            <span class="badge bg-green pull-right"><?= $model->aprCount + $model->rfqCount ?></span>
-            </a>
-            <span class="product-description">Create RFQ for suppliers</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">4</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="retrieveQuotations(<?= $model->id?>);" class="product-title">Retrieve Quotation</a>
-            <span class="product-description">Input prices from suppliers</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">5</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onClick="bidItems(<?= $model->id ?>);" class="product-title">Canvas/Bid Items</a>
-            <span class="product-description">Select winning suppliers on each items</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">6</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="createPurchaseOrders(<?= $model->id ?>);"  class="product-title">Create Purchase Order/Contract</a>
-            <span class="product-description">Create purchase order or contract</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">7</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" class="product-title">Inspect Items</a>
-            <span class="product-description">Inspect delivered items</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">8</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" class="product-title">Issue Items</a>
-            <span class="product-description">Issue inspected items</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">9</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="generateReports(<?= $model->id ?>);" class="product-title">Generate Reports</a>
-            <span class="product-description">Generate reports related to purchase request</span>
-        </div>
-    </li>
-</ul>
-
-<br>
+<div class="row">
+    <div class="col-md-12 col-xs-12">
+        <a onclick="items(<?= $model->id?>);" class="btn btn-app main-menu" id="step-1">
+            <?= $model->itemCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-shopping-cart"></i>1. Select Items
+        </a>
+        <a onclick="groupItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-2">
+            <?= $model->itemCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-sort"></i>2. Group Items
+        </a>
+        <a onclick="setQuotations(<?= $model->id?>);" class="btn btn-app main-menu" id="step-3">
+            <?= $model->aprCount + $model->rfqCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-envelope-o"></i>3. Quote Items
+        </a>
+        <a onclick="retrieveQuotations(<?= $model->id?>);" class="btn btn-app main-menu" id="step-4">
+            <?= $model->aprInfoCount + $model->rfqInfoCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-envelope-open-o"></i>4. Retrieve Quote
+        </a>
+        <a onclick="bidItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-5">
+            <?= $model->bidCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-legal"></i>5. Bid Items
+        </a>
+        <a onclick="createPurchaseOrderOrContract(<?= $model->id?>);" class="btn btn-app main-menu" id="step-6">
+            <?= $model->poCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-edit"></i>6. Deal Items
+        </a>
+        <a onclick="proceedAndAward(<?= $model->id?>);" class="btn btn-app main-menu" id="step-7">
+            <?= $model->ntpCount + $model->noaCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-handshake-o"></i>7. Award Items
+        </a>
+        <a onclick="obligateItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-8">
+            <i class="fa fa-table"></i>8. Obligate Items
+        </a>
+        <a onclick="inspectItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-9">
+            <?= $model->iarCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-check"></i>9. Inspect Items
+        </a>
+    </div>
+</div>
+<!-- <br>
 <p><b>QUICK ACCESS</b></p>
     <li><a href="javascript:void(0);" onclick="home(<?= $model->id?>);" class="home-link">Home</a></li>
     <li><a href="javascript:void(0);" onclick="items(<?= $model->id?>);" class="items-link">Select Items (<?= $model->itemCount ?>)</a></li>
@@ -126,7 +77,7 @@ use yii\bootstrap\ButtonDropdown;
         <li><i class="fa fa-print"></i> Obligation Request Status (ORS)</li>
         <li><i class="fa fa-print"></i> Disbursement Voucher (DV)</li>
         <li><i class="fa fa-print"></i> Inspection and Acceptance Report (IAR)</li>
-    </ul>
+    </ul> -->
 <?php
     $script = '
         function updateNavigation(className)
@@ -141,27 +92,6 @@ use yii\bootstrap\ButtonDropdown;
                     }
                 }else{
                     $(this).removeClass("active");
-                }
-            });
-        }
-
-        function home(id)
-        {
-            $.ajax({
-                url: "'.Url::to(['/v1/pr/home']).'?id=" + id,
-                beforeSend: function(){
-                    $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
-                },
-                success: function (data) {
-                    console.log(this.data);
-                    $("#pr-main").empty();
-                    $("#pr-main").hide();
-                    $("#pr-main").fadeIn("slow");
-                    $("#pr-main").html(data);
-                    updateNavigation("home-link");
-                },
-                error: function (err) {
-                    console.log(err);
                 }
             });
         }
@@ -271,10 +201,52 @@ use yii\bootstrap\ButtonDropdown;
             });
         }
 
-        function createPurchaseOrders(id)
+        function createPurchaseOrderOrContract(id)
         {
             $.ajax({
-                url: "'.Url::to(['/v1/pr/sub-menu']).'?id=" + id + "&step=createPurchaseOrders",
+                url: "'.Url::to(['/v1/pr/sub-menu']).'?id=" + id + "&step=createPurchaseOrderOrContract",
+                beforeSend: function(){
+                    $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    console.log(this.data);
+                    $("#pr-main").empty();
+                    $("#pr-main").hide();
+                    $("#pr-main").fadeIn("slow");
+                    $("#pr-main").append("<div class=\"row\"><div class=\"col-md-3 col-xs-12\" id=\"pr-submenu\"></div><div class=\"col-md-9 col-xs-12\" id=\"pr-container\"></div></div>");
+                    $("#pr-submenu").html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function proceedAndAward(id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/pr/sub-menu']).'?id=" + id + "&step=proceedAndAward",
+                beforeSend: function(){
+                    $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    console.log(this.data);
+                    $("#pr-main").empty();
+                    $("#pr-main").hide();
+                    $("#pr-main").fadeIn("slow");
+                    $("#pr-main").append("<div class=\"row\"><div class=\"col-md-3 col-xs-12\" id=\"pr-submenu\"></div><div class=\"col-md-9 col-xs-12\" id=\"pr-container\"></div></div>");
+                    $("#pr-submenu").html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function inspectItems(id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/pr/sub-menu']).'?id=" + id + "&step=inspectItems",
                 beforeSend: function(){
                     $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
                 },

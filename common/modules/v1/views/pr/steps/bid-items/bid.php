@@ -12,17 +12,17 @@ $totals = [];
 
 <h4>5.<?= $i ?> Canvas/Bid RFQ No. <?= $rfq->rfq_no ?></h4>
 <p><i class="fa fa-exclamation-circle"></i> To accomplish the step, create a bid and proceed to the selection of winning bidders.</p>
-<div class="pull-right">
-    <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit Canvas/Bid', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-warning', 'id' => 'update-bid-button']).' '.
-               Html::a('Delete Canvas/Bid', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
-                            'confirm' => 'Are you sure you want to delete this bid?',
-                            'method' => 'post',
-                        ],])
+
+    <?= $bid ? '<div class="pull-right">'.Html::button('<i class="fa fa-edit"></i> Edit Canvas/Bid', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-warning', 'id' => 'update-bid-button']).' '.
+               Html::a('<i class="fa fa-trash"></i> Delete Canvas/Bid', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
+                    'confirm' => 'Are you sure you want to delete this bid?',
+                    'method' => 'post',
+                ],]).'</div>'
     :
-    Html::button('Create Canvass/Bid', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-success', 'id' => 'create-bid-button']) ?>
+    Html::button('Create Canvass/Bid', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-bid-button']) ?>
 </div>
 <div class="clearfix"></div>
-<h4>Bid Information</h4>
+<h4>Canvass/Bid Information</h4>
 <table class="table table-bordered table-responsive table-condensed">
     <tbody>
         <tr>
@@ -51,10 +51,11 @@ $totals = [];
         </tr>
     </tbody>
 </table>
-<p><i class="fa fa-exclamation-circle"></i> Create canvas/bid first to allow setting of winning bidders in each items.</p>
-<span class="pull-right"><?= $bid ? Html::button('Select Winning Bidders', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-success btn-sm winner-button']) : '' ?></span>
-<div class="clearfix"></div>
+<p><i class="fa fa-exclamation-circle"></i> Create canvas/bid to enable selection of winners.</p>
+<?= $bid ? Html::button('<i class="fa fa-gavel"></i> Select Winners', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-app winner-button']) : '' ?>
+<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-app', 'onclick' => 'printAoq('.$model->id.')']) : '' ?>
 <br>
+<h4>Items</h4>
 <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
     <thead>
         <tr>
@@ -163,6 +164,26 @@ $totals = [];
                     console.log(err);
                 }
             });
+        }
+
+        function printAoq()
+        {
+            var printWindow = window.open(
+                "'.Url::to(['/v1/pr/print-aoq']).'?id='.$bid->id.'", 
+                "Print",
+                "left=200", 
+                "top=200", 
+                "width=650", 
+                "height=500", 
+                "toolbar=0", 
+                "resizable=0"
+                );
+                printWindow.addEventListener("load", function() {
+                    printWindow.print();
+                    setTimeout(function() {
+                    printWindow.close();
+                }, 1);
+                }, true);
         }
 
         $(document).ready(function(){

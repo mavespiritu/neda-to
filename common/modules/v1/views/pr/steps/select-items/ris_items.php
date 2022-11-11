@@ -132,6 +132,7 @@ use yii\web\View;
             success: function (data) {
                 form.enableSubmitButtons();
                 alert("Item/s has been included in PR");
+                menu('.$model->id.');
                 prItems('.$model->id.');
                 loadRisItems('.$model->id.','.$ris->id.');
             },

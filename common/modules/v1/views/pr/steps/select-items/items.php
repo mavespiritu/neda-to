@@ -8,14 +8,20 @@ use yii\web\View;
 
 <h4>1. Select Items</h4>
 <p><i class="fa fa-exclamation-circle"></i> Select items from approved RIS to include in PR.</p>
-<?= $this->render('ris_form', [
-    'model' => $model,
-    'rises' => $rises
-]) ?>
-<div id="ris-items"></div>
-<hr style="opacity: 0.3">
-<h4>PR Items</h4>
-<div id="pr-items"></div>
+<div class="row">
+    <div class="col-md-6 col-xs-12">
+        <h4>Select items from RIS</h4>
+        <?= $this->render('ris_form', [
+            'model' => $model,
+            'rises' => $rises
+        ]) ?>
+        <div id="ris-items"></div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+        <h4>PR Items</h4>
+        <div id="pr-items"></div>
+    </div>
+</div>
 <?php
     $script = '
         function prItems(id)

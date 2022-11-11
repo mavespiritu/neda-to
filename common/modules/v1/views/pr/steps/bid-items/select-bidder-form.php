@@ -123,6 +123,7 @@ $totals = [];
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                menu('.$model->id.');
                 bidRfq('.$model->id.','.$rfq->id.','.$id.');
             },
             error: function (err) {

@@ -8,10 +8,8 @@ use yii\web\View;
 
 <h4>4.2 Retrieve Supplier Quotation</h4>
 <p><i class="fa fa-exclamation-circle"></i> Input prices from supplier quotations.</p>
-<div class="pull-right">
-    <?= Html::button('Retrieve Quotation', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-success', 'id' => 'retrieve-rfq-button']) ?>
-</div>
-<div class="clearfix"></div>
+<?= Html::button('<i class="fa fa-envelope-open-o"></i> Retrieve Quotation', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'retrieve-rfq-button']) ?>
+<br>
 <h4>Supplier List</h4>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
     <thead>
@@ -44,6 +42,7 @@ use yii\web\View;
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
                         <td align=right><?= number_format($rfq->getRfqInfoTotal($supplier->id), 2) ?></td>
                         <td align=right>
+                            <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-xs btn-info']) ?>
                             <?= Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-warning update-rfq-quotation-button']) ?>
                             <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteRfqInfo('.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
                         </td>

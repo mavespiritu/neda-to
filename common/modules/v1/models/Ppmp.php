@@ -300,7 +300,7 @@ class Ppmp extends \yii\db\ActiveRecord
                         ->getRawSql();
                         
                         // update cost if not equal years : use updated cost, else use ppmp cost
-                        $items = $this->year != $model->year ? PpmpItem::find()
+                        /* $items = $this->year != $model->year ? PpmpItem::find()
                         ->select([
                             'ppmp_ppmp_item.id',
                             'activity_id',
@@ -331,7 +331,25 @@ class Ppmp extends \yii\db\ActiveRecord
                         ])
                         ->where(['ppmp_id' => $model->id])
                         ->createCommand()
-                        ->getRawSql(); 
+                        ->getRawSql(); */ 
+
+                        $items = PpmpItem::find()
+                        ->select([
+                            'ppmp_ppmp_item.id',
+                            'activity_id',
+                            'fund_source_id',
+                            'sub_activity_id',
+                            'obj_id',
+                            'concat("'.$this->id.'")',
+                            'ppmp_ppmp_item.item_id',
+                            'costs.cost',
+                            'remarks',
+                            'concat("Original")'
+                        ])
+                        ->leftJoin(['costs' => '('.$costs.')'], 'costs.item_id = ppmp_ppmp_item.item_id')
+                        ->where(['ppmp_id' => $model->id])
+                        ->createCommand()
+                        ->getRawSql();
 
                         $connection->createCommand('INSERT into ppmp_ppmp_item (source_id, activity_id, fund_source_id, sub_activity_id, obj_id, ppmp_id, item_id, cost, remarks, type) '.$items)->execute();
 

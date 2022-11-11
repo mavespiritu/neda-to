@@ -53,7 +53,7 @@ $totals = [];
 </table>
 <p><i class="fa fa-exclamation-circle"></i> Create canvas/bid to enable selection of winners.</p>
 <?= $bid ? Html::button('<i class="fa fa-gavel"></i> Select Winners', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-app winner-button']) : '' ?>
-<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-app', 'onclick' => 'printAoq('.$model->id.')']) : '' ?>
+<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-app', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?>
 <br>
 <h4>Items</h4>
 <table class="table table-bordered table-condensed table-striped table-hover table-responsive">

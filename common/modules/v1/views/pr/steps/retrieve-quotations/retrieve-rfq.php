@@ -42,9 +42,9 @@ use yii\web\View;
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
                         <td align=right><?= number_format($rfq->getRfqInfoTotal($supplier->id), 2) ?></td>
                         <td align=right>
-                            <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-xs btn-info']) ?>
+                            <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-info']) ?>
                             <?= Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-warning update-rfq-quotation-button']) ?>
-                            <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteRfqInfo('.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
+                            <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -85,8 +85,28 @@ use yii\web\View;
                 }, 1);
                 }, true);
         }
+
+        function printRfqInfo(id, rfq_id, supplier_id)
+        {
+            var printWindow = window.open(
+                "'.Url::to(['/v1/pr/print-rfq-info']).'?rfq_id="+ rfq_id +"&supplier_id=" + supplier_id, 
+                "Print",
+                "left=200", 
+                "top=200", 
+                "width=650", 
+                "height=500", 
+                "toolbar=0", 
+                "resizable=0"
+                );
+                printWindow.addEventListener("load", function() {
+                    printWindow.print();
+                    setTimeout(function() {
+                    printWindow.close();
+                }, 1);
+                }, true);
+        }
         
-        function deleteRfqInfo(rfq_id, supplier_id)
+        function deleteRfqInfo(id, rfq_id, supplier_id)
         {
             if(confirm("Are you sure you want to delete this item?"))
             {

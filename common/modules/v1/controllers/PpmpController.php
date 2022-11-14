@@ -646,8 +646,6 @@ class PpmpController extends Controller
                         'activity.title as activityTitle',
                         'subActivity.id as subActivityID',
                         'subActivity.title as subActivityTitle',
-                        'object.id as objectID',
-                        'concat(object.code," - ",object.title) as objectTitle',
                         'sum(cost * quantity.total) as total',
     
                     ])
@@ -656,15 +654,13 @@ class PpmpController extends Controller
                     ->leftJoin('ppmp_activity activity', 'activity.id = ppmp_ppmp_item.activity_id')
                     ->leftJoin('ppmp_pap pap', 'pap.id = activity.pap_id')
                     ->leftJoin('ppmp_fund_source fundSource', 'fundSource.id = ppmp_ppmp_item.fund_source_id')
-                    ->leftJoin('ppmp_obj object', 'object.id = ppmp_ppmp_item.obj_id')
-                    ->groupBy(['subActivity.id','object.id'])
+                    ->groupBy(['subActivity.id', 'fundSource.id'])
                     ->where(['ppmp_id' => $model->id])
                     ->orderBy([
                         'fundSourceTitle' => SORT_ASC,
                         'pap.id' => SORT_ASC,
                         'activity.code' => SORT_ASC,
                         'subActivity.code' => SORT_ASC,
-                        'object.code' => SORT_ASC,
                         ])
                     ->asArray()
                     ->all();
@@ -678,8 +674,7 @@ class PpmpController extends Controller
                 $data[$item['fundSourceID']]['title'] = $item['fundSourceTitle'];
                 $data[$item['fundSourceID']]['contents'][$item['activityID']]['title'] = $item['activityTitle'];
                 $data[$item['fundSourceID']]['contents'][$item['activityID']]['contents'][$item['subActivityID']]['title'] = $item['subActivityTitle'];
-                $data[$item['fundSourceID']]['contents'][$item['activityID']]['contents'][$item['subActivityID']]['contents'][$item['objectID']]['title'] = $item['objectTitle'];
-                $data[$item['fundSourceID']]['contents'][$item['activityID']]['contents'][$item['subActivityID']]['contents'][$item['objectID']]['total'] = $item['total'];
+                $data[$item['fundSourceID']]['contents'][$item['activityID']]['contents'][$item['subActivityID']]['total'] = $item['total'];
             }
         }
 

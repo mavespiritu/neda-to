@@ -219,8 +219,8 @@ return $rettxt;
                 <b>Conforme:</b>
                 <br>
                 <br>
-                <span style="display: inline-block; border-bottom: 1px solid black; width: 250px;"></span>
                 <br>
+                <?= $form->field($poModel, 'represented_by')->textInput(['maxlength' => true, 'style' => 'width: 300px;', 'value' => is_null($poModel->represented_by) ? $supplier->owner_name : $poModel->represented_by])->label(false) ?>
                 (Signature over printed name)
                 <br>
                 <br>

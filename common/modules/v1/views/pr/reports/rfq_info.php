@@ -137,8 +137,8 @@ $asset = AppAsset::register($this);
                         </td>
                         <td>&nbsp;</td>
                         <td align=right>P<?= number_format($item['cost'], 2) ?></td>
-                        <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                        <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                        <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['offer'], 2) ?></span></td>
+                        <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['total'] * $item['offer'], 2) ?></span></td>
                     </tr>
                     <?php $i++; ?>
                 <?php } ?>
@@ -159,7 +159,7 @@ $asset = AppAsset::register($this);
     <br>
     <br>
     <br>
-    <p><span style="display: inline-block; float: right; border-bottom: 1px solid black; width: 300px;"></span></p>
+    <p><span style="display: inline-block; float: right; border-bottom: 1px solid black; width: 300px; text-align: center;"><?= strtoupper($supplier->owner_name) ?></span></p>
     <p style="clear: both;"></p>
     <p style="float: right; text-align: center;">Signature over Printed Name of Authorized <br> Representative/Owner</p>
     <br>

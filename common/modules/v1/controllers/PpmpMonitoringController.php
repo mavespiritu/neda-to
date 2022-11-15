@@ -214,6 +214,8 @@ class PpmpMonitoringController extends \yii\web\Controller
             ->asArray()
             ->all();
 
+            echo "<pre>"; print_r($items); exit;
+
             $data = [];
 
             $groups = [];

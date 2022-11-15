@@ -18,7 +18,7 @@ use yii\bootstrap\ButtonDropdown;
             </div>
             <div class="product-info">
                 <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>','<?= $po->id ?>','<?= $i ?>');" class="product-title"><?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>
-                <?= 0 == 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
+                <?= count($po->ors) > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
                 </a>
                 <span class="product-description"><?= $po->supplier->business_name ?></span>
             </div>
@@ -31,7 +31,7 @@ use yii\bootstrap\ButtonDropdown;
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i ?>');" class="product-title">Non-procurable Items
-            <?= 0 == 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
+            <?= $model->orsWithoutPo > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
             <span class="product-description">Obligate items not undergoing procurement</span>
         </div>

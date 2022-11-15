@@ -17,6 +17,7 @@ $asset = AppAsset::register($this);
     'id' => 'ors-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
+<h5><?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'CN No. '.$po->pocnNo : 'Non-procurable Items' ?></h5><br>
 <div class="ors-content">
     <div class="row">
         <div class="col-md-6 col-xs-12">
@@ -32,6 +33,13 @@ $asset = AppAsset::register($this);
             ]); ?>
         </div>
     </div>
+    <?php if(is_null($po)){ ?>
+        <div class="row">
+            <div class="col-md-12 col-xs-12"><?= $form->field($orsModel, 'payee')->textInput(['maxlength' => true]) ?></div>
+            <div class="col-md-12 col-xs-12"><?= $form->field($orsModel, 'office')->textInput(['maxlength' => true]) ?></div>
+            <div class="col-md-12 col-xs-12"><?= $form->field($orsModel, 'address')->textInput(['maxlength' => true]) ?></div>
+        </div>
+    <?php } ?>
     <p><i class="fa fa-exclamation-circle"></i> Select items to obligate.</p>
     <table class="table table-bordered table-striped table-hover table-condensed table-responsive">
         <thead>
@@ -42,13 +50,24 @@ $asset = AppAsset::register($this);
                 <td align=center><b>Qty</b></td>
                 <td align=center><b>Unit Cost</b></td>
                 <td align=center><b>Amount</b></td>
-                <td>&nbsp;</td>
+                <td align=center><input type=checkbox name="ors-items" class="check-ors-items" /></td>
             </tr>
         </thead>
         <tbody>
         <?php if(!empty($items)){ ?>
             <?php foreach($items as $item){ ?>
-                
+                <?php $id = $item['id']; ?>
+                <tr>
+                    <td align=center><?= $item['id'] ?></td>
+                    <td><?= $item['unit'] ?></td>
+                    <td><?= $item['item'] ?></td>
+                    <td align=center><?= number_format($item['total'], 0) ?></td>
+                    <td align=right><?= number_format($item['cost'], 2) ?></td>
+                    <td align=right><b><?= number_format($item['total'] * $item['cost'], 2) ?></b></td>
+                    <td align=center>
+                        <?= $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id'], 'checked' => 'checked']) ?>
+                    </td>
+                </tr>
             <?php } ?>
         <?php } ?>
         </tbody>
@@ -56,7 +75,7 @@ $asset = AppAsset::register($this);
     <?= $form->field($orsModel, 'responsibility_center')->textInput(['maxlength' => true]) ?>
     <br>
     <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success', 'id' => 'save-ors-button']) ?>
     </div>
     <div class="clearfix"></div>
 </div>
@@ -64,9 +83,29 @@ $asset = AppAsset::register($this);
 <?php ActiveForm::end(); ?>
 <?php
     $script = '
+        function enableOrsButtons()
+        {
+            $("#ors-form input:checkbox:checked").length > 0 ? $("#save-ors-button").attr("disabled", false) : $("#save-ors-button").attr("disabled", true);
+        }
+
+        $(".check-ors-items").click(function(){
+            $(".check-ors-item").not(this).prop("checked", this.checked);
+            enableOrsButtons();
+        });
+    
+        $(".check-ors-item").click(function(){
+            enableOrsButtons();
+        });
+
+        $(document).ready(function(){
+            $(".check-ors-item").removeAttr("checked");
+            enableOrsButtons();
+        });
+    ';
+    !is_null($po) ? $script .= '
         $("#ors-form").on("beforeSubmit", function(e) {
             e.preventDefault();
-            var form = $(this);
+            var form = $("#ors-form");
             var formData = form.serialize();
 
             $.ajax({
@@ -81,6 +120,33 @@ $asset = AppAsset::register($this);
                     $("body").removeClass("modal-open");
                     menu('.$model->id.');
                     obligatePo('.$model->id.','.$po->id.','.$i.');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            }); 
+            
+            return false;
+        });
+    ' : 
+    $script .= '
+        $("#ors-form").on("beforeSubmit", function(e) {
+            e.preventDefault();
+            var form = $("#ors-form");
+            var formData = form.serialize();
+
+            $.ajax({
+                url: form.attr("action"),
+                type: form.attr("method"),
+                data: formData,
+                success: function (data) {
+                    form.enableSubmitButtons();
+                    alert("Obligation has been saved successfully");
+                    $(".modal").remove();
+                    $(".modal-backdrop").remove();
+                    $("body").removeClass("modal-open");
+                    menu('.$model->id.');
+                    obligatePo('.$model->id.',"null",'.$i.');
                 },
                 error: function (err) {
                     console.log(err);

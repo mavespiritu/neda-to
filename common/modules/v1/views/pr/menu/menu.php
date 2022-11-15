@@ -38,6 +38,7 @@ use yii\bootstrap\ButtonDropdown;
             <i class="fa fa-handshake-o"></i>7. Award Items
         </a>
         <a onclick="obligateItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-8">
+            <?= $model->orsCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
             <i class="fa fa-table"></i>8. Obligate Items
         </a>
         <a onclick="inspectItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-9">

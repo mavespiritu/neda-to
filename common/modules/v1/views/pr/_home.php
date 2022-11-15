@@ -8,6 +8,7 @@ use  yii\web\View;
 
 <div class="row">
     <div class="col-md-6 col-xs-12">
+    <h4>PR Details</h4>
     <?= DetailView::widget([
         'model' => $model,
         'options' => ['class' => 'table table-responsive table-condensed table-bordered'],
@@ -36,8 +37,26 @@ use  yii\web\View;
     ]) ?>
     </div>
     <div class="col-md-6 col-xs-12">
-        <h5 class="text-right">Total</h5>
-
-        <h5 class="text-right">No. of items</h5>
+        <h4>Reports Available</h4>
+        <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;&nbsp;PR No. '.$model->pr_no, ['value' => Url::to(['/v1/pr/pr', 'id' => $model->id]), 'class' => 'btn btn-default btn-xs', 'id' => 'pr-button']) ?>
     </div>
 </div>
+<?php
+  Modal::begin([
+    'id' => 'pr-modal',
+    'size' => "modal-xl",
+    'header' => '<div id="pr-modal-header"><h4>Purchase Request (PR)</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="pr-modal-content"></div>';
+  Modal::end();
+?>
+<?php
+    $script = '
+        $("#pr-button").click(function(){
+            $("#pr-modal").modal("show").find("#pr-modal-content").load($(this).attr("value"));
+        });
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>

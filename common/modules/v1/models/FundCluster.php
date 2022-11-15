@@ -29,7 +29,7 @@ class FundCluster extends \yii\db\ActiveRecord
         return [
             [['title'], 'required'],
             [['title'], 'unique', 'message' => 'The title has been used already'],
-            [['description'], 'string'],
+            [['description', 'code'], 'string'],
             [['title'], 'string', 'max' => 100],
         ];
     }
@@ -43,6 +43,7 @@ class FundCluster extends \yii\db\ActiveRecord
             'id' => 'ID',
             'title' => 'Title',
             'description' => 'Description',
+            'code' => 'Code'
         ];
     }
 }

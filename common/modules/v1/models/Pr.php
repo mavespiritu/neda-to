@@ -45,6 +45,7 @@ class Pr extends \yii\db\ActiveRecord
         return [
             [['ris_id'], 'required', 'on' => 'selectRis'],
             [['type', 'office_id', 'year', 'fund_source_id', 'fund_cluster_id', 'purpose', 'date_requested', 'requested_by', 'procurement_mode_id'], 'required'],
+            [['date_prepared'], 'required', 'on' => 'printPr'],
             [['fund_source_id', 'fund_cluster_id'], 'integer'],
             [['purpose', 'type'], 'string'],
             [['year'], 'integer'],
@@ -92,7 +93,8 @@ class Pr extends \yii\db\ActiveRecord
             'ris_id' => 'Approved RIS',
             'risNos' => 'RIS',
             'risNo' => 'RIS No.',
-            'statusName' => 'Status'
+            'statusName' => 'Status',
+            'date_prepared' => 'Date Prepared'
         ];
     }
 
@@ -186,6 +188,23 @@ class Pr extends \yii\db\ActiveRecord
     {
         $total = Noa::find()
                     ->where(['pr_id' => $this->id])
+                    ->count();
+        return $total;
+    }
+
+    public function getOrsCount()
+    {
+        $total = Ors::find()
+                    ->where(['pr_id' => $this->id])
+                    ->count();
+        return $total;
+    }
+
+    public function getOrsWithoutPo()
+    {
+        $total = Ors::find()
+                    ->andWhere(['pr_id' => $this->id])
+                    ->andWhere(['is', 'po_id', null])
                     ->count();
         return $total;
     }

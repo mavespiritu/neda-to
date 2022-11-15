@@ -132,6 +132,11 @@ class Po extends \yii\db\ActiveRecord
         return $this->hasMany(Noa::className(), ['po_id' => 'id']);
     }
 
+    public function getOrs()
+    {
+        return $this->hasMany(Ors::className(), ['po_id' => 'id']);
+    }
+
     public function getPocnNo()
     {
         return $this->type == 'PO' ? $this->po_no : 'CN-'.$this->po_no;

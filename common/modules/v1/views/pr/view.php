@@ -34,24 +34,6 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-<?php
-    $script = '
-        function highlightButton(step)
-        {
-          var button = $("#"+step);
-          var buttons = $(":a.main-menu");
-          for(let index = 0 ; index < buttons.length ; ++index){
-            
-          }
-        }
-        $(document).ready(function(){
-            home('.$model->id.');
-            menu('.$model->id.');
-        });     
-    ';
-
-    $this->registerJs($script, View::POS_END);
-?>
 <style>
     .button-link {
         background: none !important;
@@ -62,46 +44,6 @@ $this->params['breadcrumbs'][] = $this->title;
         cursor: pointer;
     }
 </style>
-<?php
-  Modal::begin([
-    'id' => 'pr-modal',
-    'size' => "modal-xl",
-    'header' => '<div id="pr-modal-header"><h4>Purchase Request (PR)</h4></div>',
-    'options' => ['tabindex' => false],
-  ]);
-  echo '<div id="pr-modal-content"></div>';
-  Modal::end();
-?>
-<?php
-  Modal::begin([
-    'id' => 'apr-modal',
-    'size' => "modal-xl",
-    'header' => '<div id="apr-modal-header"><h4>Agency Purchase Request (APR)</h4></div>',
-    'options' => ['tabindex' => false],
-  ]);
-  echo '<div id="apr-modal-content"></div>';
-  Modal::end();
-?>
-<?php
-  Modal::begin([
-    'id' => 'rfq-modal',
-    'size' => "modal-xl",
-    'header' => '<div id="rfq-modal-header"><h4>Request For Quotation (RFQ)</h4></div>',
-    'options' => ['tabindex' => false],
-  ]);
-  echo '<div id="rfq-modal-content"></div>';
-  Modal::end();
-?>
-<?php
-  Modal::begin([
-    'id' => 'aoq-modal',
-    'size' => "modal-xl",
-    'header' => '<div id="aoq-modal-header"><h4>Abstract of Quotation (AOQ)</h4></div>',
-    'options' => ['tabindex' => false],
-  ]);
-  echo '<div id="aoq-modal-content"></div>';
-  Modal::end();
-?>
 <?php
     $script = '
         function home(id)
@@ -142,22 +84,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     console.log(err);
                 }
             });
-        }
+        }  
 
         $(document).ready(function(){
-            $("#pr-button").click(function(){
-                $("#pr-modal").modal("show").find("#pr-modal-content").load($(this).attr("value"));
-              });
-            $("#apr-button").click(function(){
-                $("#apr-modal").modal("show").find("#apr-modal-content").load($(this).attr("value"));
-              });
-            $("#rfq-button").click(function(){
-                $("#rfq-modal").modal("show").find("#rfq-modal-content").load($(this).attr("value"));
-              });
-            $("#aoq-button").click(function(){
-                $("#aoq-modal").modal("show").find("#aoq-modal-content").load($(this).attr("value"));
-              });
-        });     
+          home('.$model->id.');
+          menu('.$model->id.');
+        });    
     ';
 
     $this->registerJs($script, View::POS_END);

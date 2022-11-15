@@ -22,14 +22,14 @@ $asset = AppAsset::register($this);
     <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
         <thead>
             <tr>
-                <td align=center><b>IAR No.</b></td>
-                <td align=center><b>IAR Date</b></td>
+                <td><b>IAR No.</b></td>
+                <td><b>IAR Date</b></td>
                 <td align=center><b>Invoice No.</b></td>
-                <td align=center><b>Invoice Date</b></td>
-                <td align=center><b>Inspected By</b></td>
-                <td align=center><b>Date Inspected</b></td>
-                <td align=center><b>Status</b></td>
-                <td>&nbsp;</td>
+                <td><b>Invoice Date</b></td>
+                <td><b>Inspected By</b></td>
+                <td><b>Date Inspected</b></td>
+                <td><b>Status</b></td>
+                <td style="width: 4%;">&nbsp;</td>
             </tr>
         </thead>
         <tbody>
@@ -44,9 +44,9 @@ $asset = AppAsset::register($this);
                     <td><?= date("F j, Y", strtotime($iar->date_inspected)) ?></td>
                     <td><?= $iar->status ?></td>
                     <td>
-                        <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printIar('.$iar->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
-                        <?= Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-iar', 'id' => $iar->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-iar-button']) ?>
-                        <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteIar('.$model->id.','.$po->id.','.$iar->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
+                        <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printIar('.$iar->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
+                        <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-iar', 'id' => $iar->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-iar-button']) ?>
+                        <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteIar('.$model->id.','.$po->id.','.$iar->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
                     </td>
                 </tr>
             <?php } ?>

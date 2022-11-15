@@ -19,7 +19,7 @@ use yii\web\View;
             <th>Business Address</th>
             <th>Date Retrieved</th>
             <td align=right><b>ABC</b></td>
-            <th style="width: 20%;">&nbsp;</th>
+            <th style="width: 4%;">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
@@ -42,9 +42,9 @@ use yii\web\View;
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
                         <td align=right><?= number_format($rfq->getRfqInfoTotal($supplier->id), 2) ?></td>
                         <td align=right>
-                            <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-info']) ?>
-                            <?= Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-warning update-rfq-quotation-button']) ?>
-                            <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
+                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
+                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-block btn-warning update-rfq-quotation-button']) ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
                         </td>
                     </tr>
                 <?php } ?>

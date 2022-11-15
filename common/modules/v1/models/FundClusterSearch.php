@@ -18,7 +18,7 @@ class FundClusterSearch extends FundCluster
     {
         return [
             [['id'], 'integer'],
-            [['title', 'description'], 'safe'],
+            [['title', 'description', 'code'], 'safe'],
         ];
     }
 
@@ -62,7 +62,8 @@ class FundClusterSearch extends FundCluster
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'description', $this->description]);
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'code', $this->code]);
 
         return $dataProvider;
     }

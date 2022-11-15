@@ -17,7 +17,7 @@ use yii\bootstrap\Collapse;
         <tr>
             <th>RFQ No.</th>
             <td align=right><b>ABC</b></td>
-            <th style="width: 20%;">&nbsp;</th>
+            <th style="width: 4%;">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
@@ -27,9 +27,9 @@ use yii\bootstrap\Collapse;
                 <td><b><?= Html::a($rfq->rfq_no, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfq('.$rfq->id.')']) ?></b></td>
                 <td align=right><?= number_format($model->rfqTotal, 2) ?></td>
                 <td align=right>
-                    <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-xs btn-info']) ?>
-                    <?= Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-rfq', 'id' => $rfq->id]), 'class' => 'btn btn-xs btn-warning update-rfq-button']) ?>
-                    <?= Html::button('<i class="fa fa-trash"></i> Delete', ['onclick' => 'deleteRfq('.$model->id.','.$rfq->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
+                    <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
+                    <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq', 'id' => $rfq->id]), 'class' => 'btn btn-xs btn-warning btn-block update-rfq-button']) ?>
+                    <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfq('.$model->id.','.$rfq->id.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
                 </td>
             </tr>
         <?php } ?>

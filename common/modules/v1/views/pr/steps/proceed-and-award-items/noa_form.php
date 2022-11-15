@@ -218,7 +218,7 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printNoa();
+                    printNoa('.$model->id.','.$po->id.');
                     menu('.$model->id.');
                 },
                 error: function (err) {
@@ -229,10 +229,10 @@ return $rettxt;
             return false;
         });
 
-        function printNoa()
+        function printNoa(id, po_id)
         {
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-noa']).'?id='.$model->id.'&po_id='.$po->id.'", 
+            "'.Url::to(['/v1/pr/print-noa']).'?id="+ id +"&po_id=" + po_id, 
             "Print",
             "left=200", 
             "top=200", 

@@ -294,7 +294,7 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo();
+                    printPo('.$model->id.','.$bid->id.','.$supplier->id.');
                     menu('.$model->id.');
                 },
                 error: function (err) {
@@ -305,10 +305,10 @@ return $rettxt;
             return false;
         });
 
-        function printPo()
+        function printPo(id, bid_id, supplier_id)
         {
             var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-po']).'?id='.$model->id.'&bid_id='.$bid->id.'&supplier_id='.$supplier->id.'", 
+                "'.Url::to(['/v1/pr/print-po']).'?id=" + id + "&bid_id=" + bid_id +"&supplier_id=" + supplier_id, 
                 "Print",
                 "left=200", 
                 "top=200", 

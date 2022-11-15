@@ -239,8 +239,23 @@ class PrController extends Controller
 
     public function actionHome($id)
     {
-        return $this->renderAjax('_home', [
-            'model' => $this->findModel($id),
+        $model = $this->findModel($id);
+
+        $rfqs = Rfq::findAll(['pr_id' => $model->id]);
+        $bids = Bid::findAll(['pr_id' => $model->id]);
+        $pos = Po::findAll(['pr_id' => $model->id]);
+        $noas = Noa::findAll(['pr_id' => $model->id]);
+        $ntps = Noa::findAll(['pr_id' => $model->id]);
+        $iars = Iar::findAll(['pr_id' => $model->id]);
+
+        return $this->renderAjax('\steps\home\index', [
+            'model' => $model,
+            'rfqs' => $rfqs,
+            'bids' => $bids,
+            'pos' => $pos,
+            'noas' => $noas,
+            'ntps' => $ntps,
+            'iars' => $iars,
         ]);
     }
 

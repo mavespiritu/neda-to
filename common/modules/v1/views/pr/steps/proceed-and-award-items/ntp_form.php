@@ -197,7 +197,7 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printNtp();
+                    printNtp('.$model->id.','.$po->id.');
                     menu('.$model->id.');
                 },
                 error: function (err) {
@@ -208,10 +208,10 @@ return $rettxt;
             return false;
         });
 
-        function printNtp()
+        function printNtp(id, po_id)
         {
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-ntp']).'?id='.$model->id.'&po_id='.$po->id.'", 
+            "'.Url::to(['/v1/pr/print-ntp']).'?id="+ id +"&po_id=" + po_id,
             "Print",
             "left=200", 
             "top=200", 
@@ -227,6 +227,7 @@ return $rettxt;
             }, 1);
             }, true);
         }
+    ';
     ';
 
     $this->registerJs($script, View::POS_END);

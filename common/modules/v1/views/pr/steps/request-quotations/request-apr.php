@@ -232,7 +232,7 @@ use yii\web\View;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printApr();
+                    printApr('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);
@@ -242,10 +242,10 @@ use yii\web\View;
             return false;
         });
 
-        function printApr()
+        function printApr(id)
         {
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-apr']).'?id='.$model->id.'", 
+            "'.Url::to(['/v1/pr/print-apr']).'?id=" + id, 
             "Print",
             "left=200", 
             "top=200", 

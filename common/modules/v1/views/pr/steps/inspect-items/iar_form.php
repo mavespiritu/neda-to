@@ -140,26 +140,6 @@ $asset = AppAsset::register($this);
             
             return false;
         });
-
-        function printIar()
-        {
-            var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-iar']).'?id='.$model->id.'&po_id='.$po->id.'", 
-                "Print",
-                "left=200", 
-                "top=200", 
-                "width=650", 
-                "height=500", 
-                "toolbar=0", 
-                "resizable=0"
-                );
-                printWindow.addEventListener("load", function() {
-                    printWindow.print();
-                    setTimeout(function() {
-                    printWindow.close();
-                }, 1);
-                }, true);
-        }
     ';
 
     $this->registerJs($script, View::POS_END);

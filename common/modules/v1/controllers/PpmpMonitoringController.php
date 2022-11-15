@@ -117,18 +117,18 @@ class PpmpMonitoringController extends \yii\web\Controller
                 'ppmp_fund_source.code as fundSource',
                 '
                 (
-                    janQuantity.quantity +
-                    febQuantity.quantity +
-                    marQuantity.quantity +
-                    aprQuantity.quantity +
-                    mayQuantity.quantity +
-                    junQuantity.quantity +
-                    julQuantity.quantity +
-                    augQuantity.quantity +
-                    sepQuantity.quantity +
-                    octQuantity.quantity +
-                    novQuantity.quantity +
-                    decQuantity.quantity
+                    COALESCE(janQuantity.quantity, 0) +
+                    COALESCE(febQuantity.quantity, 0) +
+                    COALESCE(marQuantity.quantity, 0) +
+                    COALESCE(aprQuantity.quantity, 0) +
+                    COALESCE(mayQuantity.quantity, 0) +
+                    COALESCE(junQuantity.quantity, 0) +
+                    COALESCE(julQuantity.quantity, 0) +
+                    COALESCE(augQuantity.quantity, 0) +
+                    COALESCE(sepQuantity.quantity, 0) +
+                    COALESCE(octQuantity.quantity, 0) +
+                    COALESCE(novQuantity.quantity, 0) +
+                    COALESCE(decQuantity.quantity, 0)
                 ) as totalQty',
                 'janQuantity.quantity as janQty',
                 'febQuantity.quantity as febQty',

@@ -30,9 +30,10 @@ class OrsItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_id', 'pr_item_id'], 'integer'],
+            [['pr_id', 'pr_item_id', 'ors_id'], 'integer'],
             [['pr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pr::className(), 'targetAttribute' => ['pr_id' => 'id']],
             [['pr_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrItem::className(), 'targetAttribute' => ['pr_item_id' => 'id']],
+            [['ors_id'], 'exist', 'skipOnError' => true, 'targetClass' => Ors::className(), 'targetAttribute' => ['ors_id' => 'id']],
         ];
     }
 
@@ -45,6 +46,7 @@ class OrsItem extends \yii\db\ActiveRecord
             'id' => 'ID',
             'pr_id' => 'Pr ID',
             'pr_item_id' => 'Pr Item ID',
+            'ors_id' => 'Ors ID'
         ];
     }
 
@@ -66,5 +68,15 @@ class OrsItem extends \yii\db\ActiveRecord
     public function getPrItem()
     {
         return $this->hasOne(PrItem::className(), ['id' => 'pr_item_id']);
+    }
+
+    /**
+     * Gets query for [[Ors]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrs()
+    {
+        return $this->hasOne(Ors::className(), ['id' => 'ors_id']);
     }
 }

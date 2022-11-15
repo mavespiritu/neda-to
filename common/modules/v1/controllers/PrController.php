@@ -7,6 +7,7 @@ use common\modules\v1\models\Pr;
 use common\modules\v1\models\Po;
 use common\modules\v1\models\Ntp;
 use common\modules\v1\models\Noa;
+use common\modules\v1\models\Ors;
 use common\modules\v1\models\Iar;
 use common\modules\v1\models\IarItem;
 use common\modules\v1\models\PaymentTerm;
@@ -209,6 +210,14 @@ class PrController extends Controller
             $pos = Po::findAll(['pr_id' => $model->id]);
         
             return $this->renderAjax('\menu\submenu\proceed-and-award-items', [
+                'model' => $model,
+                'pos' => $pos,
+            ]);
+        }else if($step == 'obligateItems')
+        {
+            $pos = Po::findAll(['pr_id' => $model->id]);
+        
+            return $this->renderAjax('\menu\submenu\obligate-items', [
                 'model' => $model,
                 'pos' => $pos,
             ]);
@@ -1947,21 +1956,24 @@ class PrController extends Controller
             ->asArray()
             ->all();
 
-        $rfqItems = PrItem::find()
+        $rfqItems = PrItemCost::find()
             ->select([
                 'ppmp_pr_item.id as id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
+                'ppmp_pr_item_cost.cost as offer',
                 'sum(ppmp_pr_item.quantity) as total'
             ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
-                'ppmp_pr_item.pr_id' => $model->id,
+                'ppmp_pr_item_cost.pr_id' => $model->id,
+                'ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
@@ -4318,12 +4330,163 @@ class PrController extends Controller
         ]);
     }
 
+    // Inspect Items -> Delete Iar
     public function actionDeleteIar($id, $iar_id)
     {
         $iar = Iar::findOne($iar_id);
         $model = $this->findModel($id);
 
         $iar->delete();
+    }
+
+    // Obligate Items -> with PO
+    public function actionObligateItem($id, $po_id, $i)
+    {
+        $model = $this->findModel($id);
+        $po = !is_null($po_id) ? Po::findOne($po_id) : null;
+        $ors = !is_null($po) ? Ors::findAll(['pr_id' => $model->id, 'po_id' => $po->id]) : Ors::findAll(['pr_id' => $model->id]);
+
+        return $this->renderAjax('\steps\obligate-items\index', [
+            'model' => $model,
+            'po' => $po,
+            'ors' => $ors,
+            'i' => $i
+        ]);
+    }
+
+    public function actionCreateOrs($id, $po_id, $i)
+    {
+        $model = $this->findModel($id);
+        $po = $po_id != 'null' ? Po::findOne($po_id) : null;
+        $bid = $po_id != 'null' ? Bid::findOne($po->bid_id) : null;
+        $supplier = $po_id != 'null' ? Supplier::findOne($po->supplier_id) : null;
+        
+        $orsModel = new Ors();
+        $orsModel->pr_id = $model->id;
+        $orsModel->po_id = $po_id != 'null' ? $po->id : null;
+        $orsModel->ors_no = $orsModel->isNewRecord ? date("Y-m-") : $orsModel->ors_no;  
+
+        $awardedItems = !is_null($bid) && !is_null($supplier) ? 
+                BidWinner::find()
+                ->select(['pr_item_id'])
+                ->where([
+                    'bid_id' => $bid->id,
+                    'supplier_id' => $supplier->id,
+                    'status' => 'Awarded'
+                ])
+                ->asArray()
+                ->all() :
+                [];
+
+        $awardedItems = !empty($awardedItems) ? ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id') : [];
+
+        $orsItemIDs = OrsItem::find()
+                    ->select(['pr_item_id'])
+                    ->andWhere(['pr_id' => $model->id])
+                    ->andWhere(['is', 'ors_id', null])
+                    ->asArray()
+                    ->all();
+
+        $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $items = $po_id != 'null' ? PrItemCost::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+                'ppmp_pr_item_cost.cost as offer',
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_pr_item_cost.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all() : OrsItem::find()
+            ->select([
+                'ppmp_pr_item.id as id',
+                'ppmp_item.id as item_id',
+                'ppmp_item.title as item',
+                'ppmp_item.unit_of_measure as unit',
+                'ppmp_pr_item.cost as cost',
+
+                'sum(ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_ors_item.pr_item_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere([
+                'ppmp_ors_item.pr_id' => $model->id,
+            ])
+            ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
+            ->orderBy(['item' => SORT_ASC])
+            ->asArray()
+            ->all();
+        
+        echo "<pre>"; print_r($orsItemIDs); exit;
+
+        if($orsModel->load(Yii::$app->request->post()))
+        {
+            $orsModel->created_by = Yii::$app->user->id;
+            $orsModel->date_created = date("Y-m-d");
+            $orsModel->save();
+        }
+
+        return $this->renderAjax('\steps\obligate-items\ors_form', [
+            'model' => $model,
+            'orsModel' => $orsModel,
+            'po' => $po,
+            'items' => $items,
+            'i' => $i
+        ]);
+    }
+
+    public function actionUpdateOrs($id)
+    {
+        $orsModel = Ors::findOne($id);
+        $model = $this->findModel($orsModel->pr_id);
+        $po = !is_null($orsModel->po_id) ? Po::findOne($po_id) : null;
+
+        if($orsModel->load(Yii::$app->request->post()))
+        {
+            $orsModel->created_by = Yii::$app->user->id;
+            $orsModel->date_created = date("Y-m-d");
+            $orsModel->save();
+        }
+    }
+
+    public function actionViewOrs($id)
+    {
+        $ors = Ors::findOne($id);
+        $model = $this->findModel($orsModel->pr_id);
+        $po = !is_null($ors->po_id) ? Po::findOne($po_id) : null;
+
+        return $this->renderAjax('\steps\obligate-items\ors', [
+            'model' => $model,
+            'po' => $po,
+            'ors' => $ors,
+        ]);
+    }
+
+    public function actionDeleteOrs($id)
+    {
+        $orsModel = Ors::findOne($id);
+        $model = $this->findModel($orsModel->pr_id);
+        $po = !is_null($orsModel->po_id) ? Po::findOne($po_id) : null;
+
+        $orsModel->delete();
     }
 
     public function actionAoq($id)

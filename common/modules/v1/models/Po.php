@@ -43,7 +43,7 @@ class Po extends \yii\db\ActiveRecord
             [['delivery_term', 'delivery_date', 'po_date', 'payment_term_id'], 'required'],
             [['pr_id', 'bid_id', 'supplier_id', 'payment_term_id'], 'integer'],
             [['po_date', 'delivery_date'], 'safe'],
-            [['delivery_place', 'delivery_term', 'type'], 'string'],
+            [['delivery_place', 'delivery_term', 'type', 'represented_by'], 'string'],
             [['po_no'], 'string', 'max' => 20],
             [['payment_term_id'], 'exist', 'skipOnError' => true, 'targetClass' => PaymentTerm::className(), 'targetAttribute' => ['payment_term_id' => 'id']],
             [['pr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pr::className(), 'targetAttribute' => ['pr_id' => 'id']],
@@ -67,7 +67,8 @@ class Po extends \yii\db\ActiveRecord
             'delivery_date' => 'Delivery Date',
             'delivery_term' => 'Delivery Term',
             'payment_term_id' => 'Payment Term',
-            'type' => 'Type'
+            'type' => 'Type',
+            'represented_by' => 'Represented By'
         ];
     }
 

@@ -19,7 +19,7 @@ use yii\web\View;
 
 <h5>
     <?= $ris->officeName ?><br>
-    RIS No. <?= $ris->ris_no ?> - <?= $ris->purpose ?><br>
+    RIS No. <?= $ris->ris_no ?> - <?= $ris->purpose ?><br><br>
     List of items
 </h5>
 <p><i class="fa fa-exclamation-circle"></i> Check items and click "Add to PR" green button to include in PR.</p>

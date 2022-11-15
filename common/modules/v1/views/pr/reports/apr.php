@@ -48,18 +48,18 @@
                 </p>
                 <p style="text-align: center;">ACTION REQUEST ON THE ITEM(S) LISTED BELOW</p>
                 <p>
-                    [<?= $apr->checklist_1 == 1 ? '&#10004;' : '' ?>] Please furnish us with Price Estimate (for office equipment/furniture & supplementary items) <br>
-                    [<?= $apr->checklist_2 == 1 ? '&#10004;' : '' ?>] Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate <br>
-                    &nbsp;&nbsp;&nbsp; (PS RAD No. <?= $apr->rad_no != '' ? '<u>'.$apr->rad_no.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> attached) dated 
-                    <?= $apr->rad_month != '' ? '<u>'.$apr->rad_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $apr->rad_year != '' ? '<u>'.$apr->rad_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
-                    [<?= $apr->checklist_3 == 1 ? '&#10004;' : '' ?>] Please issue common-use supplies/materials per PS Price List as of <?= $apr->pl_month != '' ? '<u>'.$apr->pl_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= $apr->pl_year != '' ? '<u>'.$apr->pl_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
-                    [<?= $apr->checklist_4 == 1 ? '&#10004;' : '' ?>] Please issue Certificate of Price Reasonableness <br>
-                    [<?= $apr->checklist_5 == 1 ? '&#10004;' : '' ?>] Please furnish us with your latest/updated Price list <br>
-                    [<?= $apr->checklist_6 == 1 ? '&#10004;' : '' ?>] Others (specify) <?= $apr->others != '' ? '<u>'.$apr->others.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>
+                    [<?= !is_null($apr) ? $apr->checklist_1 == 1 ? '&#10004;' : '' : '' ?>] Please furnish us with Price Estimate (for office equipment/furniture & supplementary items) <br>
+                    [<?= !is_null($apr) ? $apr->checklist_2 == 1 ? '&#10004;' : '' : ''?>] Please purchase for our agency the equipment/furniture/supplementary items per your Price Estimate <br>
+                    &nbsp;&nbsp;&nbsp; (PS RAD No. <?= !is_null($apr) ? $apr->rad_no != '' ? '<u>'.$apr->rad_no.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> attached) dated 
+                    <?= !is_null($apr) ? $apr->rad_month != '' ? '<u>'.$apr->rad_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= !is_null($apr) ? $apr->rad_year != '' ? '<u>'.$apr->rad_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
+                    [<?= !is_null($apr) ? $apr->checklist_3 == 1 ? '&#10004;' : '' : '' ?>] Please issue common-use supplies/materials per PS Price List as of <?= !is_null($apr) ? $apr->pl_month != '' ? '<u>'.$apr->pl_month.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>-<?= !is_null($apr) ? $apr->pl_year != '' ? '<u>'.$apr->pl_year.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?> <br>
+                    [<?= !is_null($apr) ? $apr->checklist_4 == 1 ? '&#10004;' : '' : '' ?>] Please issue Certificate of Price Reasonableness <br>
+                    [<?= !is_null($apr) ? $apr->checklist_5 == 1 ? '&#10004;' : '' : '' ?>] Please furnish us with your latest/updated Price list <br>
+                    [<?= !is_null($apr) ? $apr->checklist_6 == 1 ? '&#10004;' : '' : '' ?>] Others (specify) <?= !is_null($apr) ? $apr->others != '' ? '<u>'.$apr->others.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?>
                 </p>
             </td>
             <td colspan=3 style="text-align: center; vertical-align: top; width: 20%;">
-            <?= $apr->date_prepared != '' ? date("F j, Y", strtotime($apr->date_prepared)) : '' ?>
+            <?= !is_null($apr) ? $apr->date_prepared != '' ? date("F j, Y", strtotime($apr->date_prepared)) : '' : '' ?>
             <br>
             <i>(Date Prepared)</i>
             </td>
@@ -113,7 +113,7 @@
         </tr>
         <tr>
             <td>&nbsp;</td>
-            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= $apr->telefax != '' ? '<u>'.$apr->telefax.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?></td>
+            <td colspan=4><?= $shortName->value ?> Office Telefax No: <?= !is_null($apr) ? $apr->telefax != '' ? '<u>'.$apr->telefax.'</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' : '<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>' ?></td>
             <td colspan=2 align=right>Total AMOUNT:</td>
             <td>&nbsp;</td>
         </tr>
@@ -129,7 +129,7 @@
             TO BE WITHIN APPROVED PROGRAM: <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->stockCertifierName) ?></b><br><?= $apr->stockCertifier ? $apr->stockCertifier->position.' (Supply Officer)' : '' ?></p>
+            <p style="text-align: center"><b><?= !is_null($apr) ? strtoupper($apr->stockCertifierName) : '' ?></b><br><?= !is_null($apr) ? $apr->stockCertifier ? $apr->stockCertifier->position.' (Supply Officer)' : '' : '' ?></p>
         </td>
         <td style="width: 30%">
             FUNDS CERTIFIED AVAILABLE:
@@ -137,7 +137,7 @@
             <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->fundsCertifierName) ?></b><br><?= $apr->fundsCertifier ? $apr->fundsCertifier->position : '' ?></p>
+            <p style="text-align: center"><b><?= !is_null($apr) ? strtoupper($apr->fundsCertifierName) : '' ?></b><br><?= !is_null($apr) ? $apr->fundsCertifier ? $apr->fundsCertifier->position : '' : '' ?></p>
         </td>
         <td style="width: 30%">
             APPROVED:
@@ -145,7 +145,7 @@
             <br>
             <br>
             <br>
-            <p style="text-align: center"><b><?= strtoupper($apr->approverName) ?></b><br><?= $apr->approver ? $apr->approver->position : '' ?></p>
+            <p style="text-align: center"><b><?= !is_null($apr) ? strtoupper($apr->approverName) : '' ?></b><br><?= !is_null($apr) ? $apr->approver ? $apr->approver->position : '' : '' ?></p>
         </td>
     </tr>
 </table>

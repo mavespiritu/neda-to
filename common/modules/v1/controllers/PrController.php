@@ -434,7 +434,6 @@ class PrController extends Controller
                                 'ppmp_activity.id' => $risItem->ppmpItem->activity_id,
                                 'ppmp_sub_activity.id' => $risItem->ppmpItem->sub_activity_id,
                                 'ppmp_ris_item.cost' => $risItem->cost,
-                                'ppmp_ris_item.type' => $risItem->type,
                             ])
                             ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                             ->all();

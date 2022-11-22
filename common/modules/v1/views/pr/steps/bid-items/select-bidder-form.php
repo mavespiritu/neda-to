@@ -52,16 +52,16 @@ $totals = [];
             <td rowspan=3 align=center><b>Unit Cost</b></td>
             <td rowspan=3 align=center><b>ABC</b></td>
             <?php if($supplierList){ ?>
-                <td colspan=<?= count($supplierList) ?> align=center><b>Participating<br>Establishments</b></td>
+                <td colspan=<?= count($supplierList) * 2 ?> align=center><b>Participating<br>Establishments</b></td>
             <?php } ?>
             <td rowspan=3 align=center style="width: 10%;"><b>Awarded to</b></td>
-            <td rowspan=3 align=center style="width: 30%;"><b>Justification</b></td>
         </tr>
         <tr>
             <?php if($supplierList){ ?>
                 <?php foreach($supplierList as $idx => $supplier){ ?>
                     <?php $totals[$supplier->id] = 0; ?>
-                    <td align=center><b><?= $letters[$idx] ?></b></td>
+                    <td align=center><b><?= $letters[$idx].'<br>'.$supplier->business_name ?></b></td>
+                    <td align=center><b>Specifications</b></td>
                 <?php } ?>
             <?php } ?>
         </tr>
@@ -79,15 +79,13 @@ $totals = [];
                 <?php if($supplierList){ ?>
                     <?php foreach($supplierList as $supplier){ ?>
                         <td align=right style="width: 15%;" id="cell-<?= $rfqItem['id'] ?>-<?= $supplier->id ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                        <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
                         <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
                     <?php } ?>
                 <?php } ?>
                 <td>
                 <?php $id = $rfqItem['id']; ?>
                 <?= $form->field($winnerModels[$id], "[$id]supplier_id")->dropdownList(['' => '-'] + $suppliers[$id], ['onchange' => 'colorTheCell('.$rfqItem['id'].',this.value,'.json_encode($supplierIDs).')'])->label(false); ?>
-                </td>
-                <td>
-                <?= $form->field($winnerModels[$id], "[$id]justification")->textArea(['rows' => 1, 'cols' => 2, 'style' => 'resize: none;'])->label(false) ?>
                 </td>
                 <?php $abcTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
             </tr>
@@ -96,6 +94,10 @@ $totals = [];
     <?php } ?>
     </tbody>
 </table>
+
+<?= $form->field($bid, 'recommendation')->textArea(['rows' => 3])->label('Award Recommended to') ?>
+
+<?= $form->field($bid, 'justification')->textArea(['rows' => 3])->label('Justification') ?>
 
 <div class="form-group pull-right"> 
     <?= Html::submitButton('Save Bid Results', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
@@ -124,7 +126,7 @@ $totals = [];
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
                 menu('.$model->id.');
-                bidRfq('.$model->id.','.$rfq->id.','.$id.');
+                bidRfq('.$model->id.','.$rfq->id.','.$i.');
             },
             error: function (err) {
                 console.log(err);

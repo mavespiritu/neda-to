@@ -34,7 +34,8 @@ class Bid extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_opened', 'time_opened', 'minute', 'meridian'], 'required'],
+            [['date_opened', 'time_opened', 'minute', 'meridian'], 'required', 'on' => 'createBid'],
+            [['recommendation'], 'required', 'on' => 'selectWinner'],
             [['pr_id', 'rfq_id'], 'integer'],
             [['date_opened'], 'safe'],
             [['bid_no', 'time_opened'], 'string', 'max' => 100],
@@ -54,7 +55,9 @@ class Bid extends \yii\db\ActiveRecord
             'date_opened' => 'Date Opened',
             'time_opened' => 'Time Opened',
             'minute' => 'Minute',
-            'meridian' => 'Meridian'
+            'meridian' => 'Meridian',
+            'recommendation' => 'Recommendation',
+            'justification' => 'Justification'
         ];
     }
 

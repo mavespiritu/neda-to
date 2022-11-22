@@ -65,7 +65,7 @@ $asset = AppAsset::register($this);
                     <td align=right><?= number_format($item['cost'], 2) ?></td>
                     <td align=right><b><?= number_format($item['total'] * $item['cost'], 2) ?></b></td>
                     <td align=center>
-                        <?= $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id'], 'checked' => 'checked']) ?>
+                        <?= in_array($item['id'], $existingOrsItemIDs) ? $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id'], 'checked' => 'checked']) : $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id']]) ?>
                     </td>
                 </tr>
             <?php } ?>
@@ -98,7 +98,7 @@ $asset = AppAsset::register($this);
         });
 
         $(document).ready(function(){
-            $(".check-ors-item").removeAttr("checked");
+            //$(".check-ors-item").removeAttr("checked");
             enableOrsButtons();
         });
     ';

@@ -12,8 +12,10 @@ $asset = AppAsset::register($this);
 $letters = range('A', 'Z');
 
 ?>
-<link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />
 <style>
+    @media print {
+        body {-webkit-print-color-adjust: exact; }
+    }
     *{ font-family: "Century Gothic"; font-size: 12px;}
     h3, h4{ text-align: center; } 
     p{ font-family: "Century Gothic";}
@@ -44,7 +46,6 @@ $letters = range('A', 'Z');
         padding: 3px 3px;
     }
 </style>
-
 <div class="aoq-content">
     <div style="width: 90%;" class="text-center flex-center">
         <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 120px; float: left; z-index: 2; padding-right: 20px;" />
@@ -85,15 +86,16 @@ $letters = range('A', 'Z');
                 <td align=center rowspan=2><b>NOMENCLATURE</b></td>
                 <td align=center rowspan=2><b>Qty</b></td>
                 <td align=center rowspan=2><b>Unit of Measurement</b></td>
-                <td align=center colspan="<?= count($supplierList) ?>"><b>For identification of participating establishments, please see below</b></td>
-                <td align=center rowspan=2><b>JUSTIFICATION</b></td>
-                <td align=center rowspan=2><b>Award Recommended to</b></td>
-                <td align=center rowspan=2><b>Price and Date of Last Purchase</b></td>
+                <td align=center colspan="<?= count($supplierList) * 2 ?>"><b>For identification of participating establishments, please see below</b></td>
+                <td align=center rowspan=2 style="width: 10%;"><b>JUSTIFICATION</b></td>
+                <td align=center rowspan=2 style="width: 10%;"><b>Award Recommended to</b></td>
+                <td align=center rowspan=2><b>Price and Date <br> of Last <br>Purchase</b></td>
             </tr>
             <tr>
                 <?php if($supplierList){ ?>
                     <?php foreach($supplierList as $idx => $supplier){ ?>
-                        <td align=center><b><?= $letters[$idx] ?>.<br> <?= $supplier->business_name ?></b></td>
+                        <td align=center style="width: 10%;"><b><?= $letters[$idx] ?>.<br> <?= $supplier->business_name ?></b></td>
+                        <td align=center style="width: 10%;"><b>Specifications</b></td>
                     <?php } ?>
                 <?php } ?>
             </tr>
@@ -102,20 +104,37 @@ $letters = range('A', 'Z');
             <?php if(!empty($rfqItems)){ ?>
                 <?php $i = 1; ?>
                 <?php foreach($rfqItems as $item){ ?>
-                    <tr>
-                        <td align=center><?= $i ?></td>
-                        <td><?= $item['item'] ?></td>
-                        <td align=center><?= number_format($item['total'], 0) ?></td>
-                        <td align=center><?= $item['unit'] ?></td>
-                        <?php if($supplierList){ ?>
-                            <?php foreach($supplierList as $sup){ ?>
-                            <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                    <?php if($i == 1){ ?>
+                        <tr>
+                            <td align=center><?= $i ?></td>
+                            <td><?= $item['item'] ?></td>
+                            <td align=center><?= number_format($item['total'], 0) ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <?php if($supplierList){ ?>
+                                <?php foreach($supplierList as $sup){ ?>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
+                                <?php } ?>
                             <?php } ?>
-                        <?php } ?>
-                        <td><?= $justifications[$item['id']] ?></td>
-                        <td align=center><?= !empty($winners[$item['id']]) ? $winners[$item['id']]->business_name : 'Failed' ?></td>
-                        <td align=center>&nbsp;</td>
-                    </tr>
+                            <td rowspan=<?= count($rfqItems) ?>><?= $bid->justification ?></td>
+                            <td rowspan=<?= count($rfqItems) ?>><?= $bid->recommendation ?></td>
+                            <td align=center>&nbsp;</td>
+                        </tr>
+                    <?php }else{ ?>
+                        <tr>
+                            <td align=center><?= $i ?></td>
+                            <td><?= $item['item'] ?></td>
+                            <td align=center><?= number_format($item['total'], 0) ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <?php if($supplierList){ ?>
+                                <?php foreach($supplierList as $sup){ ?>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
+                                <?php } ?>
+                            <?php } ?>
+                            <td align=center>&nbsp;</td>
+                        </tr>
+                    <?php } ?>
                     <?php $i++ ?>
                 <?php } ?>
             <?php } ?>

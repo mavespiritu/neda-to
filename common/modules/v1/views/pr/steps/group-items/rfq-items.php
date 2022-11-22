@@ -149,7 +149,7 @@ use yii\bootstrap\Modal;
     $("#transfer-for-obligation-button").on("click", function(e) {
         e.preventDefault();
 
-        var con = confirm("Are you sure you want to add these items to ORS?");
+        var con = confirm("Are you sure you want to add these items to non-procurables?");
         if(con == true)
         {
             var form = $("#rfq-items-form");
@@ -157,12 +157,12 @@ use yii\bootstrap\Modal;
 
             $.ajax({
                 //url: form.attr("action"),
-                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'RFQ', 'to' => 'ORS']).'",
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'RFQ', 'to' => 'NP']).'",
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    alert("Items transferred to ORS");
+                    alert("Items transferred to Non-procurables");
                     menu('.$model->id.');
                     groupItems('.$model->id.');
                     groupRfqItems('.$model->id.');

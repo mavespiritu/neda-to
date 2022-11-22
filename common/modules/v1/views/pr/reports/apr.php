@@ -1,4 +1,7 @@
 <style>
+    @media print {
+        body {-webkit-print-color-adjust: exact;}
+    }
     *{ font-family: "Tahoma"; }
     h4{ text-align: center; } 
     p{ font-size: 10px; font-family: "Tahoma";}

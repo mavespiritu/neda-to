@@ -11,7 +11,7 @@ use  yii\web\View;
     <h4>PR Details</h4>
     <?= DetailView::widget([
         'model' => $model,
-        'options' => ['class' => 'table table-responsive table-condensed table-bordered'],
+        'options' => ['class' => 'table no-border table-hover'],
         'attributes' => [
             'pr_no',
             'officeName',
@@ -52,17 +52,12 @@ use  yii\web\View;
         <?php } ?>
         <?php if($bids){ ?>
             <?php foreach($bids as $bid){ ?>
-                <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;Canvass/Bid No. '.$bid->bid_no, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printAoq('.$bid->id.')']) ?>
+                <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;AOQ No. '.$bid->bid_no, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printAoq('.$bid->id.')']) ?>
             <?php } ?>
         <?php } ?>
         <?php if($pos){ ?>
             <?php foreach($pos as $po){ ?>
                 <?= $po->type == 'PO' ? Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;PO No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo('.$model->id.','.$po->bid_id.','.$po->supplier_id.')']) : Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;Contract No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo('.$po->id.')'])?>
-            <?php } ?>
-        <?php } ?>
-        <?php if($noas){ ?>
-            <?php foreach($noas as $noa){ ?>
-                <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;NOA No. '.$noa->po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printNoa('.$model->id.','.$noa->po->id.')']) ?>
             <?php } ?>
         <?php } ?>
         <?php if($noas){ ?>

@@ -93,6 +93,7 @@ use yii\bootstrap\Modal;
             <th>Unit</th>
             <th>Item</th>
             <td align=center><b>Quantity</b></td>
+            <td align=center><b>Specification</b></td>
             <td align=right><b>Current Price</b></td>
             <td align=right><b>Unit Price</b></td>
             <td align=right><b>Total Cost</b></td>
@@ -132,6 +133,7 @@ use yii\bootstrap\Modal;
                     <?php } ?>
                 </td>
                 <td align=center><?= number_format($item['total'], 0) ?></td>
+                <td><?= $form->field($costModels[$item['id']], "[$id]specification")->textInput(['maxlength' => true])->label(false) ?></td>
                 <td align=right><?= number_format($item['cost'], 2) ?></td>
                 <td style="width: 20%;"><?= $form->field($costModels[$item['id']], "[$id]cost")->widget(MaskedInput::classname(), [
                     'options' => [
@@ -153,11 +155,11 @@ use yii\bootstrap\Modal;
         <?php } ?>
     <?php }else{ ?>
         <tr>
-            <td colspan=7 align=center>No items included</td>
+            <td colspan=8 align=center>No items included</td>
         </tr>
     <?php } ?>
     <tr>
-        <td colspan=6 align=right><b>ABC:</b></td>
+        <td colspan=7 align=right><b>ABC:</b></td>
         <td align=right><b><p id="grand-total-pricing"><?= number_format($total, 2) ?></p></b></td>
         <?= Html::hiddenInput('grandtotal-pricing-hidden', 0, ['id' => 'grandtotal-pricing-hidden']) ?>
     </tr>

@@ -228,7 +228,6 @@ return $rettxt;
             }, true);
         }
     ';
-    ';
 
     $this->registerJs($script, View::POS_END);
 ?>

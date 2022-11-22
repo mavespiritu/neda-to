@@ -282,7 +282,7 @@ return $rettxt;
 
 <?php ActiveForm::end(); ?>
 <?php
-    $script = '
+    $script = !is_null($bid) ? '
         $("#po-form").on("beforeSubmit", function(e) {
             e.preventDefault();
             var form = $(this);
@@ -303,8 +303,31 @@ return $rettxt;
             }); 
             
             return false;
-        });
+        });' : 
+        '
+        $("#po-form").on("beforeSubmit", function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var formData = form.serialize();
 
+            $.ajax({
+                url: form.attr("action"),
+                type: form.attr("method"),
+                data: formData,
+                success: function (data) {
+                    form.enableSubmitButtons();
+                    printPo('.$model->id.', "null" ,'.$supplier->id.');
+                    menu('.$model->id.');
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            }); 
+            
+            return false;
+        });';
+
+    $script .= '
         function printPo(id, bid_id, supplier_id)
         {
             var printWindow = window.open(

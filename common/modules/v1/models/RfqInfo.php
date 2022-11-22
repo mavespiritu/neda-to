@@ -69,4 +69,22 @@ class RfqInfo extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Supplier::className(), ['id' => 'supplier_id']);
     }
+
+    public function getTotal()
+    {
+        $total = PrItemCost::find()
+                ->select([
+                    'sum(COALESCE(ppmp_pr_item_cost.cost * ppmp_pr_item.quantity, 0)) as total'
+                ])
+                ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+                ->where([
+                    'rfq_id' => $this->rfq_id,
+                    'rfq_info_id' => $this->id,
+                    'supplier_id' => $this->supplier_id
+                ])
+                ->asArray()
+                ->one();
+
+        return $total['total'];
+    }
 }

@@ -90,6 +90,9 @@ return $rettxt;
 ?>
 <link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />
 <style>
+    @media print {
+        body {-webkit-print-color-adjust: exact;}
+    }
     *{ font-family: "Tahoma"; font-size: 12px;}
     h3, h4{ text-align: center; } 
     p{ font-family: "Tahoma";}
@@ -214,7 +217,7 @@ return $rettxt;
                 <b>Conforme:</b>
                 <br>
                 <br>
-                <span style="display: inline-block; border-bottom: 1px solid black; width: 250px;"></span>
+                <span style="display: inline-block; border-bottom: 1px solid black; width: 250px;"><?= $poModel->represented_by ?></span>
                 <br>
                 (Signature over printed name)
                 <br>

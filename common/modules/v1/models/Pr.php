@@ -103,6 +103,11 @@ class Pr extends \yii\db\ActiveRecord
         return $this->hasMany(PrItem::className(), ['pr_id' => 'id']);
     }
 
+    public function getPos()
+    {
+        return $this->hasMany(Po::className(), ['pr_id' => 'id']);
+    }
+
     public function getRisNos()
     {
         $prItems = PrItem::findAll(['pr_id' => $this->id]);
@@ -159,6 +164,14 @@ class Pr extends \yii\db\ActiveRecord
         return $total;
     }
 
+    public function getNonProcurableCount()
+    {
+        $total = NonProcurableItem::find()
+                    ->where(['pr_id' => $this->id])
+                    ->count();
+        return $total;
+    }
+
     public function getBidCount()
     {
         $total = Bid::find()
@@ -199,6 +212,7 @@ class Pr extends \yii\db\ActiveRecord
                     ->count();
         return $total;
     }
+    
 
     public function getOrsWithoutPo()
     {
@@ -286,13 +300,13 @@ class Pr extends \yii\db\ActiveRecord
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
-        $orsItemIDs = OrsItem::find()
-                    ->select(['pr_item_id'])
-                    ->where(['pr_id' => $this->id])
-                    ->asArray()
-                    ->all();
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->id])
+                ->asArray()
+                ->all();
 
-        $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
 
         $items = PrItem::find()
                 ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
@@ -311,7 +325,40 @@ class Pr extends \yii\db\ActiveRecord
                     'ppmp_pr_item.pr_id' => $this->id,
                 ])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-                ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
+                ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
+                ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+                ->count();
+        
+        return $items;
+    }
+
+    public function getNonProcurableItemCount()
+    {
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->id])
+                ->asArray()
+                ->all();
+
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $items = PrItem::find()
+                ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+                ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
+                                                    s.activity_id = ppmp_ppmp_item.activity_id and 
+                                                    s.sub_activity_id = ppmp_ppmp_item.sub_activity_id and 
+                                                    s.item_id = ppmp_ppmp_item.item_id and 
+                                                    s.cost = ppmp_pr_item.cost and 
+                                                    s.type = ppmp_pr_item.type')
+                ->andWhere([
+                    'ppmp_pr_item.pr_id' => $this->id,
+                ])
+                ->andWhere(['in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
                 ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
                 ->count();
         
@@ -353,14 +400,23 @@ class Pr extends \yii\db\ActiveRecord
 
     public function getRfqTotal()
     {
-        $ids = AprItem::find()
+        $aprItemIDs = AprItem::find()
                 ->select(['pr_item_id'])
                 ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
                 ->where(['ppmp_apr.pr_id' => $this->id])
                 ->asArray()
                 ->all();
 
-        $ids = ArrayHelper::map($ids, 'pr_item_id', 'pr_item_id');
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->id])
+                ->asArray()
+                ->all();
+
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
+
         $total = 0;
 
         $items = PrItem::find()
@@ -375,7 +431,8 @@ class Pr extends \yii\db\ActiveRecord
                 ->andWhere([
                     'ppmp_pr_item.pr_id' => $this->id,
                 ])
-                ->andWhere(['not in', 'ppmp_pr_item.id', $ids])
+                ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+                ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
                 ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
                 ->asArray()
                 ->all();
@@ -471,6 +528,14 @@ class Pr extends \yii\db\ActiveRecord
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->id])
+                ->asArray()
+                ->all();
+
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
+
         $rfqItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
@@ -494,6 +559,7 @@ class Pr extends \yii\db\ActiveRecord
                 'ppmp_pr_item.pr_id' => $this->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
             ->asArray()
             ->all();

@@ -24,8 +24,8 @@ use yii\bootstrap\Modal;
             <th>#</th>
             <th>Unit</th>
             <th>Item</th>
-            <td align=right><b>Current Price</b></td>
             <td align=center><b>Quantity</b></td>
+            <td align=right><b>Current Price</b></td>
             <td align=right><b>Unit Price</b></td>
             <td align=right><b>Total Cost</b></td>
         </tr>
@@ -62,8 +62,8 @@ use yii\bootstrap\Modal;
                     <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
                 <?php } ?>
                 </td>
-                <td align=right><?= number_format($item['cost'], 2) ?></td>
                 <td align=center><?= number_format($item['total'], 0) ?></td>
+                <td align=right><?= number_format($item['cost'], 2) ?></td>
                 <td style="width: 20%;"><?= $form->field($costModels[$item['id']], "[$id]cost")->widget(MaskedInput::classname(), [
                     'options' => [
                         'autocomplete' => 'off',

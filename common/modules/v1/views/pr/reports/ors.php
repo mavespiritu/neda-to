@@ -1,5 +1,33 @@
-<h4>ORS No. <?= $ors->ors_no ?></h4>
-<br>
+<style>
+    @media print {
+        body {-webkit-print-color-adjust: exact;}
+    }
+    *{ font-family: "Tahoma"; }
+    h4{ text-align: center; } 
+    p{ font-size: 10px; font-family: "Tahoma";}
+    table{
+        font-family: "Tahoma";
+        border-collapse: collapse;
+        width: 100%;
+    }
+    thead{
+        font-size: 12px;
+    }
+
+    td{
+        font-size: 10px;
+        border: 1px solid black;
+        padding: 3px 3px;
+    }
+
+    th{
+        font-size: 10px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 3px 3px;
+    }
+</style>
+
 <table class="table table-bordered table-responsive table-condensed">
     <tr>
         <td colspan=10 align=center><h4><b>OBLIGATION REQUEST AND STATUS</b></h4></td>
@@ -65,7 +93,7 @@
                 <?php } ?>
             <?php } ?>
         <?php } ?>
-    <?php for($j = 0; $j <= 3; $j++){ ?>
+        <?php for($j = 0; $j <= 3; $j++){ ?>
         <tr>
             <td colspan=2 style="border-top: none; border-bottom: none;">&nbsp;</td>
             <td style="border-top: none; border-bottom: none;">&nbsp;</td>
@@ -77,7 +105,7 @@
         <td colspan=5 style="border-top: none;" align=right>Total</td>
         <td colspan=2 style="border-top: none;">&nbsp;</td>
         <td style="border-top: none;">&nbsp;</td>
-        <td colspan=2 align=right><h4><b><?= number_format($ors->total, 2) ?></b></h4></td>
+        <td colspan=2 align=right><h4 style="text-align: right;"><b><?= number_format($ors->total, 2) ?></b></h4></td>
     </tr>
     <tr>
         <td><b>A.</b></td>

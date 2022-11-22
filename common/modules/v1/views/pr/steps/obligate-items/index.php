@@ -41,7 +41,7 @@ $asset = AppAsset::register($this);
                     <td align=right><?= number_format($or->total, 2) ?></td>
                     <td>
                         <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printOrs('.$or->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
-                        <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-ors', 'id' => $or->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-iar-button']) ?>
+                        <?php // Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-ors', 'id' => $or->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-ors-button']) ?>
                         <?= !is_null($po) ? Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$po->id.','.$or->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) : Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.',"null",'.$or->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
                     </td>
                 </tr>

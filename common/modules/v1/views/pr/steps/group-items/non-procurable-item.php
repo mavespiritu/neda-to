@@ -36,6 +36,6 @@ use yii\web\View;
     <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
     <td align=center>
-        <?= $form->field($orsItems[$item['id']], "[$id]id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id'], 'checked' => 'checked']) ?>
+        <?= $form->field($nonProcurableItems[$item['id']], "[$id]id")->checkbox(['value' => $item['id'], 'class' => 'check-non-procurable-item', 'label' => '', 'id' => 'check-non-procurable-item-'.$item['id'], 'checked' => 'checked']) ?>
     </td>
 </tr>

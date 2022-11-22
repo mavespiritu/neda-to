@@ -37,10 +37,10 @@ use yii\web\View;
                 <?php foreach($rfq->suppliers as $supplier){ ?>
                     <tr>
                         <td>&nbsp;</td>
-                        <td><?= $supplier->business_name ?></td>
+                        <td><b><?= Html::a($supplier->business_name, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')']) ?></b></td>
                         <td><?= $supplier->business_address ?></td>
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
-                        <td align=right><?= number_format($rfq->getRfqInfoTotal($supplier->id), 2) ?></td>
+                        <td align=right><?= number_format($rfq->getRfqInfo($supplier->id)->total, 2) ?></td>
                         <td align=right>
                             <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
                             <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-block btn-warning update-rfq-quotation-button']) ?>
@@ -57,7 +57,7 @@ use yii\web\View;
 <?php
   Modal::begin([
     'id' => 'retrieve-rfq-modal',
-    'size' => "modal-lg",
+    'size' => "modal-xl",
     'header' => '<div id="retrieve-rfq-modal-header"><h4>Retrieve Quotation</h4></div>',
     'options' => ['tabindex' => false],
   ]);
@@ -133,7 +133,27 @@ use yii\web\View;
             $.ajax({
                 url: "'.Url::to(['/v1/pr/view-rfq']).'?id="+ id,
                 beforeSend: function(){
-                    $("#rfq-content").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                    $("#retrieve-rfq-content").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    console.log(this.data);
+                    $("#retrieve-rfq-content").empty();
+                    $("#retrieve-rfq-content").hide();
+                    $("#retrieve-rfq-content").fadeIn("slow");
+                    $("#retrieve-rfq-content").html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
+        function viewRfqInfo(id, rfq_id, supplier_id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/pr/view-rfq-info']).'?id="+ id + "&rfq_id="+ rfq_id + "&supplier_id="+ supplier_id,
+                beforeSend: function(){
+                    $("#retrieve-rfq-content").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
                 },
                 success: function (data) {
                     console.log(this.data);

@@ -36,10 +36,6 @@ use yii\bootstrap\ButtonDropdown;
             <span class="product-description">Obligate items not undergoing procurement</span>
         </div>
     </li>
-<?php }else{ ?>
-    <li class="item">
-        No awarded items. Click <a href="javascript:void(0)" onclick="proceedAndAward(<?= $model->id ?>);" >here</a> and accomplish Step 7.
-    </li>
 <?php } ?>
 </ul>
 <?php

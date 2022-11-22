@@ -4,42 +4,7 @@ use yii\helpers\Html;
 
 $asset = AppAsset::register($this);
 ?>
-<link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />
-<style>
-    @media print {
-        body {-webkit-print-color-adjust: exact;}
-    }
-    *{ font-family: "Tahoma"; font-size: 12px;}
-    h3, h4{ text-align: center; } 
-    p{ font-family: "Tahoma";}
-    table{
-        font-family: "Tahoma";
-        border-collapse: collapse;
-        width: 100%;
-    }
-    table.table-bordered{
-        font-family: "Tahoma";
-        border-collapse: collapse;
-        width: 100%;
-    }
-    thead{
-        font-size: 14px;
-    }
-
-    table.table-bordered td{
-        font-size: 14px;
-        border: 1px solid black;
-        padding: 3px 3px;
-    }
-
-    table.table-bordered th{
-        font-size: 14px;
-        text-align: center;
-        border: 1px solid black;
-        padding: 3px 3px;
-    }
-</style>
-
+<h4>RFQ No. <?= $rfq->rfq_no ?>: <?= $supplier->business_name ?></h4>
 <div class="rfq-info-content">
     <div style="width: 90%;" class="text-center flex-center">
         <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left; z-index: 2; padding-right: 20px;" />
@@ -49,7 +14,7 @@ $asset = AppAsset::register($this);
         <?= $address->value ?><br>  
         Email Add: <?= $email->value ?>, Tel. Nos.: <?= $telephoneNos->value ?></p>
     </div>
-    <h3 class="text-center"><u>REQUEST FOR QUOTATION</u></h3>
+    <h4 class="text-center"><u>REQUEST FOR QUOTATION</u></h4>
     <table style="width: 100%;">
         <tr>
             <td style="width: 20%;">Company Name:</td>
@@ -107,7 +72,7 @@ $asset = AppAsset::register($this);
         </div>
     </div>
 
-    <table class="table-bordered">
+    <table class="table table-bordered table-condensed table-striped table-hover">
         <thead>
             <tr>
                 <td align=center><b>ITEM NO.</b></td>

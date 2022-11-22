@@ -21,10 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-list"></i> PR Information</div>
                 <div class="box-body">
-                  <a onclick="home(<?= $model->id?>);" class="btn btn-app main-menu">
-                      <i class="fa fa-calendar-check-o"></i>PR Details
-                  </a>
-                      <div class="row">
+                    <div class="row">
                         <div class="col-md-12 col-xs-12">
                           <div id="menu"></div>
                         </div>

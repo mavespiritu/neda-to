@@ -35,6 +35,7 @@ class PrItemCost extends \yii\db\ActiveRecord
             [['cost'], 'required'],
             [['pr_id', 'pr_item_id', 'rfq_id', 'rfq_info_id', 'supplier_id'], 'integer'],
             [['cost'], 'safe'],
+            [['specification'], 'string'],
             [['pr_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrItem::className(), 'targetAttribute' => ['pr_item_id' => 'id']],
             [['supplier_id'], 'exist', 'skipOnError' => true, 'targetClass' => Supplier::className(), 'targetAttribute' => ['supplier_id' => 'id']],
             [['rfq_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => RfqInfo::className(), 'targetAttribute' => ['rfq_info_id' => 'id']],
@@ -55,6 +56,7 @@ class PrItemCost extends \yii\db\ActiveRecord
             'rfq_id' => 'Rfq ID',
             'rfq_info_id' => 'Rfq Info ID',
             'cost' => 'Cost',
+            'specification' => 'Specification'
         ];
     }
 

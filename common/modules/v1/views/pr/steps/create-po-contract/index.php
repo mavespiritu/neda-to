@@ -17,8 +17,8 @@ use frontend\assets\AppAsset;
     </h4>
     <div class="row">
         <div class="col-md-12 col-xs-12">
-            <h5>Select Type</h5>
-            <a onclick="createPurchaseOrder('<?= $model->id ?>','<?= $bid->id ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-app">
+            <h5>Select Document</h5>
+            <a onclick="createPurchaseOrder('<?= $model->id ?>','<?= !is_null($bid) ? $bid->id : 'null' ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-app">
             <?= $po ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
             <i class="fa fa-inbox"></i> Purchase Order</a>
             <a class="btn btn-app"><i class="fa fa-edit"></i> Contract</a>

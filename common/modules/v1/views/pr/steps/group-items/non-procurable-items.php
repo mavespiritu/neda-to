@@ -14,7 +14,7 @@ use yii\bootstrap\Modal;
 ?>
 
 <?php $form = ActiveForm::begin([
-    'id' => 'ors-items-form',
+    'id' => 'non-procurable-items-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
@@ -31,7 +31,7 @@ use yii\bootstrap\Modal;
             <th>Quantity</th>
             <th>Unit Cost</th>
             <td align=center><b>Total Cost</b></td>
-            <td align=center><input type=checkbox name="ors-items" class="check-ors-items" /></td>
+            <td align=center><input type=checkbox name="non-procurable-items" class="check-non-procurable-items" /></td>
         </tr>
     </thead>
     <tbody>
@@ -53,12 +53,12 @@ use yii\bootstrap\Modal;
                     <?php if(!empty($subActivityItems)){ ?>
                         <?php foreach($subActivityItems as $item){ ?>
                             <?php $id = $item['id'] ?>
-                            <?= $this->render('ors-item', [
+                            <?= $this->render('non-procurable-item', [
                                 'i' => $i,
                                 'id' => $id,
                                 'model' => $model,
                                 'item' => $item,
-                                'orsItems' => $orsItems,
+                                'nonProcurableItems' => $nonProcurableItems,
                                 'specifications' => $specifications,
                                 'form' => $form,
                             ]) ?>
@@ -83,10 +83,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forOrs) ? Html::submitButton('Transfer for Agency Procurement', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer for Agency Procurement', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
-    <?= !empty($forOrs) ? Html::submitButton('Transfer for Supplier', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer for Supplier', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -97,21 +97,21 @@ use yii\bootstrap\Modal;
     $script = '
     function enableTransferButtons()
     {
-        $("#ors-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-agency-procurement-button").attr("disabled", false) : $("#transfer-for-agency-procurement-button").attr("disabled", true);
-        $("#ors-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-supplier-button").attr("disabled", false) : $("#transfer-for-supplier-button").attr("disabled", true);
+        $("#non-procurable-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-agency-procurement-button").attr("disabled", false) : $("#transfer-for-agency-procurement-button").attr("disabled", true);
+        $("#non-procurable-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-supplier-button").attr("disabled", false) : $("#transfer-for-supplier-button").attr("disabled", true);
     }
 
-    $(".check-ors-items").click(function(){
-        $(".check-ors-item").not(this).prop("checked", this.checked);
+    $(".check-non-procurable-items").click(function(){
+        $(".check-non-procurable-item").not(this).prop("checked", this.checked);
         enableTransferButtons();
     });
 
-    $(".check-ors-item").click(function(){
+    $(".check-non-procurable-item").click(function(){
         enableTransferButtons();
     });
 
     $(document).ready(function(){
-        $(".check-ors-item").removeAttr("checked");
+        $(".check-non-procurable-item").removeAttr("checked");
         enableTransferButtons();
     });
 
@@ -121,12 +121,12 @@ use yii\bootstrap\Modal;
         var con = confirm("Are you sure you want to add these items to APR?");
         if(con == true)
         {
-            var form = $("#ors-items-form");
+            var form = $("#non-procurable-items-form");
             var formData = form.serialize();
 
             $.ajax({
                 //url: form.attr("action"),
-                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'ORS', 'to' => 'APR']).'",
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'NP', 'to' => 'APR']).'",
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
@@ -134,7 +134,7 @@ use yii\bootstrap\Modal;
                     alert("Items transferred to APR");
                     menu('.$model->id.');
                     groupItems('.$model->id.');
-                    groupOrsItems('.$model->id.');
+                    groupNonProcurableItems('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);
@@ -151,12 +151,12 @@ use yii\bootstrap\Modal;
         var con = confirm("Are you sure you want to add these items to RFQ?");
         if(con == true)
         {
-            var form = $("#ors-items-form");
+            var form = $("#non-procurable-items-form");
             var formData = form.serialize();
 
             $.ajax({
                 //url: form.attr("action"),
-                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'ORS', 'to' => 'RFQ']).'",
+                url: "'.Url::to(['/v1/pr/save-group-items', 'id' => $model->id, 'from' => 'NP', 'to' => 'RFQ']).'",
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
@@ -164,7 +164,7 @@ use yii\bootstrap\Modal;
                     alert("Items transferred to RFQ");
                     menu('.$model->id.');
                     groupItems('.$model->id.');
-                    groupOrsItems('.$model->id.');
+                    groupNonProcurableItems('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);

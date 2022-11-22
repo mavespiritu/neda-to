@@ -12,6 +12,9 @@ $asset = AppAsset::register($this);
 ?>
 <link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />
 <style>
+    @media print {
+        body {-webkit-print-color-adjust: exact;}
+    }
     *{ font-family: "Tahoma"; font-size: 14px;}
     h3, h4{ text-align: center; } 
     p{ font-family: "Tahoma";}

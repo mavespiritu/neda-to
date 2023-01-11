@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan=3>Member</th>
                     <td><?= $memberName ? $memberName->name : '' ?></td>
-                    <td><?= Html::a('Change', ['/v1/bac-member/bac', 'title' => 'BAC Vice-Chairperson'], ['class' => 'btn btn-primary btn-block btn-xs']) ?></td>
+                    <td><?= Html::a('Change', ['/v1/bac-member/bac', 'title' => 'BAC Member'], ['class' => 'btn btn-primary btn-block btn-xs']) ?></td>
                 </tr>
                 <tr>
                     <th colspan=4>Provisional Members with Technical Expertise</th>

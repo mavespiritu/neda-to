@@ -14,7 +14,7 @@ use yii\bootstrap\ButtonDropdown;
     <?php foreach($pos as $po){ ?>
         <li class="item">
             <div class="product-img">
-                <div class="circle">9.<?= $i ?></div>
+                <div class="circle">8.<?= $i ?></div>
             </div>
             <div class="product-info">
                 <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>','<?= $po->id ?>','<?= $i ?>','PO');" class="product-title"><?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>
@@ -29,7 +29,7 @@ use yii\bootstrap\ButtonDropdown;
 <?php if($model->apr){ ?>
     <li class="item">
         <div class="product-img">
-            <div class="circle">9.<?= $i + 1 ?></div>
+            <div class="circle">8.<?= $i + 1 ?></div>
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', '<?= $model->apr->id ?>' , '<?= $i + 1 ?>', 'APR');" class="product-title">Agency Procured Items
@@ -41,7 +41,7 @@ use yii\bootstrap\ButtonDropdown;
 <?php } ?>
     <li class="item">
         <div class="product-img">
-            <div class="circle">9.<?= $i + 2 ?></div>
+            <div class="circle">8.<?= $i + 2 ?></div>
         </div>
         <div class="product-info">
             <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i + 2 ?>','NP');" class="product-title">Non-procurable Items

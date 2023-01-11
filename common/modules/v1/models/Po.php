@@ -40,7 +40,7 @@ class Po extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['delivery_term', 'delivery_date', 'po_date', 'payment_term_id'], 'required'],
+            [['delivery_term', 'po_date', 'payment_term_id'], 'required'],
             [['pr_id', 'bid_id', 'supplier_id', 'payment_term_id'], 'integer'],
             [['po_date', 'delivery_date'], 'safe'],
             [['delivery_place', 'delivery_term', 'type', 'represented_by'], 'string'],

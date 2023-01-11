@@ -15,7 +15,7 @@ $asset = AppAsset::register($this);
 ?>
 
 <h4>8.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable Items' ?></h4>
-<?= !is_null($po) ? Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => $po->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) : Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => 'null', 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) ?>
+<?= !is_null($po) ? Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => $po->id, 'i' => $i, 'type' => $type]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) : Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => 'null', 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) ?>
 <br>
 <h4>Obligation List</h4>
 <div class="iar-content">

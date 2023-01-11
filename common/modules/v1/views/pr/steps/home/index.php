@@ -57,7 +57,7 @@ use  yii\web\View;
         <?php } ?>
         <?php if($pos){ ?>
             <?php foreach($pos as $po){ ?>
-                <?= $po->type == 'PO' ? Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;PO No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo('.$model->id.','.$po->bid_id.','.$po->supplier_id.')']) : Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;Contract No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo('.$po->id.')'])?>
+                <?= $po->type == 'PO' ? Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;PO No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo("'.$model->id.'","'.$po->bid_id.'","'.$po->supplier_id.'")']) : Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;Contract No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo('.$po->id.')'])?>
             <?php } ?>
         <?php } ?>
         <?php if($noas){ ?>

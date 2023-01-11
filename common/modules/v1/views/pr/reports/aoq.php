@@ -109,8 +109,14 @@ $letters = range('A', 'Z');
             </tr>
         </thead>
         <tbody>
+            <?php $total = []; ?>
             <?php if(!empty($rfqItems)){ ?>
                 <?php $i = 1; ?>
+                <?php if($supplierList){ ?>
+                    <?php foreach($supplierList as $sup){ ?>
+                        <?php $total[$sup->id] = 0; ?>
+                    <?php } ?>
+                <?php } ?>
                 <?php foreach($rfqItems as $item){ ?>
                     <?php if($i == 1){ ?>
                         <tr>
@@ -123,6 +129,7 @@ $letters = range('A', 'Z');
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
+                                <?php $total[$sup->id] += $prices[$item['id']][$sup->id]->cost * $item['total'] ?>
                                 <?php } ?>
                             <?php } ?>
                             <td rowspan=<?= count($rfqItems) ?>><?= $bid->justification ?></td>
@@ -140,6 +147,7 @@ $letters = range('A', 'Z');
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
                                 <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
+                                <?php $total[$sup->id] += $prices[$item['id']][$sup->id]->cost * $item['total'] ?>
                                 <?php } ?>
                             <?php } ?>
                             <td align=center>&nbsp;</td>
@@ -147,6 +155,19 @@ $letters = range('A', 'Z');
                     <?php } ?>
                     <?php $i++ ?>
                 <?php } ?>
+                <tr>
+                    <td colspan=4 align=right><b>Total Lump Sum Offer</b></td>
+                    <?php if($supplierList){ ?>
+                        <?php foreach($supplierList as $sup){ ?>
+                            <td>&nbsp;</td>
+                            <td align=right><b><?= number_format($total[$sup->id], 2) ?></b></td>
+                            <td>&nbsp;</td>
+                        <?php } ?>
+                    <?php } ?>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
             <?php } ?>
         </tbody>
     </table>

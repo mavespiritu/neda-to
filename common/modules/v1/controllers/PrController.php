@@ -4608,6 +4608,7 @@ class PrController extends Controller
         $orsModel->ors_no = $orsModel->isNewRecord ? date("Y-m-") : $orsModel->ors_no;  
         $orsModel->reviewed_by = $budgetOfficer->value;
         $orsModel->type = $type;
+        $orsModel->apr_id = $type == 'APR' ? $model->apr ? $model->apr->id : null : null;
 
         $orsModel->scenario = $po_id != 'null' ? 'withPo' : 'withoutPo';
 

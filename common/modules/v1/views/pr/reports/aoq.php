@@ -82,20 +82,28 @@ $letters = range('A', 'Z');
     <table class="table-bordered">
         <thead>
             <tr>
-                <td align=center rowspan=2><b>ITEM NO.</b></td>
-                <td align=center rowspan=2><b>NOMENCLATURE</b></td>
-                <td align=center rowspan=2><b>Qty</b></td>
-                <td align=center rowspan=2><b>Unit of Measurement</b></td>
-                <td align=center colspan="<?= count($supplierList) * 2 ?>"><b>For identification of participating establishments, please see below</b></td>
-                <td align=center rowspan=2 style="width: 10%;"><b>JUSTIFICATION</b></td>
-                <td align=center rowspan=2 style="width: 10%;"><b>Award Recommended to</b></td>
-                <td align=center rowspan=2><b>Price and Date <br> of Last <br>Purchase</b></td>
+                <td align=center rowspan=3><b>ITEM NO.</b></td>
+                <td align=center rowspan=3><b>NOMENCLATURE</b></td>
+                <td align=center rowspan=3><b>Qty</b></td>
+                <td align=center rowspan=3><b>Unit of Measurement</b></td>
+                <td align=center colspan="<?= count($supplierList) * 3 ?>"><b>For identification of participating establishments, please see below</b></td>
+                <td align=center rowspan=3 style="width: 10%;"><b>JUSTIFICATION</b></td>
+                <td align=center rowspan=3 style="width: 10%;"><b>Award Recommended to</b></td>
+                <td align=center rowspan=3><b>Price and Date <br> of Last <br>Purchase</b></td>
             </tr>
             <tr>
                 <?php if($supplierList){ ?>
                     <?php foreach($supplierList as $idx => $supplier){ ?>
-                        <td align=center style="width: 10%;"><b><?= $letters[$idx] ?>.<br> <?= $supplier->business_name ?></b></td>
-                        <td align=center style="width: 10%;"><b>Specifications</b></td>
+                        <td align=center style="width: 10%;" colspan=2><b><?= $letters[$idx] ?>.<br> <?= $supplier->business_name ?></b></td>
+                        <td align=center style="width: 10%;" rowspan=2><b>Specifications</b></td>
+                    <?php } ?>
+                <?php } ?>
+            </tr>
+            <tr>
+                <?php if($supplierList){ ?>
+                    <?php foreach($supplierList as $idx => $supplier){ ?>
+                        <td align=center style="width: 10%;">Unit Price</td>
+                        <td align=center style="width: 10%;">Total Amount</td>
                     <?php } ?>
                 <?php } ?>
             </tr>
@@ -112,6 +120,7 @@ $letters = range('A', 'Z');
                             <td align=center><?= $item['unit'] ?></td>
                             <?php if($supplierList){ ?>
                                 <?php foreach($supplierList as $sup){ ?>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
                                 <?php } ?>
@@ -128,7 +137,8 @@ $letters = range('A', 'Z');
                             <td align=center><?= $item['unit'] ?></td>
                             <?php if($supplierList){ ?>
                                 <?php foreach($supplierList as $sup){ ?>
-                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
                                 <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
                                 <?php } ?>
                             <?php } ?>

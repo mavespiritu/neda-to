@@ -4767,7 +4767,8 @@ class PrController extends Controller
             'existingOrsItemIDs' => $existingOrsItemIDs,
             'items' => $items,
             'po' => $po,
-            'i' => $i
+            'i' => $i,
+            'type' => $type
         ]);
     }
 

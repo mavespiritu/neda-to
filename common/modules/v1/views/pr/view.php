@@ -7,7 +7,7 @@ use yii\web\View;
 use yii\bootstrap\Modal;
 /* @var $model common\modules\v1\models\Pr */
 
-$this->title = $model->status ? $model->pr_no.' ['.$model->status->status.']' : $model->pr_no;
+$this->title = $model->status ? $model->pr_no.' - '.$model->purpose.' ['.$model->status->status.']' : $model->pr_no.' - '.$model->purpose;
 $this->params['breadcrumbs'][] = ['label' => 'PRs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);

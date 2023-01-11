@@ -36,7 +36,7 @@ class Rfq extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['deadline_date', 'deadline_time', 'delivery_period', 'price_validity', 'meridian', 'minute'], 'required'],
+            [['deadline_date', 'deadline_time', 'delivery_period', 'meridian', 'minute'], 'required'],
             [['pr_id', 'delivery_period', 'supply_warranty', 'supply_equipment', 'price_validity'], 'integer'],
             [['deadline_date', 'deadline_time', 'minute', 'meridian', 'supply_warranty_unit', 'supply_equipment_unit'], 'safe'],
             [['rfq_no', 'supply_warranty_unit', 'supply_equipment_unit'], 'string', 'max' => 100],

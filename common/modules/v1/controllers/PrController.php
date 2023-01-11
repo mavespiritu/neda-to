@@ -5608,6 +5608,7 @@ class PrController extends Controller
                     'ppmp_pr_item.pr_id' => $model->id,
                 ])
                 ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
+                ->orderBy(['item' => SORT_ASC])
                 ->asArray()
                 ->all();
         

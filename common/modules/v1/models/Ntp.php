@@ -32,7 +32,7 @@ class Ntp extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_proceeded', 'date_created'], 'required'],
+            [['date_created'], 'required'],
             [['pr_id', 'po_id', 'created_by'], 'integer'],
             [['date_proceeded', 'date_created'], 'safe'],
             [['po_id'], 'exist', 'skipOnError' => true, 'targetClass' => Po::className(), 'targetAttribute' => ['po_id' => 'id']],

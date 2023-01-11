@@ -1473,7 +1473,7 @@ class PrController extends Controller
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $model->id,
             ])
-            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+            //->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
             ->groupBy(['ppmp_item.id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()

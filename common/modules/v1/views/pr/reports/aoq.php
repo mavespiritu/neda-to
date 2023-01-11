@@ -120,7 +120,7 @@ $letters = range('A', 'Z');
                             <td align=center><?= $item['unit'] ?></td>
                             <?php if($supplierList){ ?>
                                 <?php foreach($supplierList as $sup){ ?>
-                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->costg, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                 <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
                                 <?php } ?>

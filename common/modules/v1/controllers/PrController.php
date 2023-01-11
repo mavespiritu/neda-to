@@ -3452,14 +3452,16 @@ class PrController extends Controller
         $model = $this->findModel($id);
         $bid = $bid_id != 0 ? Bid::findOne($bid_id) : null;
         $supplier = Supplier::findOne($supplier_id);
-        $po = !is_null($bid) ? Po::findOne(['pr_id' => $model->id, 'bid_id' => $bid->id, 'supplier_id' => $supplier->id]) : Po::findOne(['pr_id' => $model->id, 'bid_id' => null, 'supplier_id' => $supplier->id]);
+        $po = !is_null($bid) ? Po::findOne(['pr_id' => $model->id, 'bid_id' => $bid->id, 'supplier_id' => $supplier->id, 'type' => 'PO']) : Po::findOne(['pr_id' => $model->id, 'bid_id' => null, 'supplier_id' => $supplier->id, 'type' => 'PO']);
+        $contract = !is_null($bid) ? Po::findOne(['pr_id' => $model->id, 'bid_id' => $bid->id, 'supplier_id' => $supplier->id, 'type' => 'Contract']) : Po::findOne(['pr_id' => $model->id, 'bid_id' => null, 'supplier_id' => $supplier->id, 'type' => 'Contract']);
 
         return $this->renderAjax('\steps\create-po-contract\index', [
             'model' => $model,
             'bid' => $bid,
             'supplier' => $supplier,
             'i' => $i,
-            'po' => $po
+            'po' => $po,
+            'contract' => $contract,
         ]);
     }
 
@@ -3638,6 +3640,36 @@ class PrController extends Controller
             'accountant' => $accountant,
             'accountantPosition' => $accountantPosition,
         ]);
+    }
+
+    // Create Contract -> Select Supplier
+    public function actionCreateContract($id, $bid_id, $supplier_id, $i)
+    {
+        $model = $this->findModel($id);
+        $bid = $bid_id != 'null' ? Bid::findOne($bid_id) : null;
+        $supplier = Supplier::findOne($supplier_id);
+
+        $agency = Settings::findOne(['title' => 'Agency Name']);
+        $regionalOffice = Settings::findOne(['title' => 'Regional Office']);
+        $address = Settings::findOne(['title' => 'Address']);
+        $exactAddress = Settings::findOne(['title' => 'Exact Address']);
+        $rd = Settings::findOne(['title' => 'Regional Director']);
+        $accountant = Settings::findOne(['title' => 'Accountant']);
+        $accountantPosition = Settings::findOne(['title' => 'Accountant Position']);
+
+        if(!is_null($bid))
+        {
+            $contractModel = Po::findOne(['pr_id' => $model->id, 'bid_id' => $bid->id, 'supplier_id' => $supplier->id, 'type' => 'Contract']) ? 
+            Po::findOne(['pr_id' => $model->id, 'bid_id' => $bid->id, 'supplier_id' => $supplier->id, 'type' => 'Contract']) : new Po();
+        }else
+        {
+            $contractModel = Po::findOne(['pr_id' => $model->id, 'bid_id' => null, 'supplier_id' => $supplier->id, 'type' => 'Contract']) ? Po::findOne(['pr_id' => $model->id, 'bid_id' => null, 'supplier_id' => $supplier->id, 'type' => 'Contract']) : new Po();
+        }
+
+        $contractModel->pr_id = $model->id;
+        $contractModel->bid_id = !is_null($bid) ? $bid->id : null;
+        $contractModel->supplier_id = $supplier->id;
+        $contractModel->type = 'Contract';
     }
 
     // Create Purchase Order -> Print PO
@@ -4538,22 +4570,30 @@ class PrController extends Controller
     }
 
     // Obligate Items -> with PO
-    public function actionObligateItem($id, $po_id, $i)
+    public function actionObligateItem($id, $po_id, $i, $type)
     {
         $model = $this->findModel($id);
-        $po = $po_id != 'null' ? Po::findOne($po_id) : null;
-        $ors = !is_null($po) ? Ors::findAll(['pr_id' => $model->id, 'po_id' => $po->id]) : Ors::findAll(['pr_id' => $model->id, 'po_id' => null]);
+
+        if($type != 'APR')
+        {
+            $po = $po_id != 'null' ? Po::findOne($po_id) : null;
+            $ors = !is_null($po) ? Ors::findAll(['pr_id' => $model->id, 'po_id' => $po->id]) : Ors::findAll(['pr_id' => $model->id, 'po_id' => null]);
+        }else{
+            $po = null;
+            $ors =  Ors::findAll(['pr_id' => $model->id, 'apr_id' => $po_id]);
+        }
 
         return $this->renderAjax('\steps\obligate-items\index', [
             'model' => $model,
             'po' => $po,
             'ors' => $ors,
-            'i' => $i
+            'i' => $i,
+            'type' => $type
         ]);
     }
 
     // Obligate Items -> Create ORS
-    public function actionCreateOrs($id, $po_id, $i)
+    public function actionCreateOrs($id, $po_id, $i, $type)
     {
         $model = $this->findModel($id);
         $po = $po_id != 'null' ? Po::findOne($po_id) : null;
@@ -4567,6 +4607,7 @@ class PrController extends Controller
         $orsModel->po_id = $po_id != 'null' ? $po->id : null;
         $orsModel->ors_no = $orsModel->isNewRecord ? date("Y-m-") : $orsModel->ors_no;  
         $orsModel->reviewed_by = $budgetOfficer->value;
+        $orsModel->type = $type;
 
         $orsModel->scenario = $po_id != 'null' ? 'withPo' : 'withoutPo';
 

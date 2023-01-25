@@ -7,42 +7,47 @@ use yii\web\View;
 use yii\bootstrap\Collapse;
 ?>
 
-<h4>3.2 Request Supplier Quotation</h4>
-<p><i class="fa fa-exclamation-circle"></i> Create quotation to be provided to suppliers.</p>
-<?= Html::button('<i class="fa fa-envelope-o"></i> Create Quote', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'create-rfq-button']) ?>
+<h3 class="panel-title">3.2 Request RFQ</h3>
 <br>
-<h4>Quotation List</h4>
-<table class="table table-bordered table-responsive table-condensed table-striped table-hover">
-    <thead>
-        <tr>
-            <th>RFQ No.</th>
-            <td align=right><b>ABC</b></td>
-            <th style="width: 4%;">&nbsp;</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php if($rfqs){ ?>
-        <?php foreach($rfqs as $rfq){ ?>
-            <tr>
-                <td><b><?= Html::a($rfq->rfq_no, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfq('.$rfq->id.')']) ?></b></td>
-                <td align=right><?= number_format($model->rfqTotal, 2) ?></td>
-                <td align=right>
-                    <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
-                    <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq', 'id' => $rfq->id]), 'class' => 'btn btn-xs btn-warning btn-block update-rfq-button']) ?>
-                    <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfq('.$model->id.','.$rfq->id.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
-                </td>
-            </tr>
-        <?php } ?>
-    <?php } ?>
-    </tbody>
-</table>
+<p><i class="fa fa-exclamation-circle"></i> Create quotation to be provided to suppliers.</p>
+
+<div class="row">
+    <div class="col-md-6 col-xs-12">
+    <h3 class="panel-title">RFQs <span class="pull-right"><?= Html::button('Create RFQ', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-rfq-button']) ?></span></h3>
+        <br>
+        <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">RFQ No.</th>
+                    <td style="width: 40%;" align=right><b>ABC</b></td>
+                    <th style="width: 20%;">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php if($rfqs){ ?>
+                <?php foreach($rfqs as $rfq){ ?>
+                    <tr>
+                        <td><b><?= Html::a($rfq->rfq_no, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfq('.$rfq->id.')']) ?></b></td>
+                        <td align=right><?= number_format($model->rfqTotal, 2) ?></td>
+                        <td align=right>
+                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-sm btn-info']) ?>
+                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq', 'id' => $rfq->id]), 'class' => 'btn btn-sm btn-warning update-rfq-button']) ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfq('.$model->id.','.$rfq->id.')', 'class' => 'btn btn-sm btn-danger']) ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 <div id="rfq-content"></div>
 <?php // !empty($items) ? Collapse::widget(['items' => $items, 'encodeLabels' => false, 'autoCloseItems' => true]) : '<p>No RFQs generated</p>' ?>
 <?php
   Modal::begin([
     'id' => 'create-rfq-modal',
     'size' => "modal-lg",
-    'header' => '<div id="create-rfq-modal-header"><h4>Create Quote</h4></div>',
+    'header' => '<div id="create-rfq-modal-header"><h4>Create RFQ</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="create-rfq-modal-content"></div>';
@@ -52,7 +57,7 @@ use yii\bootstrap\Collapse;
   Modal::begin([
     'id' => 'update-rfq-modal',
     'size' => "modal-lg",
-    'header' => '<div id="update-rfq-modal-header"><h4>Edit Quote</h4></div>',
+    'header' => '<div id="update-rfq-modal-header"><h4>Edit RFQ</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="update-rfq-modal-content"></div>';

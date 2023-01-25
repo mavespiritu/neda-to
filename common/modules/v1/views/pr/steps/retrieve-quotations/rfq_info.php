@@ -4,7 +4,8 @@ use yii\helpers\Html;
 
 $asset = AppAsset::register($this);
 ?>
-<h4>RFQ No. <?= $rfq->rfq_no ?>: <?= $supplier->business_name ?></h4>
+<h3 class="panel-title">RFQ No. <?= $rfq->rfq_no ?>: <?= $supplier->business_name ?></h3>
+<br>
 <div class="rfq-info-content">
     <div style="width: 90%;" class="text-center flex-center">
         <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left; z-index: 2; padding-right: 20px;" />

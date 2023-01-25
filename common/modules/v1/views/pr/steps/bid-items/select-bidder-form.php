@@ -22,7 +22,7 @@ $totals = [];
 ]); ?>
 <table class="table table-bordered table-condensed table-responsive"> 
     <tr>
-        <td style="width: 20%;" align=right><b>Bid/Canvass No.:</b></td>
+        <td style="width: 20%;" align=right><b>Canvas/Bid No.:</b></td>
         <td style="width: 30%;"><?= $bid->bid_no ?></td>
         <td style="width: 20%;" align=right><b>Date of Opening:</b></td>
         <td style="width: 30%;"><?= $bid->date_opened ?></td>

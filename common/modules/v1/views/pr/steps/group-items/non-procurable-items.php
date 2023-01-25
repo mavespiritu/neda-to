@@ -18,7 +18,8 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<h4>2.3 Set Non-procurable Items</h4>
+<h3 class="panel-title">2.3 Group Non-procurable Items</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> All items included will be directly obligated and not needed to undergo procurement like TEV etc.</p>
 <table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
@@ -83,10 +84,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer for Agency Procurement', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer to APR', ['class' => 'btn btn-primary', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
-    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer for Supplier', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forNonProcurables) ? Html::submitButton('Transfer to RFQ', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>

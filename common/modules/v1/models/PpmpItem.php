@@ -213,9 +213,79 @@ class PpmpItem extends \yii\db\ActiveRecord
         return '<b>'.number_format($total, 2).'</b>';
     }
 
+    public function getRisItems()
+    {
+        return $this->hasMany(RisItem::className(), ['ppmp_item_id' => 'id']);
+    }
+
     public function getQuantities()
     {
         $total = ItemBreakdown::find()->select(['sum(quantity) as quantity'])->where(['ppmp_item_id' => $this->id])->limit(12)->asArray()->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getRisPerMonth($month_id, $ris_id)
+    {
+        $total = RisSource::find()->select(['quantity'])
+            ->andWhere(['ppmp_item_id' => $this->id, 'month_id' => $month_id, 'ris_id' => $ris_id])
+            ->andWhere(['<>', 'type', 'Realigned'])
+            ->asArray()
+            ->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getRealignedRisPerMonth($month_id, $ris_id)
+    {
+        $total = RisSource::find()->select(['quantity'])
+            ->andWhere(['ppmp_item_id' => $this->id, 'month_id' => $month_id, 'ris_id' => $ris_id])
+            ->andWhere(['type' => 'Realigned'])
+            ->asArray()
+            ->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getPrPerMonth($month_id, $pr_id)
+    {
+        $total = PrItem::find()->select(['sum(quantity) as quantity'])
+            ->andWhere(['ppmp_item_id' => $this->id, 'month_id' => $month_id, 'pr_id' => $pr_id])
+            ->asArray()
+            ->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getPrAwardedPerMonth($month_id, $pr_id)
+    {
+        $total = BidWinner::find()->select(['sum(quantity) as quantity'])
+            ->leftJoin('ppmp_pr_item p', 'p.id = ppmp_bid_winner.pr_item_id')
+            ->andWhere(['p.ppmp_item_id' => $this->id, 'p.month_id' => $month_id, 'p.pr_id' => $pr_id, 'ppmp_bid_winner.status' => 'Awarded'])
+            ->asArray()
+            ->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getPrObligatedPerMonth($month_id, $pr_id)
+    {
+        $total = OrsItem::find()->select(['sum(quantity) as quantity'])
+            ->leftJoin('ppmp_pr_item p', 'p.id = ppmp_ors_item.pr_item_id')
+            ->andWhere(['p.ppmp_item_id' => $this->id, 'p.month_id' => $month_id, 'p.pr_id' => $pr_id])
+            ->asArray()
+            ->one();
+
+        return $total ? $total['quantity'] : 0;
+    }
+
+    public function getPrInspectedPerMonth($month_id, $pr_id)
+    {
+        $total = IarItem::find()->select(['sum(quantity) as quantity'])
+            ->leftJoin('ppmp_pr_item p', 'p.id = ppmp_iar_item.pr_item_id')
+            ->andWhere(['p.ppmp_item_id' => $this->id, 'p.month_id' => $month_id, 'p.pr_id' => $pr_id])
+            ->asArray()
+            ->one();
 
         return $total ? $total['quantity'] : 0;
     }

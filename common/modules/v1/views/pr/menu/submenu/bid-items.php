@@ -6,8 +6,9 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>5. Canvas/Bid Items</h4>
-<p><i class="fa fa-exclamation-circle"></i> Canvass/bid items to select winning suppliers.</p>
+<h3 class="panel-title">5. AOQ</h3>
+<br>
+<p><i class="fa fa-exclamation-circle"></i> Canvas/bid items to select winning suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
 <?php if($rfqs){ ?>
     <?php $i = 1; ?>
@@ -19,7 +20,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="product-info">
                 <a href="javascript:void(0)" onclick="bidRfq('<?= $model->id?>','<?= $rfq->id?>','<?= $i ?>');" class="product-title">RFQ. No. <?= $rfq->rfq_no ?>
                 </a>
-                <span class="product-description">Bid the selected requested quotation.</span>
+                <span class="product-description">Bid the selected RFQ.</span>
             </div>
         </li>
         <?php $i++ ?>

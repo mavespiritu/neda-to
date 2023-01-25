@@ -18,11 +18,10 @@ use yii\web\View;
 ]); ?>
 
 <h5>
-    <?= $ris->officeName ?><br>
-    RIS No. <?= $ris->ris_no ?> - <?= $ris->purpose ?><br><br>
-    List of items
+    List of items under RIS No. <?= $ris->ris_no ?> of <?= $ris->officeName ?>: <?= $ris->purpose ?><br><br>
+    
 </h5>
-<p><i class="fa fa-exclamation-circle"></i> Check items and click "Add to PR" green button to include in PR.</p>
+<p><i class="fa fa-exclamation-circle"></i> Check items to include in PR.</p>
 <table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
         <tr>

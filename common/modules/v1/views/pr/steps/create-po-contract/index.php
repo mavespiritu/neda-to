@@ -12,20 +12,20 @@ use frontend\assets\AppAsset;
 
 ?>
 <div class="po-contract-content">
-    <h4>6.<?= $i ?> <?= $supplier->business_name ?><br>
-    <small><?= $supplier->business_address ?></small>
-    </h4>
+    <h3 class="panel-title">7.<?= $i ?> <?= $supplier->business_name ?>
+    </h3>
+    <p><?= $supplier->business_address ?></p>
     <div class="row">
         <div class="col-md-12 col-xs-12">
-            <h5>Select Document</h5>
-            <a onclick="createPurchaseOrder('<?= $model->id ?>','<?= !is_null($bid) ? $bid->id : 'null' ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-app">
-            <?= $po ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
-            <i class="fa fa-inbox"></i> Purchase Order</a>
-            <a onclick="createContract('<?= $model->id ?>','<?= !is_null($bid) ? $bid->id : 'null' ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-app">
-            <?= $contract ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
-            <i class="fa fa-edit"></i> Contract</a>
+            <a onclick="createPurchaseOrder('<?= $model->id ?>','<?= !is_null($bid) ? $bid->id : 'null' ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-success">
+            <?php //$po ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-inbox"></i> Create PO</a>
+            <a onclick="createContract('<?= $model->id ?>','<?= !is_null($bid) ? $bid->id : 'null' ?>','<?= $supplier->id ?>','<?= $i ?>');" class="btn btn-primary">
+            <?php //$contract ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
+            <i class="fa fa-edit"></i> Create Contract</a>
         </div>
         <div class="col-md-12 col-xs-12">
+            <br>
             <div id="po_contract_content"></div>
         </div>
     </div>

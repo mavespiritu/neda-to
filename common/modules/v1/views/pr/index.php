@@ -75,13 +75,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return '<span class="badge bg-'.$color[$pr->statusName].'">'.$pr->statusName.'</span>';
                                 }
                             ],
-                            [
+                            /* [
                                 'attribute' => 'type',
                                 'format' => 'raw',
                                 'value' => function($model){
                                     return $model->type == 'Supply' ? 'Goods' : 'Service/Contract';
                                 }
-                            ],
+                            ], */
                             'officeName',
                             'procurementModeName',
                             [
@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'requesterName',
                             'date_requested',
                             [
-                                'header' => 'Total', 
+                                'header' => 'Total ABC', 
                                 'attribute' => 'total',
                                 'headerOptions' => ['style' => 'text-align: right;'],
                                 'contentOptions' => ['style' => 'text-align: right;'],

@@ -38,7 +38,7 @@ use fedemotta\datatables\DataTables;
             'header' => 'Title', 
             'format' => 'raw',
             'value' => function($item){
-                return $item->item->title;
+                return '<a href="javascript:void(0)" onClick="viewItemDetails('.$item->id.')">'.$item->item->title.'</a>';
             }
         ],
         'item.unit_of_measure',
@@ -267,7 +267,22 @@ use fedemotta\datatables\DataTables;
 ?>
 
 <?php
+  Modal::begin([
+    'id' => 'view-item-modal-'.$subActivity->id,
+    'size' => "modal-xl",
+    'header' => '<div id="view-item-modal-header-'.$subActivity->id.'"><h4>View Item</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="view-item-modal-content-'.$subActivity->id.'"></div>';
+  Modal::end();
+?>
+
+<?php
     $script = '
+        function viewItemDetails(id)
+        {   
+            $("#view-item-modal-'.$subActivity->id.'").modal("show").find("#view-item-modal-content-'.$subActivity->id.'").load("'.Url::to(['/v1/ppmp/view-item']).'?id=" + id);
+        }
         function loadItems(id, activity_id, fund_source_id)
         {
             $.ajax({
@@ -316,8 +331,8 @@ use fedemotta\datatables\DataTables;
                 //$("#update-item-modal-'.$subActivity->id.'").modal("show").find("#update-item-modal-content-'.$subActivity->id.'").load($(this).attr("value"));
                 $("html").animate({ scrollTop: 0 }, "slow");
                 $("#item-form-container").load($(this).attr("value"));
-                $("#close-item-form-button").css("display", "block");
-                $("#create-item-button").css("display", "none");
+                
+                
             });
 
             $(".content-table").freezeTable({

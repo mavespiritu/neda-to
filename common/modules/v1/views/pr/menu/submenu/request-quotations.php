@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>3. Quote Items</h4>
+<h3 class="panel-title">3. RFQs/APRs</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> Request quotations from suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
     <li class="item">
@@ -14,10 +15,10 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">3.1</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="aprQuotation(<?= $model->id?>);" class="product-title">Agency Procurement Quotation
+            <a href="javascript:void(0)" onclick="aprQuotation(<?= $model->id?>);" class="product-title">Request APR
             <?= $model->aprCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
-            <span class="product-description">Generate quotation for agency procurement</span>
+            <span class="product-description">Generate APR for PS-DBM</span>
         </div>
     </li>
     <li class="item">
@@ -25,10 +26,10 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">3.2</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="rfqQuotation(<?= $model->id?>);" class="product-title">Supplier Quotation
+            <a href="javascript:void(0)" onclick="rfqQuotation(<?= $model->id?>);" class="product-title">Request RFQ
             <?= $model->rfqCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
-            <span class="product-description">Generate quotation for outside suppliers.</span>
+            <span class="product-description">Generate RFQ for outside suppliers.</span>
         </div>
     </li>
 </ul>

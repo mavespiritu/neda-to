@@ -24,6 +24,11 @@ use common\modules\v1\models\ItemBreakdown;
 use common\modules\v1\models\PpmpSearch;
 use common\modules\v1\models\Settings;
 use common\modules\v1\models\Transaction;
+use common\modules\v1\models\Ris;
+use common\modules\v1\models\RisItem;
+use common\modules\v1\models\Pr;
+use common\modules\v1\models\PrItem;
+use common\modules\v1\models\RisSource;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -1012,6 +1017,46 @@ class PpmpController extends Controller
             'model' => $model,
             'months' => $months,
         ]);   
+    }
+
+    public function actionViewItem($id)
+    {
+        $model = PpmpItem::findOne($id);
+        $risIDs = RisSource::find()
+                ->select(['ris_id'])
+                ->andWhere(['ppmp_item_id' => $model->id])
+                ->andWhere(['<>', 'type', 'Realigned'])
+                ->asArray()
+                ->all();
+        $risIDs = ArrayHelper::map($risIDs, 'ris_id', 'ris_id');
+
+        $rises = Ris::find()->where(['in', 'id', $risIDs])->all();
+
+        $realignedRisIDs = RisSource::find()
+                        ->select(['ris_id'])
+                        ->andWhere(['ppmp_item_id' => $model->id])
+                        ->andWhere(['type' => 'Realigned'])
+                        ->asArray()
+                        ->all();
+        $realignedRisIDs = ArrayHelper::map($realignedRisIDs, 'ris_id', 'ris_id');
+
+        $realignedRises = Ris::find()->where(['in', 'id', $realignedRisIDs])->all();
+
+        $prIDs = PrItem::find()
+        ->select(['pr_id'])
+        ->andWhere(['ppmp_item_id' => $model->id])
+        ->asArray()
+        ->all();
+        $prIDs = ArrayHelper::map($prIDs, 'pr_id', 'pr_id');
+
+        $prs = Pr::find()->where(['in', 'id', $prIDs])->all();
+
+        return $this->renderAjax('_item-info', [
+            'model' => $model,
+            'rises' => $rises,
+            'realignedRises' => $realignedRises,
+            'prs' => $prs,
+        ]);
     }
 
     /**

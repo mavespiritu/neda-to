@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>2. Group Items</h4>
+<h3 class="panel-title">2. Group Items</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> Group items for agency procurement, supplier, and direct obligation.</p>
 <ul class="products-list product-list-in-box navigation">
     <li class="item">
@@ -14,7 +15,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">2.1</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupAprItems(<?= $model->id?>);" class="product-title">Set Agency Procurement Items
+            <a href="javascript:void(0)" onclick="groupAprItems(<?= $model->id?>);" class="product-title">Group APR Items
             <span class="badge bg-green pull-right"><?= $model->aprItemCount ?></span>
             </a>
             <span class="product-description">Select items from PR to include in APR</span>
@@ -25,7 +26,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">2.2</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupRfqItems(<?= $model->id?>);" class="product-title">Set Supplier Items
+            <a href="javascript:void(0)" onclick="groupRfqItems(<?= $model->id?>);" class="product-title">Group RFQ Items
             <span class="badge bg-green pull-right"><?= $model->rfqItemCount ?></span>
             </a>
             <span class="product-description">Select items from PR to include in RFQ</span>
@@ -36,7 +37,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">2.3</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupNonProcurableItems(<?= $model->id?>);" class="product-title">Set Non-procurable Items
+            <a href="javascript:void(0)" onclick="groupNonProcurableItems(<?= $model->id?>);" class="product-title">Group Non-procurable Items
             <span class="badge bg-green pull-right"><?= $model->nonProcurableItemCount ?></span>
             </a>
             <span class="product-description">Select items from PR for direct obligation</span>

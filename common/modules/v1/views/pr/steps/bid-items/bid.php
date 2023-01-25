@@ -10,26 +10,25 @@ $abcTotal = 0;
 $totals = [];
 ?>
 
-<h4>5.<?= $i ?> Canvas/Bid RFQ No. <?= $rfq->rfq_no ?></h4>
-<p><i class="fa fa-exclamation-circle"></i> To accomplish the step, create a bid and proceed to the selection of winning bidders.</p>
-</div>
-<div class="clearfix"></div>
-<h4>Canvass/Bid Information
+<h3 class="panel-title">5.<?= $i ?> AOQ for RFQ No. <?= $rfq->rfq_no ?></h3>
+<br>
+<h3 class="panel-title">AOQ Information
     <span class="pull-right">
-    <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit Canvas/Bid', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-warning', 'id' => 'update-bid-button']).' '.
-               Html::a('<i class="fa fa-trash"></i> Delete Canvas/Bid', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger btn-sm delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
+    <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit AOQ', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-warning', 'id' => 'update-bid-button']).' '.
+               Html::a('<i class="fa fa-trash"></i> Delete AOQ', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger btn-sm delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
                     'confirm' => 'Are you sure you want to delete this bid?',
                     'method' => 'post',
                 ],]).'</div>'
     :
-    Html::button('<i class="fa fa-legal"></i> Create Canvass/Bid', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-bid-button']) ?>
+    Html::button('<i class="fa fa-legal"></i> Create AOQ', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-bid-button']) ?>
     </span>
-    <span class="clearfix"></span>
-</h4>
+</h3>
+<p><i class="fa fa-exclamation-circle"></i> To accomplish the step, create a bid and proceed to the selection of winning bidders.</p>
+<br>
 <table class="table table-bordered table-responsive table-condensed">
     <tbody>
         <tr>
-            <td align=right style="width: 20%;"><b>Canvass/Bid No.</b></td>
+            <td align=right style="width: 20%;"><b>Canvas/Bid No.</b></td>
             <td><?= $bid ? $bid->bid_no : '&nbsp;' ?></td>
             <td align=right style="width: 20%;"><b>Date and Time of Opening</b></td>
             <td><?= $bid ? date("F j, Y", strtotime($bid->date_opened)) : '&nbsp;' ?> <?= $bid ? $bid->time_opened : '&nbsp;' ?></td>
@@ -54,11 +53,10 @@ $totals = [];
         </tr>
     </tbody>
 </table>
+<h3 class="panel-title">Bid Items <span class="pull-right"><?= $bid ? Html::button('<i class="fa fa-gavel"></i> Set Winning Bidders', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-success winner-button']).' ' : ' ' ?>
+<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-sm btn-info', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?></span></h3>
 <p><i class="fa fa-exclamation-circle"></i> Create canvas/bid to enable selection of winners.</p>
-<?= $bid ? Html::button('<i class="fa fa-gavel"></i> Select Winners', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-app winner-button']) : '' ?>
-<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-app', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?>
 <br>
-<h4>Items</h4>
 <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
     <thead>
         <tr>
@@ -147,7 +145,7 @@ $totals = [];
   Modal::begin([
     'id' => 'create-bid-modal',
     'size' => "modal-lg",
-    'header' => '<div id="create-bid-modal-header"><h4>Create Canvas/Bid</h4></div>',
+    'header' => '<div id="create-bid-modal-header"><h4>Create AOQ</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="create-bid-modal-content"></div>';
@@ -157,7 +155,7 @@ $totals = [];
   Modal::begin([
     'id' => 'update-bid-modal',
     'size' => "modal-lg",
-    'header' => '<div id="update-bid-modal-header"><h4>Edit Canvas/Bid</h4></div>',
+    'header' => '<div id="update-bid-modal-header"><h4>Edit AOQ</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="update-bid-modal-content"></div>';

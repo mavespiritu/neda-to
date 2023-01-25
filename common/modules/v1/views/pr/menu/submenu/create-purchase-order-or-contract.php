@@ -6,18 +6,19 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>6. Deal Items</h4>
-<p><i class="fa fa-exclamation-circle"></i> Produce purchase orders or contracts for winning suppliers.</p>
+<h3 class="panel-title">7. POs/Contracts</h3>
+<br>
+<p><i class="fa fa-exclamation-circle"></i> Generate purchase orders and contracts for winning suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
 <?php if(!empty($data)){ ?>
     <?php $i = 1; ?>
     <?php foreach($data as $datum){ ?>
-        <li><h5>Canvass/Bid No. <?= $datum['bid']->bid_no ?></h5></li>
+        <li><h5>AOQ No. <?= $datum['bid']->bid_no ?></h5></li>
         <?php if(!empty($datum['suppliers'])){ ?>
             <?php foreach($datum['suppliers'] as $supplier){ ?>
                 <li class="item">
                     <div class="product-img">
-                        <div class="circle">6.<?= $i ?></div>
+                        <div class="circle">7.<?= $i ?></div>
                     </div>
                     <div class="product-info">
                         <a href="javascript:void(0)" onclick="selectType('<?= $model->id ?>','<?= $datum['bid']->id ?>','<?= $supplier->id ?>','<?= $i ?>');" class="product-title"><?= $supplier->business_name ?>

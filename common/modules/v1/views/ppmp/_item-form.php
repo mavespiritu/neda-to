@@ -312,11 +312,15 @@ $item_id = $itemModel->isNewRecord ? 0 : $itemModel->item_id;
                 //$("#create-item-modal").modal("toggle");
                 //$("#update-item-modal").modal("toggle");
                 //$(".modal-backdrop").remove();
-                loadItems('.$model->id.',activity_id,fund_source_id);
-                loadPpmpTotal('.$model->id.');
-                loadOriginalTotal('.$model->id.');
-                loadSupplementalTotal('.$model->id.');
-                loadItemSummary('.$model->id.');
+                $("#close-item-form-button").css("display", "none");
+                $("#create-item-button").css("display", "block");
+                $("#item-form-container").empty();
+                loadItemsInSubActivity('.$model->id.',sub_activity_id,activity_id,fund_source_id);
+                //loadItems('.$model->id.',activity_id,fund_source_id);
+                //loadPpmpTotal('.$model->id.');
+                //loadOriginalTotal('.$model->id.');
+                //loadSupplementalTotal('.$model->id.');
+                //loadItemSummary('.$model->id.');
                 form.enableSubmitButtons();
             },
             error: function (err) {

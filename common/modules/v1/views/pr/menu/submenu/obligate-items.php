@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>8. Obligate Items</h4>
+<h3 class="panel-title">9. ORS</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> Obligate items procured and non-procurable items.</p>
 <ul class="products-list product-list-in-box navigation">
 <?php $i = 1; ?>
@@ -14,7 +15,7 @@ use yii\bootstrap\ButtonDropdown;
     <?php foreach($pos as $po){ ?>
         <li class="item">
             <div class="product-img">
-                <div class="circle">8.<?= $i ?></div>
+                <div class="circle">9.<?= $i ?></div>
             </div>
             <div class="product-info">
                 <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>','<?= $po->id ?>','<?= $i ?>','PO');" class="product-title"><?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>
@@ -26,28 +27,28 @@ use yii\bootstrap\ButtonDropdown;
         <?php $i++ ?>
     <?php } ?>
 <?php } ?>
-<?php if($model->apr){ ?>
+<!-- <?php if($model->apr){ ?>
     <li class="item">
         <div class="product-img">
-            <div class="circle">8.<?= $i + 1 ?></div>
+            <div class="circle">8.<?php //$i + 1 ?></div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', '<?= $model->apr->id ?>' , '<?= $i + 1 ?>', 'APR');" class="product-title">Agency Procured Items
+            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', '<?= $model->apr->id ?>' , '<?= $i + 1 ?>', 'APR');" class="product-title">APR Items
             <?= $model->orsOfApr > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
-            <span class="product-description">Obligate items for APR</span>
+            <span class="product-description">Obligate items from APR</span>
         </div>
     </li>
-<?php } ?>
+<?php } ?> -->
     <li class="item">
         <div class="product-img">
-            <div class="circle">8.<?= $i + 2 ?></div>
+            <div class="circle">9.<?= $i ?></div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i + 2 ?>','NP');" class="product-title">Non-procurable Items
+            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i ?>','NP');" class="product-title">Non-procurable Items
             <?= $model->orsWithoutPo > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
-            <span class="product-description">Obligate items not undergoing procurement</span>
+            <span class="product-description">Obligate non-procurable items</span>
         </div>
     </li>
 </ul>

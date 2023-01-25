@@ -9,6 +9,7 @@ use yii\web\View;
 /* @var $model common\modules\v1\models\Ris */
 
 $this->title = $model->statusName != 'No status' ? $model->ris_no.' - '.$model->purpose.' ['.$model->statusName.']' : $model->ris_no.' - '.$model->purpose;
+$this->title = strlen($this->title) > 70 ? substr($this->title, 0, 70).'...' : $this->title;
 $this->params['breadcrumbs'][] = ['label' => 'RIS', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);

@@ -1,4 +1,4 @@
-<h4>ORS No. <?= $ors->ors_no ?></h4>
+<h3 class="panel-title">ORS No. <?= $ors->ors_no ?></h3>
 <br>
 <table class="table table-bordered table-responsive table-condensed">
     <tr>

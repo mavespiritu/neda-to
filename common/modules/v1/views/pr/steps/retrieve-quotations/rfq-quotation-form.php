@@ -95,7 +95,7 @@ use yii\bootstrap\Modal;
             <td align=center><b>Quantity</b></td>
             <td align=center><b>Specification</b></td>
             <td align=right><b>Current Price</b></td>
-            <td align=right><b>Unit Price</b></td>
+            <td align=right><b>Supplier Price</b></td>
             <td align=right><b>Total Cost</b></td>
         </tr>
     </thead>

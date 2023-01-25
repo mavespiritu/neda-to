@@ -11,7 +11,8 @@ use yii\web\View;
 /* @var $model common\modules\v1\models\Pr */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-<h4>3.1 Request Agency Procurement Quotation</h4>
+<h3 class="panel-title">3.1 Request APR</h3>
+<br>
 <?php $form = ActiveForm::begin([
     'id' => 'apr-form',
     'options' => ['class' => 'disable-submit-buttons'],

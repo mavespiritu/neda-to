@@ -205,6 +205,9 @@ class PpmpController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+
+        if(!Yii::$app->user->can('Administrator') && Yii::$app->user->identity->userinfo->OFFICE_C != $model->office_id){ throw new NotFoundHttpException('Page not found'); }
+
         $refFilters = [];
         $refFilters['Indicative'] = ['ppmp_appropriation.type' => 'GAA', 'ppmp_appropriation.year' => $model->year - 1]; 
         $refFilters['Adjusted'] = ['ppmp_appropriation.type' => 'NEP', 'ppmp_appropriation.year' => $model->year]; 

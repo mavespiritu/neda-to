@@ -142,7 +142,8 @@ class PpmpMonitoringController extends \yii\web\Controller
                 'octQuantity.quantity as octQty',
                 'novQuantity.quantity as novQty',
                 'decQuantity.quantity as decQty',
-                'IF(ppmp_item.cse = "Yes", "TRUE", "FALSE") as cse'
+                'IF(ppmp_item.cse = "Yes", "TRUE", "FALSE") as cse',
+                'ppmp_ppmp_item.cost as remarks',
             ])
             ->leftJoin('ppmp_ppmp', 'ppmp_ppmp.id = ppmp_ppmp_item.ppmp_id')
             ->leftJoin('tbloffice', 'tbloffice.id = ppmp_ppmp.office_id')

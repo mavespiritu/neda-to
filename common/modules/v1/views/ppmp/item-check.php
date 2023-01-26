@@ -39,7 +39,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'activityName',
                 'subActivityName',
                 'objName',
-                'itemName',
+                [
+                    'header' => 'Item',
+                    'attribute' => 'itemName',
+                    'format' => 'raw',
+                    'value' => function($item){
+                        return '<a href="javascript:void(0)" onClick="viewItemDetails('.$item->id.')">'.$item->item->title.'</a>';
+                    }
+                ],
                 [
                     'header' => 'Cost',
                     'attribute' => 'cost',
@@ -77,3 +84,23 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<?php
+  Modal::begin([
+    'id' => 'view-item-modal',
+    'size' => "modal-xl",
+    'header' => '<div id="view-item-modal-header"><h4>View Item</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="view-item-modal-content"></div>';
+  Modal::end();
+?>
+<?php
+    $script = '
+        function viewItemDetails(id)
+        {   
+            $("#view-item-modal").modal("show").find("#view-item-modal-content").load("'.Url::to(['/v1/ppmp/view-item']).'?id=" + id);
+        }   
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>

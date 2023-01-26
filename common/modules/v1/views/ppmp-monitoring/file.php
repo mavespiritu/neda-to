@@ -52,6 +52,7 @@
                 <?php } ?>
             <?php } ?>
             <th rowspan=2>CSE</th>
+            <th rowspan=2>Remarks</th>
         </tr>
         <tr>
             <th>Size</th>
@@ -110,6 +111,7 @@
                 <td align=right><?= number_format($firstLevel['octQty'] + $firstLevel['novQty'] + $firstLevel['decQty'], 0) ?></td>
                 <td align=right><?= number_format($firstLevel['octCost'] + $firstLevel['novCost'] + $firstLevel['decCost'], 2) ?></td>
                 <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
             <?php if(!empty($firstLevel) && is_array($firstLevel)){ ?>
                 <?php foreach((array) $firstLevel as $secondFilter => $secondLevel){ ?>
@@ -150,6 +152,7 @@
                         <td align=right><?= number_format($secondLevel['decCost'], 2) ?></td>
                         <td align=right><?= number_format($secondLevel['octQty'] + $secondLevel['novQty'] + $secondLevel['decQty'], 0) ?></td>
                         <td align=right><?= number_format($secondLevel['octCost'] + $secondLevel['novCost'] + $secondLevel['decCost'], 2) ?></td>
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
                     <?php } ?>
@@ -194,6 +197,7 @@
                                 <td align=right><?= number_format($thirdLevel['octQty'] + $thirdLevel['novQty'] + $thirdLevel['decQty'], 0) ?></td>
                                 <td align=right><?= number_format($thirdLevel['octCost'] + $thirdLevel['novCost'] + $thirdLevel['decCost'], 2) ?></td>
                                 <td>&nbsp;</td>
+                                <td>&nbsp;</td>
                             </tr>
                             <?php } ?>
                             <?php if(!empty($thirdLevel) && is_array($thirdLevel)){ ?>
@@ -237,6 +241,7 @@
                                         <td align=right><?= number_format($items['decCost'], 2) ?></td>
                                         <td align=right><?= number_format($items['octQty'] + $items['novQty'] + $items['decQty'], 0) ?></td>
                                         <td align=right><?= number_format($items['octCost'] + $items['novCost'] + $items['decCost'], 2) ?></td>
+                                        <td>&nbsp;</td>
                                         <td>&nbsp;</td>
                                     </tr>
                                     <?php } ?>
@@ -286,6 +291,7 @@
                                                 <td align=right><?= number_format(($item['octQty'] + $item['novQty'] + $item['decQty']), 0) ?></td>
                                                 <td align=right><?= number_format(($item['octQty'] + $item['novQty'] + $item['decQty']) * $item['costPerUnit'], 2) ?></td>
                                                 <td align=right><?= $item['cse'] ?></td>
+                                                <td align=right><?= $item['remarks'] ?></td>
                                             </tr>
                                         <?php } ?>
                                     <?php } ?>

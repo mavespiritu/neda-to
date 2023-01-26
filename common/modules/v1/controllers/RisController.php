@@ -508,6 +508,11 @@ class RisController extends Controller
     public function actionInfo($id)
     {
         $model = $this->findModel($id);
+
+        $office = Office::findOne(Yii::$app->user->identity->userinfo->OFFICE_C);
+
+        if(!Yii::$app->user->can('Administrator') && $office->abbreviation != $model->office_id){ throw new NotFoundHttpException('Page not found'); }
+
         $entityName = Settings::findOne(['title' => 'Entity Name']);
         $fundCluster = FundCluster::find()->one();
 
@@ -517,6 +522,7 @@ class RisController extends Controller
                 ->select([
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
+                    'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
                     'ppmp_item.id as stockNo',
                     'concat(
                         ppmp_cost_structure.code,"",
@@ -599,6 +605,7 @@ class RisController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.month_id as month_id',
                     'ppmp_item.id as stockNo',
+                    'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
                     'ppmp_activity.id as activityId',
                     'concat(
                         ppmp_cost_structure.code,"",

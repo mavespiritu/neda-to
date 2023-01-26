@@ -40,7 +40,8 @@ class SupplierSearch extends Supplier
      */
     public function search($params)
     {
-        $query = Supplier::find();
+        $query = Supplier::find()
+                ->orderBy(['business_name' => SORT_ASC]);
 
         // add conditions that should always apply here
 

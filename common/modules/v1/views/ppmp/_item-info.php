@@ -76,7 +76,7 @@ use common\modules\v1\models\PpmpItem;
             <tbody>
                 <?php $ppmpTotal = 0; ?>
                 <tr>
-                    <td><b>PPMP</b></td>
+                    <td><?= Html::a($model->ppmp->title, ['/v1/ppmp/view', 'id' => $model->ppmp->id]) ?></td>
                     <?php for($i = 1; $i < 13; $i++){ ?>
                         <td align=center><?= number_format($model->getQuantityPerMonth($i), 0) ?></td>
                         <?php $ppmpTotal += $model->getQuantityPerMonth($i) ?>

@@ -4,6 +4,8 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
 use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap\Modal;
+use yii\web\View;
 /* @var $this yii\web\View */
 /* @var $model common\modules\v1\models\Ris */
 
@@ -260,3 +262,23 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<?php
+  Modal::begin([
+    'id' => 'view-item-modal',
+    'size' => "modal-xl",
+    'header' => '<div id="view-item-modal-header"><h4>View Item</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="view-item-modal-content"></div>';
+  Modal::end();
+?>
+<?php
+    $script = '
+        function viewItemDetails(id)
+        {   
+            $("#view-item-modal").modal("show").find("#view-item-modal-content").load("'.Url::to(['/v1/ppmp/view-item']).'?id=" + id);
+        }   
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>

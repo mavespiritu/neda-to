@@ -9,7 +9,7 @@ use yii\web\View;
     <td align=center><?= $item['stockNo'] ?></td>
     <td><?= $item['unitOfMeasure'] ?></td>
     <td>
-        <?= $item['itemTitle'] ?><br>
+        <a href="javascript:void(0)" onClick="viewItemDetails(<?= $item['ppmp_item_id'] ?>)"><?= $item['itemTitle'] ?></a><br>
         <i><?= isset($specifications[$item['id']]) ? $specifications[$item['id']]->risItemSpecValueString : '' ?></i>
     </td>
     <td align=center><?= number_format($item['total'], 0) ?></td>

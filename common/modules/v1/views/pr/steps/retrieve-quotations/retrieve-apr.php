@@ -6,8 +6,9 @@ use yii\widgets\DetailView;
 use yii\web\View;
 ?>
 
-<h4>4.1 Retrieve Agency Procurement Quotation</h4>
-<p><i class="fa fa-exclamation-circle"></i> Input prices from agency procurement items. Remove items not available by clicking <a href="javascript:void(0);" onclick="groupItems(<?= $model->id?>);">here</a>.</p>
+<h3 class="panel-title">4.1 Retrieved APR</h3>
+<br>
+<p><i class="fa fa-exclamation-circle"></i> Input prices from retrieved APR. Remove items not available by clicking <a href="javascript:void(0);" onclick="groupItems(<?= $model->id?>);">here</a>.</p>
 
 <div id="agency-procurement-price"></div>
 <?php

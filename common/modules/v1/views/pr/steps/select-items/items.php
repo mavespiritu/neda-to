@@ -6,21 +6,21 @@ use yii\widgets\DetailView;
 use yii\web\View;
 ?>
 
-<h4>1. Select Items</h4>
+<h3 class="panel-title">1. Select Items</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> Select items from approved RIS to include in PR.</p>
 <div class="row">
-    <div class="col-md-6 col-xs-12">
-        <h4>Select items from RIS</h4>
+    <div class="col-md-12 col-xs-12">
         <?= $this->render('ris_form', [
             'model' => $model,
             'rises' => $rises
         ]) ?>
         <div id="ris-items"></div>
     </div>
-    <div class="col-md-6 col-xs-12">
+    <!-- <div class="col-md-6 col-xs-12">
         <h4>PR Items</h4>
         <div id="pr-items"></div>
-    </div>
+    </div> -->
 </div>
 <?php
     $script = '
@@ -65,7 +65,7 @@ use yii\web\View;
         }
 
         $(document).ready(function(){
-            prItems('.$model->id.');
+            //prItems('.$model->id.');
         });     
     ';
 

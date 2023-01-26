@@ -11,7 +11,8 @@ use frontend\assets\AppAsset;
 $asset = AppAsset::register($this);
 ?>
 
-<h4>RFQ No. <?= $rfq->rfq_no ?></h4>
+<h3 class="panel-title">RFQ No. <?= $rfq->rfq_no ?></h3>
+<br>
 <div class="rfq-content">
     <div style="width: 100%;" class="text-center flex-center">
         <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left; z-index: 2; padding-right: 20px;" />

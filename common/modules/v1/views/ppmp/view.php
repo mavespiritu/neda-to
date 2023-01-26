@@ -85,6 +85,31 @@ $this->params['breadcrumbs'][] = $this->title;
             });
         }
 
+        function loadItemsInSubActivity(id, sub_activity_id, activity_id, fund_source_id)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/ppmp/load-items-in-sub-activity']).'",
+                data: {
+                    id: id,
+                    sub_activity_id: sub_activity_id,
+                    activity_id: activity_id,
+                    fund_source_id: fund_source_id,
+                },
+                beforeSend: function(){
+                    $("#item-list-" + sub_activity_id).html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    $("#item-list-" + sub_activity_id).empty();
+                    $("#item-list-" + sub_activity_id).hide();
+                    $("#item-list-" + sub_activity_id).fadeIn("slow");
+                    $("#item-list-" + sub_activity_id).html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
+
         function ignoreAlert(id, con)
         {
             $.ajax({

@@ -18,7 +18,8 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<h4>2.1 Set Agency Procurement Items</h4>
+<h3 class="panel-title">2.1 Group APR Items</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> All items included will be checked if available in PS-DBM</p>
 <table class="table table-bordered table-responsive table-hover table-condensed table-striped">
     <thead>
@@ -83,10 +84,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to Non-procurable', ['class' => 'btn btn-success', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to Non-procurable', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to Supplier', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to RFQ', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>

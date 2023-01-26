@@ -37,7 +37,7 @@ class Bid extends \yii\db\ActiveRecord
             [['date_opened', 'time_opened', 'minute', 'meridian'], 'required', 'on' => 'createBid'],
             [['recommendation'], 'required', 'on' => 'selectWinner'],
             [['pr_id', 'rfq_id'], 'integer'],
-            [['date_opened'], 'safe'],
+            [['date_opened', 'justification'], 'safe'],
             [['bid_no', 'time_opened'], 'string', 'max' => 100],
         ];
     }

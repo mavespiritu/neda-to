@@ -97,7 +97,8 @@ return $rettxt;
 }
 ?>
 
-<h4>PO No. <?= !$poModel->isNewRecord ? $poModel->po_no : $model->pr_no.'-'.$no ?></h4>
+<h3 class="panel-title">PO No. <?= !$poModel->isNewRecord ? $poModel->po_no : $model->pr_no.'-'.$no ?></h3>
+<br>
 <?php $form = ActiveForm::begin([
     'id' => 'po-form',
     'options' => ['class' => 'disable-submit-buttons'],
@@ -294,7 +295,7 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.','.$bid->id.','.$supplier->id.');
+                    printPo('.$model->id.','.$bid->id.','.$supplier->id.',"PO");
                     menu('.$model->id.');
                 },
                 error: function (err) {
@@ -316,7 +317,7 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.', "null" ,'.$supplier->id.');
+                    printPo('.$model->id.', "null" ,'.$supplier->id.',"PO");
                     menu('.$model->id.');
                 },
                 error: function (err) {
@@ -328,10 +329,10 @@ return $rettxt;
         });';
 
     $script .= '
-        function printPo(id, bid_id, supplier_id)
+        function printPo(id, bid_id, supplier_id, type)
         {
             var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-po']).'?id=" + id + "&bid_id=" + bid_id +"&supplier_id=" + supplier_id, 
+                "'.Url::to(['/v1/pr/print-po']).'?id=" + id + "&bid_id=" + bid_id +"&supplier_id=" + supplier_id +"&type=" + type, 
                 "Print",
                 "left=200", 
                 "top=200", 

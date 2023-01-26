@@ -38,11 +38,13 @@ class Ors extends \yii\db\ActiveRecord
         return [
             [['ors_no', 'ors_date', 'responsibility_center'], 'required', 'on' => 'withPo'],
             [['ors_no', 'ors_date', 'responsibility_center', 'payee', 'address'], 'required', 'on' => 'withoutPo'],
-            [['pr_id', 'po_id'], 'integer'],
+            [['pr_id', 'apr_id', 'po_id'], 'integer'],
             [['ors_date', 'date_created', 'office'], 'safe'],
-            [['ors_no'], 'string', 'max' => 20],
+            [['ors_no', 'type'], 'string', 'max' => 20],
             [['responsibility_center'], 'string', 'max' => 50],
             [['created_by', 'reviewed_by'], 'string', 'max' => 10],
+            [['pr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Pr::className(), 'targetAttribute' => ['pr_id' => 'id']],
+            [['apr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Apr::className(), 'targetAttribute' => ['apr_id' => 'id']],
             [['po_id'], 'exist', 'skipOnError' => true, 'targetClass' => Po::className(), 'targetAttribute' => ['po_id' => 'id']],
         ];
     }
@@ -55,6 +57,7 @@ class Ors extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'pr_id' => 'Pr ID',
+            'apr_id' => 'Apr ID',
             'po_id' => 'Po ID',
             'ors_no' => 'ORS No',
             'ors_date' => 'ORS Date',
@@ -64,6 +67,7 @@ class Ors extends \yii\db\ActiveRecord
             'payee' => 'Payee',
             'office' => 'Office',
             'address' => 'Address',
+            'type' => 'Type'
         ];
     }
 

@@ -14,11 +14,13 @@ use frontend\assets\AppAsset;
 $asset = AppAsset::register($this);
 ?>
 
-<h4>8.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable Items' ?></h4>
-<?= !is_null($po) ? Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => $po->id, 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) : Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => 'null', 'i' => $i]), 'class' => 'btn btn-app', 'id' => 'create-ors-button']) ?>
+<h3 class="panel-title">9.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable Items' ?></h3>
 <br>
-<h4>Obligation List</h4>
-<div class="iar-content">
+<p><i class="fa fa-exclamation-circle"></i> Create ORS to obligate items.</p>
+
+<h3 class="panel-title">ORS List <span class="pull-right"><?= !is_null($po) ? Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => $po->id, 'i' => $i, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) : Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => 'null', 'i' => $i, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) ?></span></h3>
+<br>
+<div class="ors-content">
     <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
         <thead>
             <tr>
@@ -27,7 +29,7 @@ $asset = AppAsset::register($this);
                 <td><b>Created By</b></td>
                 <td><b>Date Created</b></td>
                 <td align=right><b>Total</b></td>
-                <td style="width: 4%;">&nbsp;</td>
+                <td style="width: 10%;">&nbsp;</td>
             </tr>
         </thead>
         <tbody>
@@ -40,9 +42,9 @@ $asset = AppAsset::register($this);
                     <td><?= date("F j, Y", strtotime($or->date_created)) ?></td>
                     <td align=right><?= number_format($or->total, 2) ?></td>
                     <td>
-                        <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printOrs('.$or->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
+                        <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printOrs('.$or->id.')', 'class' => 'btn btn-sm btn-info']) ?>
                         <?php // Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-ors', 'id' => $or->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-ors-button']) ?>
-                        <?= !is_null($po) ? Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$po->id.','.$or->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) : Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.',"null",'.$or->id.','.$i.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
+                        <?= !is_null($po) ? Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$po->id.','.$or->id.','.$i.')', 'class' => 'btn btn-sm btn-danger']) : Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.',"null",'.$or->id.','.$i.')', 'class' => 'btn btn-sm btn-danger']) ?>
                     </td>
                 </tr>
             <?php } ?>

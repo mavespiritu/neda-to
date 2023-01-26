@@ -52,7 +52,7 @@ DisableButtonAsset::register($this);
                         });
                     }'
                 ]
-                ]);
+                ])->label('Select Approved RIS');
             ?>
         </div>
     </div>

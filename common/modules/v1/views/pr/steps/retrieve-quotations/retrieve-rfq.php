@@ -6,11 +6,11 @@ use yii\widgets\DetailView;
 use yii\web\View;
 ?>
 
-<h4>4.2 Retrieve Supplier Quotation</h4>
-<p><i class="fa fa-exclamation-circle"></i> Input prices from supplier quotations.</p>
-<?= Html::button('<i class="fa fa-envelope-open-o"></i> Retrieve Quotation', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'retrieve-rfq-button']) ?>
+<h3 class="panel-title">4.2 Retrieved RFQs</h3>
 <br>
-<h4>Supplier List</h4>
+<p><i class="fa fa-exclamation-circle"></i> Input prices from supplier quotations.</p>
+<h3 class="panel-title">List of Suppliers <span class="pull-right"><?= Html::button('<i class="fa fa-envelope-open-o"></i> Input Prices', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'retrieve-rfq-button']) ?></span></h3>
+<br>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
     <thead>
         <tr>
@@ -19,7 +19,7 @@ use yii\web\View;
             <th>Business Address</th>
             <th>Date Retrieved</th>
             <td align=right><b>ABC</b></td>
-            <th style="width: 4%;">&nbsp;</th>
+            <th style="width: 10%;">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
@@ -41,10 +41,10 @@ use yii\web\View;
                         <td><?= $supplier->business_address ?></td>
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
                         <td align=right><?= number_format($rfq->getRfqInfo($supplier->id)->total, 2) ?></td>
-                        <td align=right>
-                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-block btn-info']) ?>
-                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-block btn-warning update-rfq-quotation-button']) ?>
-                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-block btn-danger']) ?>
+                        <td>
+                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-sm btn-info']) ?>
+                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-sm btn-warning update-rfq-quotation-button']) ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-sm btn-danger']) ?>
                         </td>
                     </tr>
                 <?php } ?>
@@ -58,7 +58,7 @@ use yii\web\View;
   Modal::begin([
     'id' => 'retrieve-rfq-modal',
     'size' => "modal-xl",
-    'header' => '<div id="retrieve-rfq-modal-header"><h4>Retrieve Quotation</h4></div>',
+    'header' => '<div id="retrieve-rfq-modal-header"><h4>Input Prices</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="retrieve-rfq-modal-content"></div>';

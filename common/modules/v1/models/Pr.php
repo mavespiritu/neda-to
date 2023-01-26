@@ -217,7 +217,16 @@ class Pr extends \yii\db\ActiveRecord
     public function getOrsWithoutPo()
     {
         $total = Ors::find()
-                    ->andWhere(['pr_id' => $this->id])
+                    ->andWhere(['pr_id' => $this->id, 'type' => 'NP'])
+                    ->andWhere(['is', 'po_id', null])
+                    ->count();
+        return $total;
+    }
+
+    public function getOrsOfApr()
+    {
+        $total = Ors::find()
+                    ->andWhere(['pr_id' => $this->id, 'type' => 'APR'])
                     ->andWhere(['is', 'po_id', null])
                     ->count();
         return $total;

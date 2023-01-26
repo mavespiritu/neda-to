@@ -6,7 +6,8 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h4>4. Retrieve Quote</h4>
+<h3 class="panel-title">4. Retrieved RFQs/APR</h3>
+<br>
 <p><i class="fa fa-exclamation-circle"></i> Retrieve quotations from suppliers.</p>
 <ul class="products-list product-list-in-box navigation">
     <li class="item">
@@ -14,10 +15,10 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">4.1</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="aprRetrieveQuotation(<?= $model->id?>);" class="product-title">Agency Procurement Quotation
-            <?= $aprInfoCount > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
+            <a href="javascript:void(0)" onclick="aprRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieved APR
+            <?= $aprInfoCount > 0 ? '<span class="badge bg-green pull-right">1</span>' : '' ?>
             </a>
-            <span class="product-description">Retrieve quotation from agency procurement</span>
+            <span class="product-description">Input prices from APR</span>
         </div>
     </li>
     <li class="item">
@@ -25,10 +26,10 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">4.2</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="rfqRetrieveQuotation(<?= $model->id?>);" class="product-title">Supplier Quotation
+            <a href="javascript:void(0)" onclick="rfqRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieved RFQs
             <?= $rfqInfosCount > 0 ? '<span class="badge bg-green pull-right">'.$rfqInfosCount.'</span>' : '' ?>
             </a>
-            <span class="product-description">Retrieve quotation from outside suppliers.</span>
+            <span class="product-description">Input prices from RFQ.</span>
         </div>
     </li>
 </ul>

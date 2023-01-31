@@ -35,15 +35,15 @@ use common\modules\v1\models\PpmpItem;
             </tr>
             <tr>
                 <th>Program</th>
-                <td><?= $model->activity->pap->codeTitle.'<br>'.$model->activity->pap->title ?></td>
+                <td><?= $model->activity->pap->codeAndTitle ?></td>
             </tr>
             <tr>
                 <th>Activity</th>
-                <td><?= $model->activityName ?></td>
+                <td><?= $model->activity->activityTitle ?></td>
             </tr>
             <tr>
                 <th>Sub-Activity</th>
-                <td><?= $model->subActivityName ?></td>
+                <td><?= $model->subActivity->subActivityTitle ?></td>
             </tr>
             <tr>
                 <th>Fund Source</th>

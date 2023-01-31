@@ -25,11 +25,11 @@ DisableButtonAsset::register($this);
         </tr>
         <tr>
             <th>Activity</th>
-            <td><?= $activity->title ?></td>
+            <td><?= $activity->ActivityTitle ?> - <?= $activity->title ?></td>
         </tr>
         <tr>
             <th>Sub-Activity</th>
-            <td><?= $subActivity->title ?> - <?= $model->fundSource->code ?> Funded</td>
+            <td><?= $subActivity->subActivityTitle ?> - <?= $subActivity->title ?> - <?= $model->fundSource->code ?> Funded</td>
         </tr>
         <tr>
             <th>Item</th>

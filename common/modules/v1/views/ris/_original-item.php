@@ -1,7 +1,7 @@
 <div id="alert-container"></div>
 <div class="row">
     <div class="col-md-12 col-xs-12">
-        <?= $this->render('_load-items', [
+        <?= $this->render('_original-item-form', [
             'model' => $model,
             'appropriationItemModel' => $appropriationItemModel,
             'activities' => $activities,

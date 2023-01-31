@@ -140,7 +140,11 @@ class Pap extends \yii\db\ActiveRecord
 
     public function getCodeTitle()
     {
-        return $this->identifier ? 
+        if(!is_null($this->short_code))
+        {
+            return $this->short_code;
+        }else{
+            return $this->identifier ? 
             $this->identifier->organizationalOutcome->costStructure->code.''.
             $this->identifier->organizationalOutcome->code.''.
             $this->identifier->program->code.''.
@@ -148,11 +152,16 @@ class Pap extends \yii\db\ActiveRecord
             $this->identifier->code.''.
             $this->code.'000' 
             : '';
+        }
     }
 
     public function getCodeAndTitle()
     {
-        return $this->identifier ? 
+        if(!is_null($this->short_code))
+        {
+            return $this->short_code.' - '.$this->title;
+        }else{
+            return $this->identifier ? 
             $this->identifier->organizationalOutcome->costStructure->code.''.
             $this->identifier->organizationalOutcome->code.''.
             $this->identifier->program->code.''.
@@ -161,6 +170,7 @@ class Pap extends \yii\db\ActiveRecord
             $this->code.'000'.' - '.
             $this->title 
             : '';
+        }
     }
 
     public function getActivities()

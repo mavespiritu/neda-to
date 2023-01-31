@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <div class="col-md-4 col-xs-12">
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                <p class="panel-title">Object Form</p><br>
+                                <p class="panel-title">Attach Item to Object of Expense</p><br>
                                     <?= $this->render('_object-form',[
                                         'objectItemModel' => $objectItemModel,
                                         'objs' => $objs
@@ -90,7 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-list"></i>Cost History</div>
                 <div class="box-body">
-                    <p class="panel-title">Cost History</p><br>
                     <?= GridView::widget([
                         'options' => [
                             'class' => 'table-responsive table-condensed',

@@ -122,7 +122,7 @@ class PpmpController extends Controller
         $arr = [];
         $arr[] = ['id'=>'','text'=>''];
         foreach($activities as $activity){
-            $arr[] = ['id' => $activity->id ,'text' => $activity->title];
+            $arr[] = ['id' => $activity->id ,'text' => $activity->activityTtitle];
         }
         \Yii::$app->response->format = 'json';
         return $arr;
@@ -229,13 +229,63 @@ class PpmpController extends Controller
                      ->select([
                          'ppmp_activity.id as id',
                          'ppmp_activity.pap_id as pap_id',
-                         'ppmp_activity.title as text',
+                         'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                        ) as text',
                          'p.title as groupTitle'
                      ])
-                     ->leftJoin(['p' => '(SELECT id, code, title from ppmp_pap)'], 'p.id = ppmp_activity.pap_id')
-                     ->asArray()
-                     ->all();
-
+                    ->leftJoin(['p' => '(
+                        SELECT 
+                        ppmp_pap.id as id, 
+                        ppmp_pap.code as code, 
+                        IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000 - ",
+                                ppmp_pap.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code," - ",
+                                ppmp_pap.title
+                            )
+                        ) as title
+                        from 
+                        ppmp_pap
+                        left join ppmp_identifier on ppmp_identifier.id = ppmp_pap.identifier_id
+                        left join ppmp_sub_program on ppmp_sub_program.id = ppmp_pap.sub_program_id
+                        left join ppmp_program on ppmp_program.id = ppmp_pap.program_id
+                        left join ppmp_organizational_outcome on ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id
+                        left join ppmp_cost_structure on ppmp_cost_structure.id = ppmp_pap.cost_structure_id
+                    )'], 'p.id = ppmp_activity.pap_id')
+                    ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                    ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                    ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                    ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                    ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                    ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                    ->asArray()
+                    ->all();
+        
         $activities = ArrayHelper::map($activities, 'id', 'text', 'groupTitle');
 
         //$fundSources = [];
@@ -277,8 +327,25 @@ class PpmpController extends Controller
                     ->select([
                         'fundSource.id as fundSourceID',
                         'fundSource.code as fundSourceTitle',
-                        'activity.id as activityID',
-                        'activity.title as activityTitle',
+                        'ppmp_activity.id as activityID',
+                        'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                        ) as activityTitle',
                         'subActivity.id as subActivityID',
                         'subActivity.title as subActivityTitle',
                         'object.id as objectID',
@@ -288,16 +355,21 @@ class PpmpController extends Controller
                     ])
                     ->leftJoin(['quantity' => '('.$quantity.')'], 'quantity.ppmp_item_id = ppmp_ppmp_item.id')
                     ->leftJoin('ppmp_sub_activity subActivity', 'subActivity.id = ppmp_ppmp_item.sub_activity_id')
-                    ->leftJoin('ppmp_activity activity', 'activity.id = ppmp_ppmp_item.activity_id')
-                    ->leftJoin('ppmp_pap pap', 'pap.id = activity.pap_id')
+                    ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                    ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                    ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                    ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                    ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                    ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                    ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
                     ->leftJoin('ppmp_fund_source fundSource', 'fundSource.id = ppmp_ppmp_item.fund_source_id')
                     ->leftJoin('ppmp_obj object', 'object.id = ppmp_ppmp_item.obj_id')
                     ->groupBy(['subActivity.id','object.id'])
                     ->where(['ppmp_id' => $model->id])
                     ->orderBy([
                         'fundSourceTitle' => SORT_ASC,
-                        'pap.id' => SORT_ASC,
-                        'activity.code' => SORT_ASC,
+                        'ppmp_pap.id' => SORT_ASC,
+                        'ppmp_activity.code' => SORT_ASC,
                         'subActivity.code' => SORT_ASC,
                         'object.code' => SORT_ASC,
                         ])
@@ -336,7 +408,7 @@ class PpmpController extends Controller
             {
                 $items[$key]['label'] = '<table style="width:100%;" id="item-table-'.$subActivity->id.'" onclick="loadItemsInSubActivity('.$model->id.','.$subActivity->id.','.$activity->id.','.$fundSource->id.')">'; 
                 $items[$key]['label'] .= '<tr>'; 
-                $items[$key]['label'] .= '<td>'.$subActivity->title.'</td>'; 
+                $items[$key]['label'] .= '<td>'.$subActivity->subActivityTitle.'</td>'; 
                 $items[$key]['label'] .= '<td align=right>'.PpmpItem::getCountPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id).'</td>'; 
                 $items[$key]['label'] .= '<td align=right style="width: 45%;">'.number_format(PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id), 2).'</td>'; 
                 $items[$key]['label'] .= '</tr>'; 
@@ -365,7 +437,41 @@ class PpmpController extends Controller
         $activity = Activity::findOne($activity_id);
         $fundSource = FundSource::findOne($fund_source_id);
 
-        $subActivities = SubActivity::find()-> where(['activity_id' => $activity->id])->orderBy(['code' => SORT_ASC])->all();
+        $subActivities = SubActivity::find()
+                        ->select([
+                            'ppmp_sub_activity.id as id',
+                            'IF(ppmp_pap.short_code IS NULL,
+                                concat(
+                                    ppmp_cost_structure.code,"",
+                                    ppmp_organizational_outcome.code,"",
+                                    ppmp_program.code,"",
+                                    ppmp_sub_program.code,"",
+                                    ppmp_identifier.code,"",
+                                    ppmp_pap.code,"000-",
+                                    ppmp_activity.code,"-",
+                                    ppmp_sub_activity.code," - ",
+                                    ppmp_sub_activity.title
+                                )
+                                ,
+                                concat(
+                                    ppmp_pap.short_code,"-",
+                                    ppmp_activity.code,"-",
+                                    ppmp_sub_activity.code," - ",
+                                    ppmp_sub_activity.title
+                                )
+                            ) as title',
+                        ])
+                        ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_sub_activity.activity_id')
+                        ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                        ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                        ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                        ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                        ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                        ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                        ->where(['ppmp_sub_activity.activity_id' => $activity->id])
+                        ->asArray()
+                        ->all();
+
         $subActivities = ArrayHelper::map($subActivities, 'id', 'title');
 
         $itemModel = new PpmpItem();
@@ -456,7 +562,40 @@ class PpmpController extends Controller
         $activity = $itemModel->activity;
         $fundSource = $itemModel->fundSource;
 
-        $subActivities = SubActivity::find()-> where(['activity_id' => $activity->id])->orderBy(['code' => SORT_ASC])->all();
+        $subActivities = SubActivity::find()
+                        ->select([
+                            'ppmp_sub_activity.id as id',
+                            'IF(ppmp_pap.short_code IS NULL,
+                                concat(
+                                    ppmp_cost_structure.code,"",
+                                    ppmp_organizational_outcome.code,"",
+                                    ppmp_program.code,"",
+                                    ppmp_sub_program.code,"",
+                                    ppmp_identifier.code,"",
+                                    ppmp_pap.code,"000-",
+                                    ppmp_activity.code,"-",
+                                    ppmp_sub_activity.code," - ",
+                                    ppmp_sub_activity.title
+                                )
+                                ,
+                                concat(
+                                    ppmp_pap.short_code,"-",
+                                    ppmp_activity.code,"-",
+                                    ppmp_sub_activity.code," - ",
+                                    ppmp_sub_activity.title
+                                )
+                            ) as title',
+                        ])
+                        ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_sub_activity.activity_id')
+                        ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                        ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                        ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                        ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                        ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                        ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                        ->where(['ppmp_sub_activity.activity_id' => $activity->id])
+                        ->asArray()
+                        ->all();
         $subActivities = ArrayHelper::map($subActivities, 'id', 'title');
 
         /* $selectedObjs = AppropriationItem::find()

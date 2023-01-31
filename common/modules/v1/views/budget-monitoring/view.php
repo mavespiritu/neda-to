@@ -152,11 +152,11 @@ function getChildren($elements, $padding = 0, $fundSources, $offices, $activity,
 <div class="panel panel-default">
     <div class="panel-body">
         <div class="freeze-table" style="height: 800px;">
-        <table class="table table-responsive table-bordered table-hover">
+        <table class="table table-responsive table-bordered table-hover" style="min-width: 2000px;">
             <thead>
                 <tr>
-                    <th rowspan=3>Objects</th>
-                    <th colspan=2><?= $activity->pap->short_code ?></th>
+                    <th rowspan=3 style="width: 10%;">Objects</th>
+                    <th colspan=2><?= $activity->pap->codeTitle ?></th>
                     <?php if($offices){ ?>
                         <?php foreach($offices as $office){ ?>
                             <th colspan=2 rowspan=2><?= $office->abbreviation ?></th>
@@ -166,7 +166,7 @@ function getChildren($elements, $padding = 0, $fundSources, $offices, $activity,
                     <th colspan=2 rowspan=2>(Over) Under</th>
                 </tr>
                 <tr>
-                    <th colspan=2><?= $activity->pap->codeTitle ?></th>
+                    <th colspan=2><?= $activity->pap->codeAndTitle ?></th>
                 </tr>
                 <tr>
                     <?php for($i = 0; $i < (count($offices) + 3); $i++){ ?>
@@ -241,6 +241,7 @@ function getChildren($elements, $padding = 0, $fundSources, $offices, $activity,
     $(document).ready(function() {
         $(".freeze-table").freezeTable({
             "scrollable": true,
+            "columnNum" : 1
         });
     });
   ';

@@ -331,8 +331,8 @@ use fedemotta\datatables\DataTables;
                 //$("#update-item-modal-'.$subActivity->id.'").modal("show").find("#update-item-modal-content-'.$subActivity->id.'").load($(this).attr("value"));
                 $("html").animate({ scrollTop: 0 }, "slow");
                 $("#item-form-container").load($(this).attr("value"));
-                
-                
+                $("#create-item-button").css("display", "none");
+                $("#close-item-form-button").css("display", "block");
             });
 
             $(".content-table").freezeTable({

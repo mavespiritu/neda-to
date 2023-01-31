@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'attribute' => 'total',
                             'contentOptions' => ['style' => 'text-align: right;'],
                             'value' => function($model){
-                                return number_format($model->currentCost, 2);
+                                return number_format($model->cost_per_unit, 2);
                             },
                         ],
                         'cse',

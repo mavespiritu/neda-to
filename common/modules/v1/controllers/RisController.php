@@ -978,7 +978,8 @@ class RisController extends Controller
                     'ppmp_item.unit_of_measure as unitOfMeasure',
                     'ppmp_ppmp_item.cost as cost',
                     'sum(quantity) as total',
-                    'ppmp_ris_item.type'
+                    'ppmp_ris_item.type',
+                    'ppmp_ris_item.ppmp_item_id'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
@@ -1053,7 +1054,8 @@ class RisController extends Controller
                         ppmp_sub_activity.title
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
-                    'sum(quantity) as total'
+                    'sum(quantity) as total',
+                    'ppmp_ris_item.ppmp_item_id'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')

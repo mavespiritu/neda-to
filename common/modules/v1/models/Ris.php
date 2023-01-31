@@ -350,7 +350,8 @@ class Ris extends \yii\db\ActiveRecord
     {
         $items = RisItem::find()
                 ->select([
-                    'concat(
+                    'IF(ppmp_pap.short_code IS NULL,
+                    concat(
                         ppmp_cost_structure.code,"",
                         ppmp_organizational_outcome.code,"",
                         ppmp_program.code,"",
@@ -359,7 +360,14 @@ class Ris extends \yii\db\ActiveRecord
                         ppmp_pap.code,"000-",
                         ppmp_activity.code,"-",
                         ppmp_sub_activity.code
-                    ) as prexc'
+                    )
+                    ,
+                    concat(
+                        ppmp_pap.short_code,"-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code
+                    )
+                ) as prexc'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
@@ -384,7 +392,8 @@ class Ris extends \yii\db\ActiveRecord
     {
         $items = RisItem::find()
                 ->select([
-                    'concat(
+                    'IF(ppmp_pap.short_code IS NULL,
+                    concat(
                         ppmp_cost_structure.code,"",
                         ppmp_organizational_outcome.code,"",
                         ppmp_program.code,"",
@@ -393,7 +402,14 @@ class Ris extends \yii\db\ActiveRecord
                         ppmp_pap.code,"000-",
                         ppmp_activity.code,"-",
                         ppmp_sub_activity.code
-                    ) as prexc'
+                    )
+                    ,
+                    concat(
+                        ppmp_pap.short_code,"-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code
+                    )
+                ) as prexc'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')

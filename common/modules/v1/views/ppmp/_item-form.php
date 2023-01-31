@@ -30,7 +30,7 @@ $item_id = $itemModel->isNewRecord ? 0 : $itemModel->item_id;
             <div class="col-md-6 col-xs-12">
                 <div class="form-group">
                     <label class="control-label">Activity</label>
-                    <?= Html::textInput('activity_id', $activity->title, ['disabled' => 'disabled', 'class' => 'form-control']); ?>
+                    <?= Html::textInput('activity_id', $activity->activityTitle, ['disabled' => 'disabled', 'class' => 'form-control']); ?>
                 </div>
             </div>
             <div class="col-md-6 col-xs-12">

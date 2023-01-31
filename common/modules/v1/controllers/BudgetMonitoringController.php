@@ -291,15 +291,65 @@ class BudgetMonitoringController extends \yii\web\Controller
         $years = ArrayHelper::map($years, 'year', 'year');
 
         $activities = Activity::find()
-                     ->select([
-                         'ppmp_activity.id as id',
-                         'ppmp_activity.pap_id as pap_id',
-                         'ppmp_activity.title as text',
-                         'p.title as groupTitle'
-                     ])
-                     ->leftJoin(['p' => '(SELECT id, code, title from ppmp_pap)'], 'p.id = ppmp_activity.pap_id')
-                     ->asArray()
-                     ->all();
+                ->select([
+                    'ppmp_activity.id as id',
+                    'ppmp_activity.pap_id as pap_id',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as text',
+                    'p.title as groupTitle'
+                ])
+            ->leftJoin(['p' => '(
+                SELECT 
+                ppmp_pap.id as id, 
+                ppmp_pap.code as code, 
+                IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000 - ",
+                            ppmp_pap.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code," - ",
+                            ppmp_pap.title
+                        )
+                    ) as title
+                from 
+                ppmp_pap
+                left join ppmp_identifier on ppmp_identifier.id = ppmp_pap.identifier_id
+                left join ppmp_sub_program on ppmp_sub_program.id = ppmp_pap.sub_program_id
+                left join ppmp_program on ppmp_program.id = ppmp_pap.program_id
+                left join ppmp_organizational_outcome on ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id
+                left join ppmp_cost_structure on ppmp_cost_structure.id = ppmp_pap.cost_structure_id
+            )'], 'p.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->asArray()
+            ->all();
 
         $activities = ArrayHelper::map($activities, 'id', 'text', 'groupTitle');
 
@@ -533,7 +583,26 @@ class BudgetMonitoringController extends \yii\web\Controller
         
         $items = PpmpItem::find()
             ->select([
-                'ppmp_sub_activity.title as pap',
+                'IF(ppmp_pap.short_code IS NULL,
+                    concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    )
+                    ,
+                    concat(
+                        ppmp_pap.short_code,"-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    )
+                ) as pap',
                 'ppmp_item.title',
                 'ppmp_item.unit_of_measure',
                 'ppmp_ppmp_item.cost as cost_per_unit',
@@ -541,6 +610,13 @@ class BudgetMonitoringController extends \yii\web\Controller
                 'ppmp_ppmp_item.remarks'
             ])
             ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_sub_activity.activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->leftJoin('ppmp_ppmp', 'ppmp_ppmp.id = ppmp_ppmp_item.ppmp_id');
 

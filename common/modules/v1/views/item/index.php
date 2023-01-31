@@ -52,10 +52,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]); ?>
                 </div>
                 <div class="clearfix"></div>
-                <br>
                 <?= GridView::widget([
-                    'options' => [
-                        'class' => 'table-responsive',
+                    'tableOptions' => [
+                        'class' => 'table table-hover table-responsive table-striped table-condensed',
                     ],
                     'dataProvider' => $dataProvider,
                     'columns' => [
@@ -119,16 +118,13 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php
     $script = '
-        $(document).ready(function(){
-            $("#create-button").click(function(){
-              $("#create-modal").modal("show").find("#create-modal-content").load($(this).attr("value"));
-            });
+        $("#create-button").click(function(){
+            $("#create-modal").modal("show").find("#create-modal-content").load($(this).attr("value"));
+        });
 
-            $(".update-button").click(function(){
-                $("#update-modal").modal("show").find("#update-modal-content").load($(this).attr("value"));
-              });
-        });     
+        $(".update-button").click(function(){
+            $("#update-modal").modal("show").find("#update-modal-content").load($(this).attr("value"));
+        });
     ';
-
     $this->registerJs($script, View::POS_END);
 ?>

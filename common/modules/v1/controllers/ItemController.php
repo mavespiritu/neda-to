@@ -5,6 +5,9 @@ namespace common\modules\v1\controllers;
 use Yii;
 use common\modules\v1\models\ProcurementMode;
 use common\modules\v1\models\Obj;
+use common\modules\v1\models\Ppmp;
+use common\modules\v1\models\PpmpItem;
+use common\modules\v1\models\Transaction;
 use common\modules\v1\models\Item;
 use common\modules\v1\models\ItemCost;
 use common\modules\v1\models\ItemSearch;
@@ -454,7 +457,33 @@ class ItemController extends Controller
             $cost->cost = $model->cost_per_unit;
             $cost->source_model = 'Item';
             $cost->source_id = $model->id;
-            $cost->save();
+            
+            if($cost->save())
+            {
+                $ids = [];
+                $transactions = Ppmp::find()
+                                ->select(['statuses.model_id'])
+                                ->innerJoin(['statuses' => '(
+                                select
+                                    ppmp_transaction.model_id,
+                                    ppmp_transaction.status
+                                from ppmp_transaction
+                                inner join
+                                (select max(id) as id from ppmp_transaction where model = "Ppmp" group by model_id) latest on latest.id = ppmp_transaction.id
+                                )'], 'statuses.model_id = ppmp_ppmp.id')
+                                ->andWhere(['statuses.status' => 'Draft'])
+                                ->asArray()
+                                ->all();
+                $ids = ArrayHelper::map($transactions, 'model_id', 'model_id');    
+                $ids = implode(",", $ids);
+
+                /* $conditions = ['and', 
+                                ['item_id' => $model->id],
+                                ['in', 'ppmp_id', $ids]
+                            ]; */
+
+                $items = PpmpItem::updateAll(['cost' => $model->cost_per_unit], 'item_id = '.$model->id.' and ppmp_id in ('.$ids.')');
+            }
 
             \Yii::$app->getSession()->setFlash('success', 'Record Updated');
             return $this->redirect(['/'.$urls]);

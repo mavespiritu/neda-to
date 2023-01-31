@@ -25,7 +25,7 @@ class PrSearch extends Pr
     {
         return [
             [['id', 'fund_source_id', 'fund_cluster_id'], 'integer'],
-            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type', 'officeName', 'procurementModeName', 'creatorName', 'requesterName', 'statusName', 'risNo'], 'safe'],
+            [['pr_no', 'office_id', 'section_id', 'unit_id', 'purpose', 'requested_by', 'date_requested', 'approved_by', 'date_approved', 'type', 'officeName', 'procurementModeName', 'creatorName', 'requesterName', 'statusName', 'risNo', 'year'], 'safe'],
         ];
     }
 
@@ -119,6 +119,7 @@ class PrSearch extends Pr
             'requested_by' => $this->requested_by,
             'approved_by' => $this->approved_by,
             'type' => $this->type,
+            'ppmp_pr.year' => $this->year,
         ]);
 
         $query->andFilterWhere(['like', 'pr_no', $this->pr_no])

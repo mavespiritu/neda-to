@@ -25,6 +25,9 @@ use yii\web\View;
             <?= $form->field($model, 'pr_no') ?>
         </div>
         <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'year')->textInput(['type' => 'number']) ?>
+        </div>
+        <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'type')->widget(Select2::classname(), [
                 'data' => $types,
                 'options' => ['placeholder' => 'Select Type','multiple' => false, 'class'=>'type-select'],
@@ -32,16 +35,6 @@ use yii\web\View;
                     'allowClear' =>  true,
                 ],
                 ])->label('Type');
-            ?>
-        </div>
-        <div class="col-md-3 col-xs-12">
-            <?= $form->field($model, 'fund_source_id')->widget(Select2::classname(), [
-                'data' => $fundSources,
-                'options' => ['placeholder' => 'Select Fund Source','multiple' => false, 'class'=>'fund-source-select'],
-                'pluginOptions' => [
-                    'allowClear' =>  true,
-                ],
-                ]);
             ?>
         </div>
 
@@ -90,7 +83,17 @@ use yii\web\View;
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'risNo') ?>
         </div>
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'fund_source_id')->widget(Select2::classname(), [
+                'data' => $fundSources,
+                'options' => ['placeholder' => 'Select Fund Source','multiple' => false, 'class'=>'fund-source-select'],
+                'pluginOptions' => [
+                    'allowClear' =>  true,
+                ],
+                ]);
+            ?>
+        </div>
+        <div class="col-md-6 col-xs-12">
             <?= $form->field($model, 'purpose')->textarea(['rows' => 1]) ?>
         </div>
     </div>

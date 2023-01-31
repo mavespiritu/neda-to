@@ -104,6 +104,7 @@ class PrController extends Controller
     public function actionIndex()
     {
         $searchModel = new PrSearch();
+        $searchModel->year = date("Y");
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $types = [
@@ -5823,9 +5824,9 @@ class PrController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
-            $lastPr = Pr::find()->orderBy(['id' => SORT_DESC])->one();
+            $lastPr = Pr::find()->orderBy(['id' => SORT_DESC, 'year' => $model->year])->one();
             $lastNumber = $lastPr ? intval(substr($lastPr->pr_no, -3)) : '001';
-            $pr_no = $lastPr ? substr(date("Y"), -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("m").'-'.$lastNumber;
+            $pr_no = $lastPr ? substr($model->year, -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr($model->year, -2).'-'.date("m").'-'.$lastNumber;
             $model->pr_no = $pr_no;
             $model->created_by = Yii::$app->user->identity->userinfo->EMP_N; 
             $model->date_created = date("Y-m-d"); 

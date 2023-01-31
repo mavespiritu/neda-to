@@ -785,29 +785,74 @@ class PpmpController extends Controller
                     ->createCommand()
                     ->getRawSql();
         
-        $items = PpmpItem::find()
+                    $items = PpmpItem::find()
                     ->select([
                         'fundSource.id as fundSourceID',
                         'fundSource.code as fundSourceTitle',
-                        'activity.id as activityID',
-                        'activity.title as activityTitle',
-                        'subActivity.id as subActivityID',
-                        'subActivity.title as subActivityTitle',
+                        'ppmp_activity.id as activityID',
+                        'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                        ) as activityTitle',
+                        'ppmp_sub_activity.id as subActivityID',
+                        'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code,"-",
+                                ppmp_sub_activity.code," - ",
+                                ppmp_sub_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code,"-",
+                                ppmp_sub_activity.code," - ",
+                                ppmp_sub_activity.title
+                            )
+                        ) as subActivityTitle',
+                        'object.id as objectID',
+                        'concat(object.code," - ",object.title) as objectTitle',
                         'sum(cost * quantity.total) as total',
     
                     ])
                     ->leftJoin(['quantity' => '('.$quantity.')'], 'quantity.ppmp_item_id = ppmp_ppmp_item.id')
-                    ->leftJoin('ppmp_sub_activity subActivity', 'subActivity.id = ppmp_ppmp_item.sub_activity_id')
-                    ->leftJoin('ppmp_activity activity', 'activity.id = ppmp_ppmp_item.activity_id')
-                    ->leftJoin('ppmp_pap pap', 'pap.id = activity.pap_id')
+                    ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                    ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                    ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                    ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                    ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                    ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                    ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                    ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
                     ->leftJoin('ppmp_fund_source fundSource', 'fundSource.id = ppmp_ppmp_item.fund_source_id')
-                    ->groupBy(['subActivity.id','fundSource.id'])
+                    ->leftJoin('ppmp_obj object', 'object.id = ppmp_ppmp_item.obj_id')
+                    ->groupBy(['ppmp_sub_activity.id','object.id'])
                     ->where(['ppmp_id' => $model->id])
                     ->orderBy([
                         'fundSourceTitle' => SORT_ASC,
-                        'pap.id' => SORT_ASC,
-                        'activity.code' => SORT_ASC,
-                        'subActivity.code' => SORT_ASC,
+                        'ppmp_pap.id' => SORT_ASC,
+                        'ppmp_activity.code' => SORT_ASC,
+                        'ppmp_sub_activity.code' => SORT_ASC,
+                        'object.code' => SORT_ASC,
                         ])
                     ->asArray()
                     ->all();

@@ -94,4 +94,40 @@ class Activity extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Ppa::className(), ['activity_id' => 'id']);
     }
+
+    public function getActivityTitle()
+    {
+        $activity = Activity::find()
+                    ->select([
+                        'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                        ) as title'
+                    ])
+                    ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                    ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                    ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                    ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                    ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                    ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                    ->andWhere(['ppmp_activity.id' => $this->id])
+                    ->asArray()
+                    ->one();
+
+        return !empty($activity) ? $activity['title'] : 'No title';
+    }
 }

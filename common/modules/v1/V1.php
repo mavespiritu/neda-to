@@ -24,10 +24,16 @@ class V1 extends \yii\base\Module
 
     public function getBackUrl($return_url)
     {
-        $choppedUrls = explode('/', $return_url);
-        $newUrl = array_splice($choppedUrls, 2, count($choppedUrls));
-        $newUrl = implode('/', $newUrl);
+        $urls = explode('/', $return_url);
+        $urls = array_splice($urls, 2, count($urls));
+        $module = array_search('v1', $urls);
+        if($module == '')
+        {
+            array_unshift($urls, $module);
+        }
 
-        return count($choppedUrls) > 1 ? $newUrl : 'v1/'.$newUrl;
+        $urls = implode('/', $urls);
+
+        return $urls;
     }
 }

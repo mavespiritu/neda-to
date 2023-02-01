@@ -8,7 +8,7 @@ use yii\bootstrap\ButtonDropdown;
 
 <div>
     <div class="pull-left">
-      <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/v1/ris/'], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/v1/ris'], ['class' => 'btn btn-app']) ?>
       <?= Html::a('<i class="fa fa-file-o"></i> View Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
       <?= Html::a('<i class="fa fa-plus"></i> Add Original', ['/v1/ris/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
       <?= Html::a('<i class="fa fa-plus"></i> Add Supplemental', ['/v1/ris/supplemental', 'id' => $model->id], ['class' => 'btn btn-app']) ?>

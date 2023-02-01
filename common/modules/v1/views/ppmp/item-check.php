@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
         <br>
         <br>
+        <hr style="opacity: 0.3" />
         <h3 class="panel-title"><i class="fa fa-list"></i> Item List</h3>
         <br>
         <?= GridView::widget([

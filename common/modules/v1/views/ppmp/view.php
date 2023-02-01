@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="row">
         <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i>Manage Items</div>
+                <div class="box-header panel-title"><i class="fa fa-folder-o"></i>Manage Items</div>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12 col-xs-12">

@@ -103,6 +103,10 @@ class PrController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('PR_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new PrSearch();
         $searchModel->year = date("Y");
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

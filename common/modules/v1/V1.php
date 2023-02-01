@@ -21,4 +21,13 @@ class V1 extends \yii\base\Module
 
         // custom initialization code goes here
     }
+
+    public function getBackUrl($return_url)
+    {
+        $urls = explode('/', $return_url);
+        $urls = array_splice($urls, 2, count($urls));
+        $urls = implode('/', $urls);
+
+        return $urls;
+    }
 }

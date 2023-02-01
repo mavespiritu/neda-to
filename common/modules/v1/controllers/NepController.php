@@ -134,6 +134,10 @@ class NepController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('NEP_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new AppropriationSearch();
         $searchModel->type = 'NEP';
 

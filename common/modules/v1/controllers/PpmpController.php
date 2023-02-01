@@ -172,6 +172,10 @@ class PpmpController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('PPMP_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new PpmpSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

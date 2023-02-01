@@ -8,7 +8,7 @@ use yii\web\View;
 
 <div>
     <div class="pull-left">
-        <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to PPMP List', ['/v1/ppmp/'], ['class' => 'btn btn-app']) ?>
+        <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to PPMP List', ['/'.Yii::$app->session->get('PPMP_ReturnURL')], ['class' => 'btn btn-app']) ?>
         <div class="btn-group" style="padding-left: 10px;">
             <?= Html::a('<i class="fa fa-list"></i> Manage Items', ['/v1/ppmp/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
             <?= Html::a('<i class="fa fa-list"></i> View Summary', ['/v1/ppmp/summary', 'id' => $model->id], ['class' => 'btn btn-app']) ?>

@@ -88,15 +88,6 @@ class RisController extends Controller
         return $branch;
     }
 
-    public function getBackUrl($return_url)
-    {
-        $urls = explode('/', $return_url);
-        $urls = array_splice($urls, 2, count($urls));
-        $urls = implode('/', $urls);
-
-        return $urls;
-    }
-
     public function actionSignatoryList($id)
     {
         $office = Office::findOne(['abbreviation' => $id]);
@@ -267,6 +258,10 @@ class RisController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('RIS_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new RisSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -280,10 +275,6 @@ class RisController extends Controller
 
         $offices = Office::find()->all();
         $offices = ArrayHelper::map($offices, 'abbreviation', 'abbreviation');
-
-        $session = Yii::$app->session;
-
-        $session->set('RIS_ReturnURL', $this->getBackUrl(Url::to()));
 
         return $this->render('index', [
             'searchModel' => $searchModel,

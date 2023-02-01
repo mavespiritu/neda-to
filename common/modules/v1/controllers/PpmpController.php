@@ -1185,6 +1185,12 @@ class PpmpController extends Controller
 
         $objects = ArrayHelper::map($objects, 'id', 'text', 'groupTitle');
 
+        $items = Item::find()->asArray()->orderBy(['title' => SORT_ASC])->all();
+        $items = ArrayHelper::map($items, 'id', 'title');
+
+        $fundSources = FundSource::find()->all();
+        $fundSources = ArrayHelper::map($fundSources, 'id', 'code');
+
         $searchModel = new PpmpItemSearch();
         $searchModel->ppmp_id = $model->id;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, '');
@@ -1196,6 +1202,8 @@ class PpmpController extends Controller
             'activities' => $activities,
             'subActivities' => $subActivities,
             'objects' => $objects,
+            'items' => $items,
+            'fundSources' => $fundSources,
         ]);
     }
     

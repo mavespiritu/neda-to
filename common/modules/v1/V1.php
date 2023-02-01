@@ -26,10 +26,9 @@ class V1 extends \yii\base\Module
     {
         $urls = explode('/', $return_url);
         $urls = array_splice($urls, 2, count($urls));
-        $module = array_search('v1', $urls);
-        if($module == '')
+        if(in_array('v1', $urls))
         {
-            array_unshift($urls, $module);
+            array_unshift($urls, 'v1');
         }
 
         $urls = implode('/', $urls);

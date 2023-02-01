@@ -1257,6 +1257,7 @@ class RisController extends Controller
     public function actionCreate()
     {
         $model = new Ris();
+        $model->year = date("Y");
 
         $approver = Settings::findOne(['title' => 'RIS Approver']);
         $model->approved_by = $approver ? $approver->value : '';

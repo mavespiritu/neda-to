@@ -49,7 +49,7 @@ class Ris extends \yii\db\ActiveRecord
             [['ppmp_id', 'fund_source_id', 'fund_cluster_id', 'requested_by', 'date_required', 'purpose', 'type'], 'required', 'on' => 'isUser'],
             [['date_approved'], 'required', 'on' => 'Approve'],
             [['disapproved_by', 'date_disapproved'], 'required', 'on' => 'Disapprove'],
-            [['fund_cluster_id'], 'integer'],
+            [['fund_cluster_id', 'year'], 'integer'],
             [['purpose', 'created_by', 'requested_by', 'approved_by', 'issued_by', 'received_by', 'office_id', 'section_id', 'unit_id'], 'string'],
             [['date_required', 'date_created', 'date_requested', 'date_approved', 'date_issued', 'date_received'], 'safe'],
             [['ris_no'], 'string', 'max' => 15],
@@ -99,6 +99,7 @@ class Ris extends \yii\db\ActiveRecord
             'total' => 'Total',
             'prNos' => 'PR',
             'prNo' => 'PR No.',
+            'year' => 'Year',
         ];
     }
 

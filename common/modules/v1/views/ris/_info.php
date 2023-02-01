@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="ris-view">
     <?= $this->render('_menu', [
         'model' => $model,
-        'returnUrl' => $returnUrl,
     ]) ?>
     <div class="row">
         <div class="col-md-12 col-xs-12">

@@ -37,6 +37,7 @@ use markavespiritu\user\models\Office;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
 use kartik\mpdf\Pdf;
+use yii\helpers\Url;
 /**
  * RisController implements the CRUD actions for Ris model.
  */
@@ -279,6 +280,10 @@ class RisController extends Controller
 
         $offices = Office::find()->all();
         $offices = ArrayHelper::map($offices, 'abbreviation', 'abbreviation');
+
+        $session = Yii::$app->session;
+
+        $session->set('RIS_ReturnURL', $this->getBackUrl(Url::to()));
 
         return $this->render('index', [
             'searchModel' => $searchModel,

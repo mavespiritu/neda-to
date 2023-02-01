@@ -78,6 +78,10 @@ class ItemController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('Items_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new ItemSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 

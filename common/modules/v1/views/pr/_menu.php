@@ -5,9 +5,9 @@ use yii\bootstrap\Modal;
 use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
-
+s
   <div class="pull-left">
-    <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to PR List', ['/v1/pr/'], ['class' => 'btn btn-app']) ?>
+    <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to PR List', ['/'.Yii::$app->session->get('PR_ReturnURL')], ['class' => 'btn btn-app']) ?>
     <a onclick="home(<?= $model->id?>);" class="btn btn-app main-menu"><i class="fa fa-calendar-check-o"></i>View Details</a>
     <?= $this->render('menu/menu', ['model' => $model]) ?>
   </div>

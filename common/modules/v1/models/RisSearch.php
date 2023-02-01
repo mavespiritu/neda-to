@@ -24,7 +24,7 @@ class RisSearch extends Ris
     {
         return [
             [['id', 'ppmp_id', 'fund_source_id', 'fund_cluster_id', 'created_by', 'requested_by', 'approved_by', 'issued_by', 'received_by'], 'integer'],
-            [['type', 'office_id', 'section_id', 'unit_id', 'ris_no', 'purpose', 'date_required', 'date_created', 'date_requested', 'date_approved', 'date_issued', 'date_received', 'creatorName', 'requesterName', 'statusName', 'prNo'], 'safe'],
+            [['type', 'office_id', 'section_id', 'unit_id', 'ris_no', 'purpose', 'date_required', 'date_created', 'date_requested', 'date_approved', 'date_issued', 'date_received', 'creatorName', 'requesterName', 'statusName', 'prNo', 'year'], 'safe'],
         ];
     }
 
@@ -127,6 +127,7 @@ class RisSearch extends Ris
             'issued_by' => $this->issued_by,
             'received_by' => $this->received_by,
             'type' => $this->type,
+            'year' => $this->year,
         ]);
 
         $query->andFilterWhere(['like', 'ris_no', $this->ris_no])

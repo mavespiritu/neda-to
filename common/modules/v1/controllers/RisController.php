@@ -263,6 +263,7 @@ class RisController extends Controller
         $session->set('RIS_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
 
         $searchModel = new RisSearch();
+        $searchModel->year = date("Y");
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $types = [

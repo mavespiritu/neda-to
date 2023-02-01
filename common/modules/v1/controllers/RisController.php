@@ -87,6 +87,15 @@ class RisController extends Controller
         return $branch;
     }
 
+    public function getBackUrl($return_url)
+    {
+        $urls = explode('/', $return_url);
+        $urls = array_splice($urls, 2, count($urls));
+        $urls = implode('/', $urls);
+
+        return $urls;
+    }
+
     public function actionSignatoryList($id)
     {
         $office = Office::findOne(['abbreviation' => $id]);

@@ -6101,7 +6101,7 @@ class PrController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
-            $lastPr = Pr::find()->orderBy(['id' => SORT_DESC, 'year' => $model->year])->one();
+            $lastPr = Pr::find()->where(['year' => $model->year])->orderBy(['id' => SORT_DESC])->one();
             $lastNumber = $lastPr ? intval(substr($lastPr->pr_no, -3)) : '001';
             $pr_no = $lastPr ? substr($model->year, -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr($model->year, -2).'-'.date("m").'-'.$lastNumber;
             $model->pr_no = $pr_no;

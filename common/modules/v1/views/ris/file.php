@@ -93,7 +93,7 @@ $i = 1;
                 </tr>
                     <?php if(!empty($items)){ ?>
                         <?php foreach($items as $item){ ?>
-                            <?= $this->render('_ris-item', [
+                            <?= $this->render('_file_ris-item', [
                                 'i' => $i,
                                 'model' => $model,
                                 'item' => $item,

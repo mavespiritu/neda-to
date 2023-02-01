@@ -103,6 +103,10 @@ class PrController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('PR_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new PrSearch();
         $searchModel->year = date("Y");
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -348,26 +352,43 @@ class PrController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -509,26 +530,43 @@ class PrController extends Controller
                     'ppmp_ris.ris_no as ris_no',
                     'ppmp_item.id as item_id',
                     'ppmp_item.title as item',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -644,26 +682,43 @@ class PrController extends Controller
                     'ppmp_ris.ris_no as ris_no',
                     'ppmp_item.id as item_id',
                     'ppmp_item.title as item',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -756,27 +811,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -861,27 +933,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -1327,26 +1416,43 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
+                'IF(ppmp_pap.short_code IS NULL,
+                    concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code," - ",
+                        ppmp_activity.title
+                    )
+                    ,
+                    concat(
+                        ppmp_pap.short_code,"-",
+                        ppmp_activity.code," - ",
+                        ppmp_activity.title
+                    )
                 ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
+                'IF(ppmp_pap.short_code IS NULL,
+                    concat(
+                        ppmp_cost_structure.code,"",
+                        ppmp_organizational_outcome.code,"",
+                        ppmp_program.code,"",
+                        ppmp_sub_program.code,"",
+                        ppmp_identifier.code,"",
+                        ppmp_pap.code,"000-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    )
+                    ,
+                    concat(
+                        ppmp_pap.short_code,"-",
+                        ppmp_activity.code,"-",
+                        ppmp_sub_activity.code," - ",
+                        ppmp_sub_activity.title
+                    )
                 ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
@@ -1654,27 +1760,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -1803,27 +1926,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -1954,27 +2094,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -2109,27 +2266,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -2272,27 +2446,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -2472,27 +2663,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -2676,27 +2884,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -3551,27 +3776,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -3837,27 +4079,44 @@ class PrController extends Controller
                 's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code," - ",
-                    ppmp_activity.title
-                ) as activity',
-                'concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code,"-",
-                    ppmp_sub_activity.code," - ",
-                    ppmp_sub_activity.title
-                ) as prexc',
+                'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
                 'ppmp_activity.id as activityId',
                 'ppmp_activity.title as activityTitle',
                 'ppmp_sub_activity.id as subActivityId',
@@ -4626,17 +4885,25 @@ class PrController extends Controller
                     ->groupBy(['pr_item_id'])
                     ->createCommand()
                     ->getRawSql();
-
+                    
         $rccs = PritemCost::find()
-                ->select(['concat(
-                    ppmp_cost_structure.code,"",
-                    ppmp_organizational_outcome.code,"",
-                    ppmp_program.code,"",
-                    ppmp_sub_program.code,"",
-                    ppmp_identifier.code,"",
-                    ppmp_pap.code,"000-",
-                    ppmp_activity.code
-                ) as prexc',])
+                ->select(['IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code
+                            )
+                        ) as prexc'
+                ])
                 ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
@@ -5615,7 +5882,8 @@ class PrController extends Controller
         $entityName = Settings::findOne(['title' => 'Entity Name']);
         $fundCluster = FundCluster::findOne($model->fund_cluster_id);
         $rccs = Pritem::find()
-                ->select(['concat(
+                ->select(['IF(ppmp_pap.short_code IS NULL,
+                concat(
                     ppmp_cost_structure.code,"",
                     ppmp_organizational_outcome.code,"",
                     ppmp_program.code,"",
@@ -5623,7 +5891,13 @@ class PrController extends Controller
                     ppmp_identifier.code,"",
                     ppmp_pap.code,"000-",
                     ppmp_activity.code
-                ) as prexc',])
+                )
+                ,
+                concat(
+                    ppmp_pap.short_code,"-",
+                    ppmp_activity.code
+                )
+            ) as prexc',])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
                 ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
@@ -5706,7 +5980,8 @@ class PrController extends Controller
         $entityName = Settings::findOne(['title' => 'Entity Name']);
         $fundCluster = FundCluster::findOne($model->fund_cluster_id);
         $rccs = Pritem::find()
-                ->select(['concat(
+                ->select(['IF(ppmp_pap.short_code IS NULL,
+                concat(
                     ppmp_cost_structure.code,"",
                     ppmp_organizational_outcome.code,"",
                     ppmp_program.code,"",
@@ -5714,7 +5989,13 @@ class PrController extends Controller
                     ppmp_identifier.code,"",
                     ppmp_pap.code,"000-",
                     ppmp_activity.code
-                ) as prexc',])
+                )
+                ,
+                concat(
+                    ppmp_pap.short_code,"-",
+                    ppmp_activity.code
+                )
+            ) as prexc',])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
                 ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
                 ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
@@ -5824,7 +6105,7 @@ class PrController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
-            $lastPr = Pr::find()->orderBy(['id' => SORT_DESC, 'year' => $model->year])->one();
+            $lastPr = Pr::find()->where(['year' => $model->year])->orderBy(['id' => SORT_DESC])->one();
             $lastNumber = $lastPr ? intval(substr($lastPr->pr_no, -3)) : '001';
             $pr_no = $lastPr ? substr($model->year, -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr($model->year, -2).'-'.date("m").'-'.$lastNumber;
             $model->pr_no = $pr_no;

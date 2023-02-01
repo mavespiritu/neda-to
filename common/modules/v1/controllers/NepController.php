@@ -22,6 +22,7 @@ use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
 use markavespiritu\user\models\Office;
+use yii\helpers\Url;
 
 /**
  * PpmpController implements the CRUD actions for Ppmp model.
@@ -134,6 +135,10 @@ class NepController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('NEP_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new AppropriationSearch();
         $searchModel->type = 'NEP';
 

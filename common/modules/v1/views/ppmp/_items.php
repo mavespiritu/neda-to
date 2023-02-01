@@ -25,7 +25,7 @@ use yii\bootstrap\Modal;
     </tr>
     <tr>
         <td align=right style="width: 10%;">Activity:</td>
-        <td><b><?= $activity->title ?></b></td>
+        <td><b><?= $activity->activityTitle ?></b></td>
     </tr>
     <tr>
         <td align=right>Fund Source:</td>

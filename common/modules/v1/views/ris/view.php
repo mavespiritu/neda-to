@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="box box-primary">
                 <div class="box-header panel-title"><i class="fa fa-edit"></i> Add Original Item Form</div>
                 <div class="box-body">
-                    <?= $this->render('_home',[
+                    <?= $this->render('_original-item',[
                         'model' => $model,
                         'appropriationItemModel' => $appropriationItemModel,
                         'activities' => $activities,

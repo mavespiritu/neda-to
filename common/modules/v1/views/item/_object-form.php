@@ -22,7 +22,7 @@ DisableButtonAsset::register($this);
         'pluginOptions' => [
             'allowClear' =>  true,
         ],
-        ])->label('Object');
+        ])->label('Select Object');
     ?>
 
     <div class="form-group">

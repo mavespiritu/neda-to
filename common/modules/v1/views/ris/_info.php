@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php $i = 1; ?>
 <div class="ris-view">
     <?= $this->render('_menu', [
-        'model' => $model
+        'model' => $model,
     ]) ?>
     <div class="row">
         <div class="col-md-12 col-xs-12">

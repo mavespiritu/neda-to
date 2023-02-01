@@ -73,7 +73,7 @@ $buttonItems = [];
     </td>
     <td align=center><?= number_format($item['total'], 0) ?></td>
     <td align=right><?= number_format($item['cost'], 2) ?></td>
-    <td align=right><?= number_format($item['cost'] * $item['total'], 2) ?></td>
+    <td align=right><b><?= number_format($item['cost'] * $item['total'], 2) ?></b></td>
 </tr>
 <?php
   Modal::begin([

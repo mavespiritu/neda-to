@@ -37,6 +37,7 @@ use markavespiritu\user\models\Office;
 use yii\widgets\ActiveForm;
 use yii\web\Response;
 use kartik\mpdf\Pdf;
+use yii\helpers\Url;
 /**
  * RisController implements the CRUD actions for Ris model.
  */
@@ -122,7 +123,7 @@ class RisController extends Controller
         $arr = [];
         $arr[] = ['id'=>'','text'=>''];
         foreach($subActivities as $subActivity){
-            $arr[] = ['id' => $subActivity->id ,'text' => $subActivity->title];
+            $arr[] = ['id' => $subActivity->id ,'text' => $subActivity->subActivityTitle];
         }
         \Yii::$app->response->format = 'json';
         return $arr;
@@ -257,6 +258,10 @@ class RisController extends Controller
      */
     public function actionIndex()
     {
+        $session = Yii::$app->session;
+
+        $session->set('RIS_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
+
         $searchModel = new RisSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -300,30 +305,45 @@ class RisController extends Controller
                      ->select([
                          'ppmp_activity.id as id',
                          'ppmp_activity.pap_id as pap_id',
-                         'concat(
-                            ppmp_cost_structure.code,"",
-                            ppmp_organizational_outcome.code,"",
-                            ppmp_program.code,"",
-                            ppmp_sub_program.code,"",
-                            ppmp_identifier.code,"",
-                            ppmp_pap.code,"000-",
-                            ppmp_activity.code," - ",
-                            ppmp_activity.title
-                        ) as text',
+                         'IF(ppmp_pap.short_code IS NULL,
+                         concat(
+                             ppmp_cost_structure.code,"",
+                             ppmp_organizational_outcome.code,"",
+                             ppmp_program.code,"",
+                             ppmp_sub_program.code,"",
+                             ppmp_identifier.code,"",
+                             ppmp_pap.code,"000-",
+                             ppmp_activity.code," - ",
+                             ppmp_activity.title
+                         )
+                         ,
+                         concat(
+                             ppmp_pap.short_code,"-",
+                             ppmp_activity.code," - ",
+                             ppmp_activity.title
+                         )
+                     ) as text',
                          'p.title as groupTitle'
                      ])
                     ->leftJoin(['p' => '(
                         SELECT 
                         ppmp_pap.id as id, 
                         ppmp_pap.code as code, 
-                        concat(
-                            ppmp_cost_structure.code,"",
-                            ppmp_organizational_outcome.code,"",
-                            ppmp_program.code,"",
-                            ppmp_sub_program.code,"",
-                            ppmp_identifier.code,"",
-                            ppmp_pap.code,"000 - ",
-                            ppmp_pap.title
+                        IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000 - ",
+                                ppmp_pap.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code," - ",
+                                ppmp_pap.title
+                            )
                         ) as title
                         from 
                         ppmp_pap
@@ -524,26 +544,43 @@ class RisController extends Controller
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -607,26 +644,43 @@ class RisController extends Controller
                     'ppmp_item.id as stockNo',
                     'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
                     'ppmp_activity.id as activityId',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
                     'sum(quantity) as total'
@@ -705,26 +759,43 @@ class RisController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -787,26 +858,43 @@ class RisController extends Controller
                     'ppmp_ris_item.month_id as month_id',
                     'ppmp_item.id as stockNo',
                     'ppmp_activity.id as activityId',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
                     'sum(quantity) as total'
@@ -949,26 +1037,43 @@ class RisController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -978,7 +1083,8 @@ class RisController extends Controller
                     'ppmp_item.unit_of_measure as unitOfMeasure',
                     'ppmp_ppmp_item.cost as cost',
                     'sum(quantity) as total',
-                    'ppmp_ris_item.type'
+                    'ppmp_ris_item.type',
+                    'ppmp_ris_item.ppmp_item_id'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
@@ -1031,29 +1137,47 @@ class RisController extends Controller
                     'ppmp_ris_item.month_id as month_id',
                     'ppmp_item.id as stockNo',
                     'ppmp_activity.id as activityId',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_item.title as itemTitle',
-                    'sum(quantity) as total'
+                    'sum(quantity) as total',
+                    'ppmp_ris_item.ppmp_item_id'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
                 ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
@@ -1133,6 +1257,7 @@ class RisController extends Controller
     public function actionCreate()
     {
         $model = new Ris();
+        $model->year = date("Y");
 
         $approver = Settings::findOne(['title' => 'RIS Approver']);
         $model->approved_by = $approver ? $approver->value : '';
@@ -1172,11 +1297,11 @@ class RisController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $ppmp = Ppmp::findOne(['id' => $model->ppmp_id]);
-            $lastRis = Ris::find()->orderBy(['id' => SORT_DESC, 'year' => $ppmp->year])->one();
+            $lastRis = Ris::find()->where(['SUBSTRING(ris_no, 1, 2)' => substr(date("Y"), -2)])->orderBy(['id' => SORT_DESC])->one();
+
             $userOffice = Office::findOne(['id' => Yii::$app->user->identity->userinfo->OFFICE_C]);
             $lastNumber = $lastRis ? intval(substr($lastRis->ris_no, -3)) : '001';
-            $ris_no = $lastRis ? substr(date("Y"), -2).'-'.date("md").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("md").$lastNumber;
+            $ris_no = $lastRis ? substr(date("Y"), -2).'-'.date("md").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("md").'-'.$lastNumber;
             $model->ris_no = $ris_no;
             $model->office_id = (Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff')) ? $model->office_id : $userOffice->abbreviation;
             $model->date_requested = (Yii::$app->user->can('Administrator') || Yii::$app->user->can('ProcurementStaff')) ? $model->date_requested : date("Y-m-d"); 
@@ -1559,32 +1684,49 @@ class RisController extends Controller
 
         $originalItems = [];
         $specifications = [];
-
+       
         $origItems = RisItem::find()
                 ->select([
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -1684,31 +1826,46 @@ class RisController extends Controller
         ->select([
             'ppmp_activity.id as id',
             'ppmp_activity.pap_id as pap_id',
-            'concat(
-               ppmp_cost_structure.code,"",
-               ppmp_organizational_outcome.code,"",
-               ppmp_program.code,"",
-               ppmp_sub_program.code,"",
-               ppmp_identifier.code,"",
-               ppmp_pap.code,"000-",
-               ppmp_activity.code," - ",
-               ppmp_activity.title
-           ) as text',
+            'IF(ppmp_pap.short_code IS NULL,
+                concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                )
+                ,
+                concat(
+                    ppmp_pap.short_code,"-",
+                    ppmp_activity.code," - ",
+                    ppmp_activity.title
+                )
+            ) as text',
             'p.title as groupTitle'
         ])
        ->leftJoin(['p' => '(
            SELECT 
            ppmp_pap.id as id, 
            ppmp_pap.code as code, 
-           concat(
-               ppmp_cost_structure.code,"",
-               ppmp_organizational_outcome.code,"",
-               ppmp_program.code,"",
-               ppmp_sub_program.code,"",
-               ppmp_identifier.code,"",
-               ppmp_pap.code,"000 - ",
-               ppmp_pap.title
-           ) as title
+           IF(ppmp_pap.short_code IS NULL,
+                concat(
+                    ppmp_cost_structure.code,"",
+                    ppmp_organizational_outcome.code,"",
+                    ppmp_program.code,"",
+                    ppmp_sub_program.code,"",
+                    ppmp_identifier.code,"",
+                    ppmp_pap.code,"000 - ",
+                    ppmp_pap.title
+                )
+                ,
+                concat(
+                    ppmp_pap.short_code," - ",
+                    ppmp_pap.title
+                )
+            ) as title
            from 
            ppmp_pap
            left join ppmp_identifier on ppmp_identifier.id = ppmp_pap.identifier_id
@@ -1770,26 +1927,43 @@ class RisController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_ris_item.ris_id as ris_id',
                     'ppmp_item.id as stockNo',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_activity.id as activityId',
                     'ppmp_activity.title as activityTitle',
@@ -1936,15 +2110,23 @@ class RisController extends Controller
                      ->select([
                          'ppmp_activity.id as id',
                          'ppmp_activity.pap_id as pap_id',
-                         'concat(
-                            ppmp_cost_structure.code,"",
-                            ppmp_organizational_outcome.code,"",
-                            ppmp_program.code,"",
-                            ppmp_sub_program.code,"",
-                            ppmp_identifier.code,"",
-                            ppmp_pap.code,"000-",
-                            ppmp_activity.code," - ",
-                            ppmp_activity.title
+                         'IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code,"-",
+                                ppmp_activity.code," - ",
+                                ppmp_activity.title
+                            )
                         ) as text',
                          'p.title as groupTitle'
                      ])
@@ -1952,14 +2134,21 @@ class RisController extends Controller
                         SELECT 
                         ppmp_pap.id as id, 
                         ppmp_pap.code as code, 
-                        concat(
-                            ppmp_cost_structure.code,"",
-                            ppmp_organizational_outcome.code,"",
-                            ppmp_program.code,"",
-                            ppmp_sub_program.code,"",
-                            ppmp_identifier.code,"",
-                            ppmp_pap.code,"000 - ",
-                            ppmp_pap.title
+                        IF(ppmp_pap.short_code IS NULL,
+                            concat(
+                                ppmp_cost_structure.code,"",
+                                ppmp_organizational_outcome.code,"",
+                                ppmp_program.code,"",
+                                ppmp_sub_program.code,"",
+                                ppmp_identifier.code,"",
+                                ppmp_pap.code,"000 - ",
+                                ppmp_pap.title
+                            )
+                            ,
+                            concat(
+                                ppmp_pap.short_code," - ",
+                                ppmp_pap.title
+                            )
                         ) as title
                         from 
                         ppmp_pap
@@ -2130,26 +2319,43 @@ class RisController extends Controller
                     'ppmp_ris_item.id as id',
                     'ppmp_item.id as stockNo',
                     'ppmp_activity.id as activityId',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code," - ",
-                        ppmp_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
                     ) as activity',
-                    'concat(
-                        ppmp_cost_structure.code,"",
-                        ppmp_organizational_outcome.code,"",
-                        ppmp_program.code,"",
-                        ppmp_sub_program.code,"",
-                        ppmp_identifier.code,"",
-                        ppmp_pap.code,"000-",
-                        ppmp_activity.code,"-",
-                        ppmp_sub_activity.code," - ",
-                        ppmp_sub_activity.title
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
                     ) as prexc',
                     'ppmp_sub_activity.id as subActivityId',
                     'ppmp_sub_activity.title as subActivityTitle',

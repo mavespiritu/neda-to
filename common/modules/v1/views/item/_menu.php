@@ -8,7 +8,7 @@ use yii\web\View;
 
 <div>
     <div class="pull-left">
-        <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to Item List', ['/v1/item/'], ['class' => 'btn btn-app']) ?>
+        <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to Item List', ['/'.Yii::$app->session->get('Items_ReturnURL')], ['class' => 'btn btn-app']) ?>
     </div>
     <div class="pull-right">
         <?= Html::button('<i class="fa fa-edit"></i> Edit Item', ['value' => Url::to(['/v1/item/update', 'id' => $model->id, 'return_url' => Url::to()]), 'class' => 'btn btn-app', 'id' => 'update-button']) ?>

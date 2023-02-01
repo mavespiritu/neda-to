@@ -8,10 +8,8 @@ use yii\web\View;
     <td><?= $i ?></td>
     <td align=center><?= $item['stockNo'] ?></td>
     <td><?= $item['unitOfMeasure'] ?></td>
-    <td>
-        <a href="javascript:void(0)" onClick="viewItemDetails(<?= $item['ppmp_item_id'] ?>)"><?= $item['itemTitle'] ?></a><br>
-        <i><?= isset($specifications[$item['id']]) ? $specifications[$item['id']]->risItemSpecValueString : '' ?></i>
-    </td>
+    <td><?= $item['itemTitle'] ?><br>
+        <i><?= isset($specifications[$item['id']]) ? $specifications[$item['id']]->risItemSpecValueString : '' ?></i></td>
     <td align=center><?= number_format($item['total'], 0) ?></td>
     <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>

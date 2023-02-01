@@ -79,6 +79,28 @@ use yii\web\View;
         ?>
       </div>
   </div>
+  <div class="row">
+    <div class="col-md-6 col-xs-12">
+        <?= $form->field($searchModel, 'item_id')->widget(Select2::classname(), [
+                'data' => $items,
+                'options' => ['placeholder' => 'Select Object', 'multiple' => false, 'class' => 'item-select'],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ])->label('Item');
+        ?>
+    </div>
+    <div class="col-md-3 col-xs-12">
+        <?= $form->field($searchModel, 'fund_source_id')->widget(Select2::classname(), [
+                'data' => $fundSources,
+                'options' => ['placeholder' => 'Select Object', 'multiple' => false, 'class' => 'fund-source-select'],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ])->label('Fund Source');
+        ?>
+    </div>
+  </div>
         
   <div class="form-group pull-right">
       <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

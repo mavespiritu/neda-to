@@ -176,7 +176,7 @@ class PpmpItem extends \yii\db\ActiveRecord
 
     public function getSubActivityName()
     {
-        return $this->subActivity ? $this->subActivity->title : '';
+        return $this->subActivity ? $this->subActivity->subActivityTitle : '';
     }
 
     /**

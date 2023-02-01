@@ -175,8 +175,6 @@ class PpmpController extends Controller
         $session = Yii::$app->session;
 
         $session->set('PPMP_ReturnURL', Yii::$app->controller->module->getBackUrl(Url::to()));
-        
-        echo "<pre>"; print_r($session->get('PPMP_ReturnURL')); exit;
 
         $searchModel = new PpmpSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

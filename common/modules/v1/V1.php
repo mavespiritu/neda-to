@@ -33,6 +33,6 @@ class V1 extends \yii\base\Module
 
         $urls = implode('/', $urls);
 
-        return $module;
+        return $urls;
     }
 }

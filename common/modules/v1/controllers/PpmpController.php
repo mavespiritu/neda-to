@@ -849,10 +849,11 @@ class PpmpController extends Controller
                     ->where(['ppmp_id' => $model->id])
                     ->orderBy([
                         'fundSourceTitle' => SORT_ASC,
-                        'pap.id' => SORT_ASC,
-                        'activity.code' => SORT_ASC,
-                        'subActivity.code' => SORT_ASC,
-                    ])
+                        'ppmp_pap.id' => SORT_ASC,
+                        'ppmp_activity.code' => SORT_ASC,
+                        'ppmp_sub_activity.code' => SORT_ASC,
+                        'object.code' => SORT_ASC,
+                        ])
                     ->asArray()
                     ->all();
         

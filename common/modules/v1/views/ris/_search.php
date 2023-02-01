@@ -90,7 +90,10 @@ use yii\web\View;
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'prNo') ?>
         </div>
-        <div class="col-md-9 col-xs-12">
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'year') ?>
+        </div>
+        <div class="col-md-6 col-xs-12">
             <?= $form->field($model, 'purpose')->textarea(['rows' => 1]) ?>
         </div>
     </div>

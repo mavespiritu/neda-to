@@ -25,9 +25,9 @@ class V1 extends \yii\base\Module
     public function getBackUrl($return_url)
     {
         $choppedUrls = explode('/', $return_url);
-        $newUrl = count($choppedUrls) > 1 ? array_splice($choppedUrls, 2, count($choppedUrls)) : array_splice($choppedUrls, 1, count($choppedUrls));
+        $newUrl = array_splice($choppedUrls, 2, count($choppedUrls));
         $newUrl = implode('/', $newUrl);
 
-        return $newUrl;
+        return count($choppedUrls) > 1 ? $newUrl : 'v1/'.$newUrl;
     }
 }

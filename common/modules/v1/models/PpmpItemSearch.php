@@ -45,6 +45,7 @@ class PpmpItemSearch extends PpmpItem
                 ->joinWith('activity')
                 ->joinWith('subActivity')
                 ->joinWith('fundSource')
+                ->joinWith('item')
                 ->orderBy(['id' => SORT_DESC])
         ;
 

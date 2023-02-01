@@ -23,8 +23,8 @@ $columnTotals = [];
                 <div class="box-header panel-title"><i class="fa fa-list"></i> Manage Allocation</div>
                 <div class="box-body">
                     <p><i class="fa fa-exclamation-circle"></i> Just input the amounts. Data are autosaved.</p>
-                    <div class="appropriation-table" style="max-height: 800px;">
-                        <table class="table table-responsive table-striped table-condensed table-hover table-bordered" id="main-table" style="padding: 20px auto;">
+                    <div class="nep-table" style="height: 800px;">
+                        <table class="table table-responsive table-striped table-condensed table-hover table-bordered" cellspacing="0" style="min-width: 3000px;">
                             <thead>
                                 <tr>
                                     <th style="width: <?= (count($model->appropriationPaps) + 1)/100 ?>%;">Objects</th>
@@ -33,8 +33,7 @@ $columnTotals = [];
                                             <th style="width: <?= (count($model->appropriationPaps) + 1)/100 ?>%;">
                                                 <?= $program->fundSource->code ?>
                                                 <hr style="opacity: 0.3">
-                                                <p><span style="font-size: 12px;"><?= $program->pap->title ?></span><br>
-                                                <?= $program->pap->codeTitle ?>
+                                                <p><span style="font-size: 12px;"><?= $program->pap->codeAndTitle ?></span>
                                                 </p>
                                             </th>
                                         <?php endforeach ?>
@@ -66,8 +65,8 @@ $columnTotals = [];
                                                             'options' => [
                                                                 'id' => $objectItem->obj_id.$key.'-input',
                                                                 'class' => 'form-control amount-select',
-                                                                'onkeypress' => 'submitForm($("#'.$objectItem->obj_id.$key.'"), $("#'.$objectItem->obj_id.$key.'-input"));',
-                                                                'onFocusout' => 'submitForm($("#'.$objectItem->obj_id.$key.'"), $("#'.$objectItem->obj_id.$key.'-input"));',
+                                                                'onkeypress' => 'submitForm($("#'.$objectItem->obj_id.$key.'"), $("#'.$objectItem->obj_id.$key.'-input"), '.$objectItem->obj_id.$key.');',
+                                                                'onFocusout' => 'submitForm($("#'.$objectItem->obj_id.$key.'"), $("#'.$objectItem->obj_id.$key.'-input"), '.$objectItem->obj_id.$key.');',
                                                                 'autocomplete' => 'off',
                                                             ],
                                                             'clientOptions' => [
@@ -77,6 +76,7 @@ $columnTotals = [];
                                                                 'autoGroup' => true
                                                             ],
                                                         ])->label(false) ?>
+                                                        <span id="loader-<?= $objectItem->obj_id.$key ?>"></span>
                                                     </td>
                                                     <?php ActiveForm::end(); ?>
                                                     <?php $rowTotal += $objectItem->amount; ?>
@@ -109,7 +109,7 @@ $columnTotals = [];
 </div>
 <?php
   $script = '
-    function submitForm(form, input)
+    function submitForm(form, input, key)
     {   
         var formData = form.serialize();
 
@@ -117,7 +117,11 @@ $columnTotals = [];
             url: form.attr("action"),
             type: form.attr("method"),
             data: formData,
+            beforeSend: function(){
+                $("#loader-"+key).html("<span class=\"text-center\" style=\"margin-top: 10px;\"><svg class=\"spinner\" width=\"20px\" height=\"20px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></span>");
+            },
             success: function (data) {
+                $("#loader-"+key).empty();
             },
             error: function (err) {
                 console.log(err);
@@ -125,7 +129,7 @@ $columnTotals = [];
         });
     }
     $(document).ready(function() {
-        $(".appropriation-table").freezeTable({
+        $(".nep-table").freezeTable({
             "scrollable": true,
         });
     });

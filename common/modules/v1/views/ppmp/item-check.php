@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model
     ]) ?>
     <div class="box box-primary">
-        <div class="box-header panel-title"><i class="fa fa-list"></i>Item List</div>
+        <div class="box-header panel-title"><i class="fa fa-search"></i>Search Item</div>
         <div class="box-body">
         <?= $this->render('_item-check', [
             'model' => $model,
@@ -27,7 +27,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'activities' => $activities,
             'subActivities' => $subActivities,
             'objects' => $objects,
+            'items' => $items,
+            'fundSources' => $fundSources,
         ]) ?>
+        <br>
+        <br>
+        <h3 class="panel-title"><i class="fa fa-list"></i> Item List</h3>
+        <br>
         <?= GridView::widget([
             'options' => [
                 'class' => 'table table-hover table-responsive',

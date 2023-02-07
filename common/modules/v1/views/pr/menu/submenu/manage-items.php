@@ -4,46 +4,13 @@ use yii\helpers\Url;
 use yii\bootstrap\Modal;
 use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
+use yii\bootstrap\Collapse;
 ?>
 
-<h3 class="panel-title">2. Group Items</h3>
+<h3 class="panel-title">Manage Items</h3>
 <br>
-<p><i class="fa fa-exclamation-circle"></i> Group items for agency procurement, supplier, and direct obligation.</p>
-<ul class="products-list product-list-in-box navigation">
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">2.1</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupAprItems(<?= $model->id?>);" class="product-title">Group APR Items
-            <span class="badge bg-green pull-right"><?= $model->aprItemCount ?></span>
-            </a>
-            <span class="product-description">Select items from PR to include in APR</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">2.2</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupRfqItems(<?= $model->id?>);" class="product-title">Group RFQ Items
-            <span class="badge bg-green pull-right"><?= $model->rfqItemCount ?></span>
-            </a>
-            <span class="product-description">Select items from PR to include in RFQ</span>
-        </div>
-    </li>
-    <li class="item">
-        <div class="product-img">
-            <div class="circle">2.3</div>
-        </div>
-        <div class="product-info">
-            <a href="javascript:void(0)" onclick="groupNonProcurableItems(<?= $model->id?>);" class="product-title">Group NP Items
-            <span class="badge bg-green pull-right"><?= $model->nonProcurableItemCount ?></span>
-            </a>
-            <span class="product-description">Select items from PR for direct obligation</span>
-        </div>
-    </li>
-</ul>
+<p><i class="fa fa-exclamation-circle"></i> Manage your items here using the steps provided below.</p>
+<?= !empty($model->menu) ? Collapse::widget(['items' => $model->menu, 'encodeLabels' => false, 'autoCloseItems' => true]) : 'No steps detected' ?>
 <?php
     $script = '
         function groupAprItems(id)
@@ -109,3 +76,8 @@ use yii\bootstrap\ButtonDropdown;
 
     $this->registerJs($script, View::POS_END);
 ?>
+<style>
+    .collapse-toggle{
+        font-size: 13px;
+    }
+</style>

@@ -152,7 +152,12 @@ class PrController extends Controller
     public function actionSubMenu($id, $step)
     {
         $model = $this->findModel($id);
-        if($step == 'groupItems')
+        if($step == 'manageItems')
+        {
+            return $this->renderAjax('\menu\submenu\manage-items', [
+                'model' => $model,
+            ]);
+        }else if($step == 'groupItems')
         {
             return $this->renderAjax('\menu\submenu\group-items', [
                 'model' => $model,
@@ -419,6 +424,7 @@ class PrController extends Controller
                                                     s.type = ppmp_ris_item.type')
                 ->andWhere(['ppmp_ris.id' => $ris->id])
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+                ->andWhere(['not in', 'ppmp_ris_item.id', $existingItems])
                 ->andWhere(['not in', 'ppmp_ris_item.id', $awardedItems])
                 ->andWhere(['not in', 'ppmp_ris_item.id', $obligatedItems])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
@@ -1284,7 +1290,7 @@ class PrController extends Controller
                 $apr->approved_by = $aprApprover->value;
                 $apr->save();
 
-                $selectedPrItems = Yii::$app->request->post('OrsItem');
+                $selectedPrItems = Yii::$app->request->post('NonProcurableItem');
             
                 if(!empty($selectedPrItems))
                 {
@@ -1337,7 +1343,7 @@ class PrController extends Controller
             }
             else if($from == 'NP' && $to == 'RFQ')
             {
-                $selectedPrItems = Yii::$app->request->post('OrsItem');
+                $selectedPrItems = Yii::$app->request->post('NonProcurableItem');
             
                 if(!empty($selectedPrItems))
                 {

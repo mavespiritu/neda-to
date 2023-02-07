@@ -15,7 +15,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">4.1</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="aprRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieved APR
+            <a href="javascript:void(0)" onclick="aprRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieve APR
             <?= $aprInfoCount > 0 ? '<span class="badge bg-green pull-right">1</span>' : '' ?>
             </a>
             <span class="product-description">Input prices from APR</span>
@@ -26,7 +26,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">4.2</div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="rfqRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieved RFQs
+            <a href="javascript:void(0)" onclick="rfqRetrieveQuotation(<?= $model->id?>);" class="product-title">Retrieve RFQs
             <?= $rfqInfosCount > 0 ? '<span class="badge bg-green pull-right">'.$rfqInfosCount.'</span>' : '' ?>
             </a>
             <span class="product-description">Input prices from RFQ.</span>

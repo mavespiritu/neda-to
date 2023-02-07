@@ -14,7 +14,7 @@ use frontend\assets\AppAsset;
 $asset = AppAsset::register($this);
 ?>
 
-<h3 class="panel-title">9.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable Items' ?></h3>
+<h3 class="panel-title">9.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable (NP) Items' ?></h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> Create ORS to obligate items.</p>
 

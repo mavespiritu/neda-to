@@ -18,7 +18,7 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<h3 class="panel-title">2.3 Group Non-procurable Items</h3>
+<h3 class="panel-title">2.3 Group Non-procurable (NP) Items</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> All items included will be directly obligated and not needed to undergo procurement like TEV etc.</p>
 <table class="table table-bordered table-responsive table-hover table-condensed table-striped">

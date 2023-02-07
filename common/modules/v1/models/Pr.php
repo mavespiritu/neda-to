@@ -181,6 +181,19 @@ class Pr extends \yii\db\ActiveRecord
         return $total;
     }
 
+    public function getWinners()
+    {
+        $bids = Bid::findAll(['pr_id' => $this->id]);
+        $bids = ArrayHelper::map($bids, 'id', 'id');
+
+        $winners = BidWinner::find()->where(['bid_id' => $bids])->all();
+        $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()->where(['id' => $winners])->all();
+
+        return $suppliers;
+    }
+
     public function getPoCount()
     {
         $total = Po::find()
@@ -738,5 +751,83 @@ class Pr extends \yii\db\ActiveRecord
         }
 
         parent::afterSave($insert, $changedAttributes);
+    }
+
+    public function getMenu()
+    {
+        $items = [];
+        $i = 0;
+        $j = 1;
+
+        $items[$i]['label'] = $j.'. Select Items';
+        $items[$i]['content'] = '<div id="select-item-menu"></div>';
+        $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+        $i++;
+        $j++;
+
+        $items[$i]['label'] = $j.'. Group Items';
+        $items[$i]['content'] = '<div id="group-item-menu"></div>';
+        $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+        $i++;
+        $j++;
+
+        if(!empty($this->aprItems))
+        {
+            $items[$i]['label'] = $j.'. APR';
+            $items[$i]['content'] = '<div id="apr-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+        }
+
+        if(!empty($this->rfqItems))
+        {
+            $items[$i]['label'] = $j.'. RFQ';
+            $items[$i]['content'] = '<div id="rfq-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+
+            $items[$i]['label'] = $j.'. AOQ';
+            $items[$i]['content'] = '<div id="aoq-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+
+            $items[$i]['label'] = $j.'. NOA';
+            $items[$i]['content'] = '<div id="noa-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+
+            $items[$i]['label'] = $j.'. PO/Contract';
+            $items[$i]['content'] = '<div id="po-contract-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+
+            $items[$i]['label'] = $j.'. NTP';
+            $items[$i]['content'] = '<div id="ntp-menu"></div>';
+            $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+            $i++;
+            $j++;
+        }
+
+        $items[$i]['label'] = $j.'. ORS';
+        $items[$i]['content'] = '<div id="ors-menu"></div>';
+        $items[$i]['options'] = ['class' => 'panel panel-default'];
+
+        $i++;
+        $j++;
+
+        return $items;
     }
 }

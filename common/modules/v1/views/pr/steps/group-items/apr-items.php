@@ -84,7 +84,7 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to Non-procurable', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to NP', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
     <?= !empty($forAprs) ? Html::submitButton('Transfer to RFQ', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [

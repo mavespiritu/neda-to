@@ -20,7 +20,7 @@ use yii\bootstrap\ButtonDropdown;
 </a>
 <a onclick="retrieveQuotations(<?= $model->id?>);" class="btn btn-app main-menu" id="step-4">
     <?= $model->aprInfoCount + $model->rfqInfoCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
-    <i class="fa fa-envelope-open-o"></i>4. Retrieved <br> RFQs/APR
+    <i class="fa fa-envelope-open-o"></i>4. Retrieve <br> RFQs/APR
 </a>
 <a onclick="bidItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-5">
     <?= $model->bidCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>

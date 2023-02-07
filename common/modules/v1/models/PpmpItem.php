@@ -111,7 +111,7 @@ class PpmpItem extends \yii\db\ActiveRecord
 
     public function getActivityName()
     {
-        return $this->activity ? $this->activity->pap->codeTitle.' - '.$this->activity->code.' - '.$this->activity->title : '';
+        return $this->activity ? $this->activity->pap->codeTitle.'-'.$this->activity->code.' - '.$this->activity->title : '';
     }
 
     /**

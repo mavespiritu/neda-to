@@ -103,7 +103,7 @@ $asset = AppAsset::register($this);
                 LIABILITY AND ACCOUNT SUCH QUOTATIONS AS MAYBE CONSIDERED MOST ADVANTAGEOUS TO 
                 THE GOVERNMENT.</li>
                 <li>MODE OF PROCUREMENT: <b><?= strtoupper($model->procurementModeName) ?></b></li>
-                <li>NUMBER OF LOT(S): <span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></li>
+                <li>NUMBER OF LOT(S): <?= $model->getLots()->count() > 0 ? '<u><b>'.$model->getLots()->count().'</b></u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>' ?></li>
                 <li>TOTAL ABC: <b>Php <?= number_format($model->rfqTotal, 2) ?></b></li>
             </ol>
         </div>

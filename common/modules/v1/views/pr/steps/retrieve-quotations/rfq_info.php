@@ -70,7 +70,7 @@ $asset = AppAsset::register($this);
                 LIABILITY AND ACCOUNT SUCH QUOTATIONS AS MAYBE CONSIDERED MOST ADVANTAGEOUS TO 
                 THE GOVERNMENT.</li>
                 <li>MODE OF PROCUREMENT: <b><?= strtoupper($model->procurementModeName) ?></b></li>
-                <li>NUMBER OF LOT(S): <span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></li>
+                <li>NUMBER OF LOT(S): <?= $model->getLots()->count() > 0 ? '<u><b>'.$model->getLots()->count().'</b></u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>' ?></li>
                 <li>TOTAL ABC: <b>Php <?= number_format($model->rfqTotal, 2) ?></b></li>
             </ol>
         </div>
@@ -126,10 +126,9 @@ $asset = AppAsset::register($this);
                                     <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
                                 <?php } ?>
                                 </td>
-                                <td>&nbsp;</td>
-                                <td align=right>P<?= number_format($item['cost'], 2) ?></td>
-                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                                <td><?= $item['specification'] ?></td>
+                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['offer'], 2) ?></span></td>
+                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['total'] * $item['offer'], 2) ?></span></td>
                             </tr>
                             <?php $i++; ?>
                         <?php } ?>
@@ -165,10 +164,9 @@ $asset = AppAsset::register($this);
                         <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
                     <?php } ?>
                     </td>
-                    <td>&nbsp;</td>
-                    <td align=right>P<?= number_format($item['cost'], 2) ?></td>
-                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                    <td><?= $item['specification'] ?></td>
+                    <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['offer'], 2) ?></span></td>
+                    <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['total'] * $item['offer'], 2) ?></span></td>
                 </tr>
                 <?php $i++; ?>
                 <?php } ?>

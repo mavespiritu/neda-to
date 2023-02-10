@@ -109,6 +109,7 @@ DisableButtonAsset::register($this);
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
                 rfqQuotation('.$model->id.');
+                $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {
                 console.log(err);

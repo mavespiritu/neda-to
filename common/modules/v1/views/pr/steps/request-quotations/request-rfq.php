@@ -98,8 +98,8 @@ use yii\bootstrap\Collapse;
                     success: function (data) {
                         console.log(this.data);
                         alert("RFQ has been deleted");
-                        menu('.$model->id.');
                         rfqQuotation(id);
+                        $("html").animate({ scrollTop: 0 }, "slow");
                     },
                     error: function (err) {
                         console.log(err);

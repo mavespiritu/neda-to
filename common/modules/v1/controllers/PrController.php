@@ -639,7 +639,7 @@ class PrController extends Controller
                 ])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $lotItemIDs])
                 ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
-                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'item' => SORT_ASC])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'ris_no' => SORT_ASC, 'item' => SORT_ASC])
                 ->asArray()
                 ->all();
 
@@ -2773,6 +2773,19 @@ class PrController extends Controller
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
+
+        $lotItems = [];
+        $rfqItems = $model->lots ? $model->rfqItemsWithAprItemsPerLot : $model->rfqItemsWithAprItems;
+        if($model->lots)
+        {
+            if(!empty($rfqItems))
+            {
+                foreach($rfqItems as $item)
+                {
+                    $lotItems[$item['lotTitle']][] = $item;
+                }
+            }
+        }
         
         if(!empty($unmergedItems))
         {
@@ -2791,6 +2804,7 @@ class PrController extends Controller
             'rfq' => $rfq,
             'supplier' => $supplier,
             'rfqItems' => $rfqItems,
+            'lotItems' => $lotItems,
             'specifications' => $specifications,
             'bacChairperson' => $bacChairperson,
             'agency' => $agency,

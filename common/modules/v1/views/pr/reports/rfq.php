@@ -148,7 +148,6 @@ $asset = AppAsset::register($this);
                                     <?php } ?>
                                     </td>
                                     <td>&nbsp;</td>
-                                    <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                                     <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                                     <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                                 </tr>
@@ -168,20 +167,8 @@ $asset = AppAsset::register($this);
                         <br>
                         <?php if(isset($specifications[$item['id']])){ ?>
                             <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                            <table style="width: 100%">
-                            <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
-                                <tr>
-                                <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
-                                <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
-                                        'data' => [
-                                            'confirm' => 'Are you sure you want to remove this item?',
-                                            'method' => 'post',
-                                        ],
-                                    ]) ?></td> -->
-                                </tr>
-                            <?php } ?>
-                            </table>
-                            <br>
+                                <i>(Please see attached Specifications for your reference.)</i>
+                                <br>
                             <?php } ?>
                             <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
                         <?php } ?>

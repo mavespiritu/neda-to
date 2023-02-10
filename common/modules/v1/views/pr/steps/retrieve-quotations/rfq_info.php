@@ -89,39 +89,100 @@ $asset = AppAsset::register($this);
             </tr>
         </thead>
         <tbody>
-            <?php if(!empty($rfqItems)){ ?>
-                <?php $i = 1; ?>
-                <?php foreach($rfqItems as $item){ ?>
+        <?php $i = 1; ?>
+        <?php if($model->lots){ ?>
+            <?php if(!empty($lotItems)){ ?>
+                <?php foreach($lotItems as $lot => $items){ ?>
+                    <?php if($lot != 0){ ?>
                     <tr>
-                        <td align=center><?= $i ?></td>
-                        <td align=center><?= number_format($item['total'], 0) ?></td>
-                        <td align=center><?= $item['unit'] ?></td>
-                        <td><?= $item['item'] ?>
-                        <br>
-                        <?php if(isset($specifications[$item['id']])){ ?>
-                            <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                                <i>(Please see attached Specifications for your reference.)</i>
-                                <br>
-                            <?php } ?>
-                            <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                        <?php } ?>
-                        </td>
-                        <td><?= $item['specification'] ?></td>
-                        <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['offer'], 2) ?></span></td>
-                        <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['total'] * $item['offer'], 2) ?></span></td>
+                        <td colspan=7 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
                     </tr>
-                    <?php $i++; ?>
+                    <?php } ?>
+                    <?php if(!empty($items)){ ?>
+                        <?php foreach($items as $item){ ?>
+                            <tr>
+                                <td align=center><?= $i ?></td>
+                                <td align=center><?= number_format($item['total'], 0) ?></td>
+                                <td align=center><?= $item['unit'] ?></td>
+                                <td><?= $item['item'] ?>
+                                <br>
+                                <?php if(isset($specifications[$item['id']])){ ?>
+                                    <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+                                    <table style="width: 100%">
+                                    <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
+                                        <tr>
+                                        <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
+                                        <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
+                                                'data' => [
+                                                    'confirm' => 'Are you sure you want to remove this item?',
+                                                    'method' => 'post',
+                                                ],
+                                            ]) ?></td> -->
+                                        </tr>
+                                    <?php } ?>
+                                    </table>
+                                    <br>
+                                    <?php } ?>
+                                    <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
+                                <?php } ?>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td align=right>P<?= number_format($item['cost'], 2) ?></td>
+                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                            </tr>
+                            <?php $i++; ?>
+                        <?php } ?>
+                    <?php } ?>
                 <?php } ?>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td align=center><i><b>xxxx NOTHING FOLLOWS xxxxx</b></i></td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
             <?php } ?>
+        <?php }else{ ?>
+            <?php if(!empty($rfqItems)){ ?>
+                <?php foreach($rfqItems as $item){ ?>
+                <tr>
+                    <td align=center><?= $i ?></td>
+                    <td align=center><?= number_format($item['total'], 0) ?></td>
+                    <td align=center><?= $item['unit'] ?></td>
+                    <td><?= $item['item'] ?>
+                    <br>
+                    <?php if(isset($specifications[$item['id']])){ ?>
+                        <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+                        <table style="width: 100%">
+                        <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
+                            <tr>
+                            <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
+                            <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
+                                    'data' => [
+                                        'confirm' => 'Are you sure you want to remove this item?',
+                                        'method' => 'post',
+                                    ],
+                                ]) ?></td> -->
+                            </tr>
+                        <?php } ?>
+                        </table>
+                        <br>
+                        <?php } ?>
+                        <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
+                    <?php } ?>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td align=right>P<?= number_format($item['cost'], 2) ?></td>
+                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                </tr>
+                <?php $i++; ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td align=center><i><b>xxxx NOTHING FOLLOWS xxxxx</b></i></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
         </tbody>
     </table>
     <p style="text-indent: 50px;">After having carefully read and accepted your General Conditions, I/We quote you the Gross Price (inclusive  of tax) on the item/items stated above.</p>

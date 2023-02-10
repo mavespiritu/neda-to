@@ -92,17 +92,20 @@ $asset = AppAsset::register($this);
         <div class="col-md-11">
             <ol type="1">
                 <li>ALL ENTRIES MUST BE PRINTED LEGIBLY</li>
-                <li>DELIVERY PERIOD WITHIN <u><?= $rfq->delivery_period ?></u> CALENDAR DAYS.</li>
-                <li>WARRANTY SHALL BE FOR A PERIOD OF <u><?= $rfq->supply_warranty ?> <?= $rfq->supply_warranty > 1 ? $rfq->supply_warranty_unit : substr_replace($rfq->supply_warranty_unit, "", -1) ?></u> FOR SUPPLIES & MATERIALS, <br>
-                <u><?= $rfq->supply_equipment ?> <?= $rfq->supply_equipment > 1 ? $rfq->supply_equipment_unit : substr_replace($rfq->supply_equipment_unit, "", -1) ?></u> FOR EQUIPMENT, FROM DATE OF ACCEPTANCE BY THE PROCURING ENTITY.
+                <li>DELIVERY PERIOD WITHIN <b><?= $rfq->delivery_period != '' ? '<u>'.$rfq->delivery_period.'</u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>' ?></b></u> CALENDAR DAYS.</li>
+                <li>WARRANTY SHALL BE FOR A PERIOD OF <u><?= $rfq->supply_warranty != '' ? $rfq->supply_warranty > 1 ? '<u><b>'.$rfq->supply_warranty.' '.$rfq->supply_warranty_unit.'</b></u>' : '<u><b>'.$rfq->supply_warranty.' '.substr_replace($rfq->supply_warranty_unit, "", -1).'</b></u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>'?></u> FOR SUPPLIES & MATERIALS, <br>
+                <?= $rfq->supply_equipment != '' ? $rfq->supply_equipment > 1 ? '<u><b>'.$rfq->supply_equipment.' '.$rfq->supply_equipment_unit.'</b></u>' : '<u><b>'.$rfq->supply_equipment.' '.substr_replace($rfq->supply_equipment_unit, "", -1).'</b></u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>' ?> FOR EQUIPMENT, FROM DATE OF ACCEPTANCE BY THE PROCURING ENTITY.
                 </li>
-                <li>PRICE VALIDITY SHALL BE FOR A PERIOD OF <u><?= $rfq->price_validity ?></u> CALENDAR DAYS.</li>
-                <li>PHILGEPS REGISTRATION CERTIFICATE SHALL BE ATTACHED UPON SUBMISSION OF THE QUOTATION.</li>
+                <li>PRICE VALIDITY SHALL BE FOR A PERIOD OF <?= $rfq->price_validity != '' ?  '<u><b>'.$rfq->price_validity.'</b></u>' : '<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span>' ?> CALENDAR DAYS.</li>
+                <li>LEGAL DOCUMENTS STATED IN ANNEX "H" OF RA 9184 AND ITS 2016 REVISED IMPLEMENTING
+                    RULES AND REGULATIONS SHALL BE ATTACHED UPON SUBMISSION OF QUOTATIONS.
+                </li>
                 <li>THIS OFFICE RESERVES THE RIGHT TO REJECT ANY OR ALL QUOTATIONS WITHOUT INCURRING ANY
                 LIABILITY AND ACCOUNT SUCH QUOTATIONS AS MAYBE CONSIDERED MOST ADVANTAGEOUS TO 
                 THE GOVERNMENT.</li>
-                <li>MODE OF PROCUREMENT: <?= strtoupper($model->procurementModeName) ?></li>
-                <li>ABC: <b>P<?= number_format($model->rfqTotal, 2) ?></b></li>
+                <li>MODE OF PROCUREMENT: <b><?= strtoupper($model->procurementModeName) ?></b></li>
+                <li>NUMBER OF LOT(S): <span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></li>
+                <li>TOTAL ABC: <b>Php <?= number_format($model->rfqTotal, 2) ?></b></li>
             </ol>
         </div>
     </div>
@@ -115,7 +118,6 @@ $asset = AppAsset::register($this);
                 <td align=center><b>UNIT</b></td>
                 <td align=center><b>ITEM DESCRIPTION</b></td>
                 <td align=center><b>BRAND & MODEL</b></td>
-                <td align=center><b>TOTAL ABC PRICE <br> PER ITEM</b></td>
                 <td align=center><b>UNIT PRICE</b></td>
                 <td align=center><b>TOTAL AMOUNT</b></td>
             </tr>
@@ -139,7 +141,6 @@ $asset = AppAsset::register($this);
                         <?php } ?>
                         </td>
                         <td><?= $item['specification'] ?></td>
-                        <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                         <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['offer'], 2) ?></span></td>
                         <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 80px;"><?= number_format($item['total'] * $item['offer'], 2) ?></span></td>
                     </tr>
@@ -150,7 +151,6 @@ $asset = AppAsset::register($this);
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td align=center><i><b>xxxx NOTHING FOLLOWS xxxxx</b></i></td>
-                    <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>

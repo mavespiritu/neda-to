@@ -12,6 +12,8 @@ use yii\web\View;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<h3 class="panel-title">1.3 Preview PR</h3>
+
 <h4 class="text-center"><b>PURCHASE REQUEST</b></h4>
 
 <?php $form = ActiveForm::begin([
@@ -53,17 +55,55 @@ use yii\web\View;
     </thead>
     <tbody>
     <?php $total = 0; ?>
-    <?php if(!empty($items)){ ?>
-        <?php foreach($items as $item){ ?>
-            <tr>
-                <td align=center><?= $item['item_id'] ?></td>
-                <td align=center><?= $item['unit'] ?></td>
-                <td><?= $item['item'] ?></td>
-                <td align=center><?= number_format($item['total'], 0) ?></td>
-                <td align=right><?= number_format($item['cost'], 2) ?></td>
-                <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
-            </tr>
-            <?php $total += $item['total'] * $item['cost'] ?>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b><?= $model->purpose ?></b></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <?php if($model->lots){ ?>
+        <?php if(!empty($lotItems)){ ?>
+            <?php foreach($lotItems as $lot => $items){ ?>
+                <?php if($lot != 0){ ?>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><b><?= $lot ?></b></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <?php } ?>
+                <?php if(!empty($items)){ ?>
+                    <?php foreach($items as $item){ ?>
+                        <tr>
+                            <td align=center><?= $item['item_id'] ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <td><?= $item['item'] ?></td>
+                            <td align=center><?= number_format($item['total'], 0) ?></td>
+                            <td align=right><?= number_format($item['cost'], 2) ?></td>
+                            <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
+                        </tr>
+                        <?php $total += $item['total'] * $item['cost'] ?>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+    <?php }else{ ?>
+        <?php if(!empty($items)){ ?>
+            <?php foreach($items as $item){ ?>
+                <tr>
+                    <td align=center><?= $item['item_id'] ?></td>
+                    <td align=center><?= $item['unit'] ?></td>
+                    <td><?= $item['item'] ?></td>
+                    <td align=center><?= number_format($item['total'], 0) ?></td>
+                    <td align=right><?= number_format($item['cost'], 2) ?></td>
+                    <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
+                </tr>
+                <?php $total += $item['total'] * $item['cost'] ?>
+            <?php } ?>
         <?php } ?>
     <?php } ?>
     <?php if(!empty($specifications)){ ?>
@@ -138,7 +178,7 @@ use yii\web\View;
 </table>
 <br>
 <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-print"></i> Save and Print PR', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('<i class="fa fa-save"></i> Save PR', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -156,7 +196,10 @@ use yii\web\View;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPr();
+                    alert("PR details has been saved.");
+                    previewPr('.$model->id.');
+                    manageItems('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -165,25 +208,6 @@ use yii\web\View;
             
             return false;
         });
-        function printPr()
-        {
-          var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-pr']).'?id='.$model->id.'", 
-            "Print",
-            "left=200", 
-            "top=200", 
-            "width=650", 
-            "height=500", 
-            "toolbar=0", 
-            "resizable=0"
-          );
-          printWindow.addEventListener("load", function() {
-              printWindow.print();
-              setTimeout(function() {
-                printWindow.close();
-            }, 1);
-          }, true);
-        }
     ';
 
     $this->registerJs($script, View::POS_END);

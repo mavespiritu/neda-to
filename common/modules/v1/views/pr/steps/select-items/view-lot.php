@@ -1,23 +1,25 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
-use kartik\select2\Select2;
-use dosamigos\datepicker\DatePicker;
-use yii\helpers\Url;
-use faryshta\disableSubmitButtons\Asset as DisableButtonAsset;
-DisableButtonAsset::register($this);
-use yii\web\View;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
-/* @var $model common\modules\v1\models\Pr */
-/* @var $form yii\widgets\ActiveForm */
+use yii\helpers\Url;
+use yii\web\View;
+use frontend\assets\AppAsset;
+use yii\widgets\ActiveForm;
+$asset = AppAsset::register($this);
 ?>
+
+<h3 class="panel-title">Lot No. <?= $lot->lot_no ?> - <?= $lot->title ?>
+<span class="pull-right"><?= Html::button('Include Items', ['value' => Url::to(['/v1/pr/include-lot-item', 'id' => $lot->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'include-lot-item-button']) ?></span></h3>
+<p>Included Items</p>
 <?php $form = ActiveForm::begin([
-    'id' => 'pr-items-form',
+    'id' => 'lot-items-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<table class="table table-bordered table-responsive table-hover table-condensed" id="pr-items-table">
+<table class="table table-bordered table-responsive table-hover table-condensed" id="lot-items-table">
     <thead>
         <tr>
             <th>#</th>
@@ -28,7 +30,7 @@ use yii\bootstrap\Modal;
             <td align=center><b>Quantity</b></td>
             <td align=right><b>Unit Cost</b></td>
             <td align=right><b>Total Cost</b></td>
-            <td align=center><input type=checkbox name="pr-items" class="check-pr-items" /></td>
+            <td align=center><input type=checkbox name="lot-items" class="check-lot-items" /></td>
         </tr>
     </thead>
     <tbody>
@@ -50,7 +52,7 @@ use yii\bootstrap\Modal;
                     <?php if(!empty($subActivityItems)){ ?>
                         <?php foreach($subActivityItems as $item){ ?>
                             <?php $id = $item['id'] ?>
-                            <?= $this->render('pr_item', [
+                            <?= $this->render('lot_item', [
                                 'i' => $i,
                                 'id' => $id,
                                 'model' => $model,
@@ -80,27 +82,36 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($risItems) ? Html::submitButton('Remove Selected from PR', ['class' => 'btn btn-danger', 'id' => 'remove-pr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($risItems) ? Html::submitButton('Remove selected from lot', ['class' => 'btn btn-danger', 'id' => 'remove-lot-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
 
 <?php ActiveForm::end(); ?>
-
+<?php
+  Modal::begin([
+    'id' => 'include-lot-item-modal',
+    'size' => "modal-xl",
+    'header' => '<div id="include-lot-item-modal-header"><h4>Include Items to Lot No. '.$lot->lot_no.' - '.$lot->title.'</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="include-lot-item-modal-content"></div>';
+  Modal::end();
+?>
 <?php
     $script = '
-    $(".check-pr-items").click(function(){
-        $(".check-pr-item").not(this).prop("checked", this.checked);
-        $("#pr-items-table tr").toggleClass("isChecked", $(".check-pr-item").is(":checked"));
+    $(".check-lot-items").click(function(){
+        $(".check-lot-item").not(this).prop("checked", this.checked);
+        $("#lot-items-table tr").toggleClass("isChecked", $(".check-lot-item").is(":checked"));
         enableRemoveButton();
     });
 
     $(document).ready(function(){
-        $(".check-pr-item").removeAttr("checked");
+        $(".check-lot-item").removeAttr("checked");
         enableRemoveButton();
 
         $("tr").click(function() {
-            var inp = $(this).find(".check-pr-item");
+            var inp = $(this).find(".check-lot-item");
             var tr = $(this).closest("tr");
             inp.prop("checked", !inp.is(":checked"));
          
@@ -109,7 +120,7 @@ use yii\bootstrap\Modal;
         });
         
         // do nothing when clicking on checkbox, but bubble up to tr
-        $(".check-pr-item").click(function(e){
+        $(".check-lot-item").click(function(e){
             e.preventDefault();
             enableRemoveButton();
         });
@@ -117,19 +128,17 @@ use yii\bootstrap\Modal;
 
     function enableRemoveButton()
     {
-        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#remove-pr-button").attr("disabled", false) : $("#remove-pr-button").attr("disabled", true);
-        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#add-apr-button").attr("disabled", false) : $("#add-apr-button").attr("disabled", true);
+        $("#lot-items-form input:checkbox:checked").length > 0 ? $("#remove-lot-button").attr("disabled", false) : $("#remove-lot-button").attr("disabled", true);
+        $("#lot-items-form input:checkbox:checked").length > 0 ? $("#add-alot-button").attr("disabled", false) : $("#add-alot-button").attr("disabled", true);
     }
 
-    $("#remove-pr-button").on("click", function(e) {
+    $("#remove-lot-button").on("click", function(e) {
         e.preventDefault();
 
         var con = confirm("Are you sure you want to remove this item?");
         if(con == true)
         {
-            
-
-            var form = $("#pr-items-form");
+            var form = $("#lot-items-form");
             var formData = form.serialize();
 
             $.ajax({
@@ -138,8 +147,8 @@ use yii\bootstrap\Modal;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    alert("Items Removed");
-                    home('.$model->id.');
+                    alert("Items removed from lot");
+                    viewLot('.$lot->id.');
                     $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
@@ -149,6 +158,12 @@ use yii\bootstrap\Modal;
         }
 
         return false;
+    });
+
+    $(document).ready(function(){
+        $("#include-lot-item-button").click(function(){
+            $("#include-lot-item-modal").modal("show").find("#include-lot-item-modal-content").load($(this).attr("value"));
+        });
     });
     ';
 
@@ -162,7 +177,7 @@ tr{
   background-color: white;
 }
 /* click-through element */
-.check-pr-item {
+.check-lot-item {
   pointer-events: none;
 }
 </style>

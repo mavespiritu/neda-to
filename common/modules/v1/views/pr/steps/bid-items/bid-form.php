@@ -87,7 +87,7 @@ use yii\bootstrap\Modal;
 ?>
 
 <div class="form-group pull-right"> 
-    <?= Html::submitButton('Save Bid', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= Html::submitButton('Save AOQ', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ]]) ?>
 </div>
@@ -108,12 +108,12 @@ use yii\bootstrap\Modal;
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("Bidding information saved successfully");
+                alert("AOQ saved successfully");
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
-                menu('.$model->id.');
                 bidRfq('.$model->id.','.$rfq->id.','.$i.');
+                $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {
                 console.log(err);

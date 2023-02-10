@@ -137,7 +137,7 @@ use yii\web\View;
                         </table>
                         <br>
                         <?php } ?>
-                        <?= $specifications[$item['id']]->risItemSpecValueString ?>
+                        <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
                     <?php } ?>
                     </td>
                     <td align=center><?= number_format($item['total'], 0) ?></td>
@@ -206,7 +206,7 @@ use yii\web\View;
 </table>
 <br>
 <div class="pull-right">
-<?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
+<?= Html::submitButton('<i class="fa fa-save"></i> Save APR', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -233,7 +233,9 @@ use yii\web\View;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printApr('.$model->id.');
+                    alert("APR has been saved");
+                    aprQuotation('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -242,26 +244,6 @@ use yii\web\View;
             
             return false;
         });
-
-        function printApr(id)
-        {
-            var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-apr']).'?id=" + id, 
-            "Print",
-            "left=200", 
-            "top=200", 
-            "width=650", 
-            "height=500", 
-            "toolbar=0", 
-            "resizable=0"
-            );
-            printWindow.addEventListener("load", function() {
-                printWindow.print();
-                setTimeout(function() {
-                printWindow.close();
-            }, 1);
-            }, true);
-        }
 
         $(document).ready(function(){
             $(".apr-checklist").removeAttr("checked");

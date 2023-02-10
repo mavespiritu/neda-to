@@ -5,23 +5,23 @@ namespace common\modules\v1\models;
 use Yii;
 
 /**
- * This is the model class for table "ppmp_apr_item".
+ * This is the model class for table "ppmp_lot_item".
  *
  * @property int $id
- * @property int|null $apr_id
+ * @property int|null $lot_id
  * @property int|null $pr_item_id
  *
- * @property PpmpApr $apr
+ * @property PpmpLot $lot
  * @property PpmpPrItem $prItem
  */
-class AprItem extends \yii\db\ActiveRecord
+class LotItem extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return 'ppmp_apr_item';
+        return 'ppmp_lot_item';
     }
 
     /**
@@ -30,8 +30,8 @@ class AprItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['apr_id', 'pr_item_id'], 'integer'],
-            [['apr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Apr::className(), 'targetAttribute' => ['apr_id' => 'id']],
+            [['lot_id', 'pr_item_id'], 'integer'],
+            [['lot_id'], 'exist', 'skipOnError' => true, 'targetClass' => Lot::className(), 'targetAttribute' => ['lot_id' => 'id']],
             [['pr_item_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrItem::className(), 'targetAttribute' => ['pr_item_id' => 'id']],
         ];
     }
@@ -43,24 +43,19 @@ class AprItem extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'apr_id' => 'Apr ID',
+            'lot_id' => 'Lot ID',
             'pr_item_id' => 'Pr Item ID',
         ];
     }
 
     /**
-     * Gets query for [[Apr]].
+     * Gets query for [[Lot]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getApr()
+    public function getLot()
     {
-        return $this->hasOne(Apr::className(), ['id' => 'apr_id']);
-    }
-
-    public function getPrItemCost()
-    {
-        return $this->hasOne(PrItemCost::className(), ['pr_item_id' => 'pr_item_id', 'supplier_id' => 1]);
+        return $this->hasOne(Lot::className(), ['id' => 'lot_id']);
     }
 
     /**

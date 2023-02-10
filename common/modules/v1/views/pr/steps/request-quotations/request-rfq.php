@@ -7,20 +7,20 @@ use yii\web\View;
 use yii\bootstrap\Collapse;
 ?>
 
-<h3 class="panel-title">3.2 Request RFQ</h3>
+<h3 class="panel-title">4.1 Generate RFQ</h3>
 <br>
-<p><i class="fa fa-exclamation-circle"></i> Create quotation to be provided to suppliers.</p>
+<p><i class="fa fa-exclamation-circle"></i> Create RFQ to be distributed for suppliers.</p>
 
 <div class="row">
-    <div class="col-md-6 col-xs-12">
-    <h3 class="panel-title">RFQs <span class="pull-right"><?= Html::button('Create RFQ', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-rfq-button']) ?></span></h3>
+    <div class="col-md-12 col-xs-12">
+    <h3 class="panel-title">RFQ List <span class="pull-right"><?= Html::button('Create RFQ', ['value' => Url::to(['/v1/pr/create-rfq', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-rfq-button']) ?></span></h3>
         <br>
         <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
             <thead>
                 <tr>
                     <th style="width: 40%;">RFQ No.</th>
-                    <td style="width: 40%;" align=right><b>ABC</b></td>
-                    <th style="width: 20%;">&nbsp;</th>
+                    <td style="width: 30%;" align=right><b>ABC</b></td>
+                    <th style="width: 30%;">&nbsp;</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +28,7 @@ use yii\bootstrap\Collapse;
                 <?php foreach($rfqs as $rfq){ ?>
                     <tr>
                         <td><b><?= Html::a($rfq->rfq_no, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfq('.$rfq->id.')']) ?></b></td>
-                        <td align=right><?= number_format($model->rfqTotal, 2) ?></td>
+                        <td align=right><b><?= number_format($model->rfqTotal, 2) ?></b></td>
                         <td align=right>
                             <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfq('.$rfq->id.')', 'class' => 'btn btn-sm btn-info']) ?>
                             <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq', 'id' => $rfq->id]), 'class' => 'btn btn-sm btn-warning update-rfq-button']) ?>

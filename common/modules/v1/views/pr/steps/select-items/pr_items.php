@@ -80,9 +80,9 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= Html::submitButton('Remove Selected from PR', ['class' => 'btn btn-danger', 'id' => 'remove-pr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= $model->prItems ? Html::submitButton('Remove Selected from PR', ['class' => 'btn btn-danger', 'id' => 'remove-pr-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
-    ], 'disabled' => true]) ?>
+    ], 'disabled' => true]) : '' ?>
 </div>
 
 <?php ActiveForm::end(); ?>

@@ -24,10 +24,6 @@ use fedemotta\datatables\DataTables;
             'headerOptions' => ['style' => 'width: 3%;'],
         ],
         [
-            'header' => 'Type', 
-            'attribute' => 'type',
-        ],
-        [
             'header' => 'Object', 
             'format' => 'raw',
             'value' => function($item){

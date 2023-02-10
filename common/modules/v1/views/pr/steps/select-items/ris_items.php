@@ -13,7 +13,7 @@ use yii\web\View;
 ?>
 
 <?php $form = ActiveForm::begin([
-    'id' => 'pr-item-form',
+    'id' => 'ris-items-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
@@ -22,7 +22,7 @@ use yii\web\View;
     
 </h5>
 <p><i class="fa fa-exclamation-circle"></i> Check items to include in PR.</p>
-<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
+<table class="table table-bordered table-responsive table-hover table-condensed" id="ris-items-table">
     <thead>
         <tr>
         <th>#</th>
@@ -32,7 +32,7 @@ use yii\web\View;
             <td align=center><b>Quantity</b></td>
             <td align=right><b>Unit Cost</b></td>
             <td align=right><b>Total Cost</b></td>
-            <td align=center><input type=checkbox name="items" class="check-items" /></td>
+            <td align=center><input type=checkbox name="items" class="check-ris-items" /></td>
         </tr>
     </thead>
     <tbody>
@@ -83,7 +83,7 @@ use yii\web\View;
                                     <td align=right><?= number_format($item['cost'], 2) ?></td>
                                     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
                                     <td align=center>
-                                        <?= $form->field($prItems[$item['id']], "[$id]ris_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-item', 'label' => '', 'id' => 'check-item-'.$item['id']]) ?>
+                                        <?= $form->field($prItems[$item['id']], "[$id]ris_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ris-item', 'label' => '', 'id' => 'check-item-'.$item['id']]) ?>
                                     </td>
                                 </tr>
                                 <?php $total += ($item['total'] * $item['cost']); ?>
@@ -107,18 +107,65 @@ use yii\web\View;
 </table>
 
 <div class="form-group pull-right">
-    <?= !empty($risItems) ? Html::submitButton('Add to PR', ['class' => 'btn btn-success', 'data' => ['disabled-text' => 'Please Wait']]) : '' ?>
+    <?= !empty($risItems) ? Html::submitButton('Add to PR', ['class' => 'btn btn-success', 'id' => 'add-pr-item-button', 'data' => ['disabled-text' => 'Please Wait'], 'disabled' => true]) : '' ?>
 </div>
 <div class="clearfix"></div>
 <?php ActiveForm::end(); ?>
 
 <?php
     $script = '
-    $(".check-items").click(function(){
-        $(".check-item").not(this).prop("checked", this.checked);
+    $(".check-ris-items").click(function(){
+        $(".check-ris-item").not(this).prop("checked", this.checked);
+        $("#ris-items-table tr").toggleClass("isChecked", $(".check-ris-item").is(":checked"));
+        enableRemoveButton();
     });
 
-    $("#pr-item-form").on("beforeSubmit", function(e) {
+    $(document).ready(function(){
+        enableRemoveButton();
+
+        $("tr").click(function() {
+            var inp = $(this).find(".check-ris-item");
+            var tr = $(this).closest("tr");
+            inp.prop("checked", !inp.is(":checked"));
+         
+            tr.toggleClass("isChecked", inp.is(":checked"));
+            enableRemoveButton();
+        });
+        
+        // do nothing when clicking on checkbox, but bubble up to tr
+        $(".check-ris-item").click(function(e){
+            e.preventDefault();
+            enableRemoveButton();
+        });
+    });
+
+    function enableRemoveButton()
+    {
+        $("#ris-items-form input:checkbox:checked").length > 0 ? $("#add-pr-item-button").attr("disabled", false) : $("#add-pr-item-button").attr("disabled", true);
+        $("#ris-items-form input:checkbox:checked").length > 0 ? $("#add-pr-item-button").attr("disabled", false) : $("#add-pr-item-button").attr("disabled", true);
+    }
+
+    function loadRisItems(id, ris_id)
+    {
+        $.ajax({
+            url: "'.Url::to(['/v1/pr/select-ris-items']).'?id=" + id + "&ris_id=" + ris_id,
+            beforeSend: function(){
+                $("#ris-items").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+            },
+            success: function (data) {
+                console.log(this.data);
+                $("#ris-items").empty();
+                $("#ris-items").hide();
+                $("#ris-items").fadeIn("slow");
+                $("#ris-items").html(data);
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+
+    $("#ris-items-form").on("beforeSubmit", function(e) {
         e.preventDefault();
      
         var form = $(this);
@@ -130,10 +177,10 @@ use yii\web\View;
             data: formData,
             success: function (data) {
                 form.enableSubmitButtons();
-                alert("Item/s has been included in PR");
-                menu('.$model->id.');
-                prItems('.$model->id.');
+                alert("Items has been included in PR");
                 loadRisItems('.$model->id.','.$ris->id.');
+                manageItems('.$model->id.');
+                $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {
                 console.log(err);
@@ -147,5 +194,15 @@ use yii\web\View;
 
     $this->registerJs($script, View::POS_END);
 ?>
-
-
+<style>
+.isChecked {
+  background-color: #F5F5F5;
+}
+tr{
+  background-color: white;
+}
+/* click-through element */
+.check-ris-item {
+  pointer-events: none;
+}
+</style>

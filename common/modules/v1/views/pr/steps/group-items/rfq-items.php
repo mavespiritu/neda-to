@@ -21,7 +21,7 @@ use yii\bootstrap\Modal;
 <h3 class="panel-title">2.2 Group RFQ Items</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> All items included will be checked availability on outside suppliers and service providers</p>
-<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
+<table class="table table-bordered table-responsive table-hover table-condensed" id="rfq-items-table">
     <thead>
         <tr>
             <th>#</th>
@@ -84,10 +84,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forRfqs) ? Html::submitButton('Transfer to NP', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forRfqs) ? Html::submitButton('Transfer to Non-Procurable Items', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
-    <?= !empty($forRfqs) ? Html::submitButton('Transfer to APR', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forRfqs) ? Html::submitButton('Transfer to APR Items', ['class' => 'btn btn-success', 'id' => 'transfer-for-agency-procurement-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -96,26 +96,38 @@ use yii\bootstrap\Modal;
 
 <?php
     $script = '
-    function enableTransferButtons()
-    {
-        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-agency-procurement-button").attr("disabled", false) : $("#transfer-for-agency-procurement-button").attr("disabled", true);
-        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-obligation-button").attr("disabled", false) : $("#transfer-for-obligation-button").attr("disabled", true);
-        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#add-rfq-button").attr("disabled", false) : $("#add-rfq-button").attr("disabled", true);
-    }
-
     $(".check-rfq-items").click(function(){
         $(".check-rfq-item").not(this).prop("checked", this.checked);
-        enableTransferButtons();
-    });
-
-    $(".check-rfq-item").click(function(){
+        $("#rfq-items-table tr").toggleClass("isChecked", $(".check-rfq-item").is(":checked"));
         enableTransferButtons();
     });
 
     $(document).ready(function(){
         $(".check-rfq-item").removeAttr("checked");
         enableTransferButtons();
+
+        $("tr").click(function() {
+            var inp = $(this).find(".check-rfq-item");
+            var tr = $(this).closest("tr");
+            inp.prop("checked", !inp.is(":checked"));
+         
+            tr.toggleClass("isChecked", inp.is(":checked"));
+            enableTransferButtons();
+        });
+        
+        // do nothing when clicking on checkbox, but bubble up to tr
+        $(".check-rfq-item").click(function(e){
+            e.preventDefault();
+            enableTransferButtons();
+        });
     });
+
+    function enableTransferButtons()
+    {
+        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-agency-procurement-button").attr("disabled", false) : $("#transfer-for-agency-procurement-button").attr("disabled", true);
+        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-obligation-button").attr("disabled", false) : $("#transfer-for-obligation-button").attr("disabled", true);
+        $("#rfq-items-form input:checkbox:checked").length > 0 ? $("#add-rfq-button").attr("disabled", false) : $("#add-rfq-button").attr("disabled", true);
+    }
 
     $("#transfer-for-agency-procurement-button").on("click", function(e) {
         e.preventDefault();
@@ -134,9 +146,9 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to APR");
-                    menu('.$model->id.');
-                    groupItems('.$model->id.');
                     groupRfqItems('.$model->id.');
+                    manageItems('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -164,9 +176,9 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to Non-procurables");
-                    menu('.$model->id.');
-                    groupItems('.$model->id.');
                     groupRfqItems('.$model->id.');
+                    manageItems('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -180,3 +192,15 @@ use yii\bootstrap\Modal;
 
     $this->registerJs($script, View::POS_END);
 ?>
+<style>
+.isChecked {
+  background-color: #F5F5F5;
+}
+tr{
+  background-color: white;
+}
+/* click-through element */
+.check-rfq-item {
+  pointer-events: none;
+}
+</style>

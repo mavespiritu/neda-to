@@ -413,14 +413,14 @@ class PpmpController extends Controller
                 $items[$key]['label'] = '<table style="width:100%;" id="item-table-'.$subActivity->id.'" onclick="loadItemsInSubActivity('.$model->id.','.$subActivity->id.','.$activity->id.','.$fundSource->id.')">'; 
                 $items[$key]['label'] .= '<tr>'; 
                 $items[$key]['label'] .= '<td>'.$subActivity->subActivityTitle.'</td>'; 
-                $items[$key]['label'] .= '<td align=right>'.PpmpItem::getCountPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id).'</td>'; 
-                $items[$key]['label'] .= '<td align=right style="width: 45%;">'.number_format(PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id), 2).'</td>'; 
+                $items[$key]['label'] .= '<td align=right>'.PpmpItem::getCountPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original').'</td>'; 
+                $items[$key]['label'] .= '<td align=right style="width: 45%;">'.number_format(PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original'), 2).'</td>'; 
                 $items[$key]['label'] .= '</tr>'; 
                 $items[$key]['label'] .= '</table>';
                 $items[$key]['content'] = '<div id="item-list-'.$subActivity->id.'"></div>';
-                $items[$key]['options'] = ['class' => PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id) > 0 ? 'panel panel-success' : 'panel panel-default'];
+                $items[$key]['options'] = ['class' => PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original') > 0 ? 'panel panel-success' : 'panel panel-default'];
 
-                $total += PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id);
+                $total += PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original');
             }
         }
 

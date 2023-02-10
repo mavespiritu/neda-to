@@ -21,7 +21,7 @@ use yii\bootstrap\Modal;
 <h3 class="panel-title">2.1 Group APR Items</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> All items included will be checked if available in PS-DBM</p>
-<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
+<table class="table table-bordered table-responsive table-hover table-condensed" id="apr-items-table">
     <thead>
         <tr>
             <th>#</th>
@@ -84,10 +84,10 @@ use yii\bootstrap\Modal;
 </table>
 
 <div class="form-group pull-right"> 
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to NP', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to Non-Procurable Items', ['class' => 'btn btn-primary', 'id' => 'transfer-for-obligation-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
-    <?= !empty($forAprs) ? Html::submitButton('Transfer to RFQ', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
+    <?= !empty($forAprs) ? Html::submitButton('Transfer to RFQ Items', ['class' => 'btn btn-success', 'id' => 'transfer-for-supplier-button', 'data' => ['disabled-text' => 'Please Wait'], 'data' => [
         'method' => 'post',
     ], 'disabled' => true]) : '' ?>
 </div>
@@ -96,6 +96,32 @@ use yii\bootstrap\Modal;
 
 <?php
     $script = '
+    $(".check-apr-items").click(function(){
+        $(".check-apr-item").not(this).prop("checked", this.checked);
+        $("#apr-items-table tr").toggleClass("isChecked", $(".check-apr-item").is(":checked"));
+        enableTransferButtons();
+    });
+
+    $(document).ready(function(){
+        $(".check-apr-item").removeAttr("checked");
+        enableTransferButtons();
+
+        $("tr").click(function() {
+            var inp = $(this).find(".check-apr-item");
+            var tr = $(this).closest("tr");
+            inp.prop("checked", !inp.is(":checked"));
+         
+            tr.toggleClass("isChecked", inp.is(":checked"));
+            enableTransferButtons();
+        });
+        
+        // do nothing when clicking on checkbox, but bubble up to tr
+        $(".check-apr-item").click(function(e){
+            e.preventDefault();
+            enableTransferButtons();
+        });
+    });
+    
     function enableTransferButtons()
     {
         $("#apr-items-form input:checkbox:checked").length > 0 ? $("#transfer-for-supplier-button").attr("disabled", false) : $("#transfer-for-supplier-button").attr("disabled", true);
@@ -103,28 +129,13 @@ use yii\bootstrap\Modal;
         $("#apr-items-form input:checkbox:checked").length > 0 ? $("#add-apr-button").attr("disabled", false) : $("#add-apr-button").attr("disabled", true);
     }
 
-    $(".check-apr-items").click(function(){
-        $(".check-apr-item").not(this).prop("checked", this.checked);
-        enableTransferButtons();
-    });
-
-    $(".check-apr-item").click(function(){
-        enableTransferButtons();
-    });
-
-    $(document).ready(function(){
-        $(".check-apr-item").removeAttr("checked");
-        enableTransferButtons();
-    });
-
     $("#transfer-for-supplier-button").on("click", function(e) {
         e.preventDefault();
 
         var con = confirm("Are you sure you want to add these items to RFQ?");
         if(con == true)
         {
-            
-
+    
             var form = $("#apr-items-form");
             var formData = form.serialize();
 
@@ -136,9 +147,9 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to RFQ");
-                    menu('.$model->id.');
-                    groupItems('.$model->id.');
                     groupAprItems('.$model->id.');
+                    manageItems('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -168,9 +179,9 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items transferred to Non-procurables");
-                    menu('.$model->id.');
-                    groupItems('.$model->id.');
                     groupAprItems('.$model->id.');
+                    manageItems('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -184,3 +195,15 @@ use yii\bootstrap\Modal;
 
     $this->registerJs($script, View::POS_END);
 ?>
+<style>
+.isChecked {
+  background-color: #F5F5F5;
+}
+tr{
+  background-color: white;
+}
+/* click-through element */
+.check-apr-item {
+  pointer-events: none;
+}
+</style>

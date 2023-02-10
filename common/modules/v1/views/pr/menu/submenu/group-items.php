@@ -6,7 +6,25 @@ use yii\web\View;
 use yii\bootstrap\ButtonDropdown;
 ?>
 
-<h3 class="panel-title">2. Group Items</h3>
+<table style="width: 100%; line-height: 30px;" class="table-hover table-responsive">
+    <tr onclick="groupAprItems(<?= $model->id ?>)">
+        <td style="width: 10%;"><a href="javascript:void(0);"><?= $j ?>.1</a></td>
+        <td style="width: 85%;"><a href="javascript:void(0);">Group APR Items (<?= count($model->aprItems) ?>)</a></td>
+        <td style="width: 5%;" align=right><?= $model->aprItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+    </tr>
+    <tr onclick="groupRfqItems(<?= $model->id ?>)">
+        <td><a href="javascript:void(0);"><?= $j ?>.2</a></td>
+        <td><a href="javascript:void(0);">Group RFQ Items (<?= count($model->rfqItems) ?>)</a></td>
+        <td align=right><?= $model->rfqItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+    </tr>
+    <tr onclick="groupNonProcurableItems(<?= $model->id ?>)">
+        <td><a href="javascript:void(0);"><?= $j ?>.3</a></td>
+        <td><a href="javascript:void(0);">Group Non-Procurable Items (<?= count($model->nonProcurableItems) ?>)</a</td>
+        <td align=right><?= $model->nonProcurableItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+    </tr>
+</table>
+
+<!-- <h3 class="panel-title">2. Group Items</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> Group items for agency procurement, supplier, and direct obligation.</p>
 <ul class="products-list product-list-in-box navigation">
@@ -43,7 +61,7 @@ use yii\bootstrap\ButtonDropdown;
             <span class="product-description">Select items from PR for direct obligation</span>
         </div>
     </li>
-</ul>
+</ul> -->
 <?php
     $script = '
         function groupAprItems(id)

@@ -421,6 +421,7 @@ class PrController extends Controller
                 ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
                 ->andWhere(['not in', 'ppmp_ris_item.id', $awardedItems])
                 ->andWhere(['not in', 'ppmp_ris_item.id', $obligatedItems])
+                ->andWhere(['not in', 'ppmp_ris_item.id', $existingItems])
                 ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
                 ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
                 ->asArray()
@@ -1681,9 +1682,9 @@ class PrController extends Controller
         if($rfqModel->load(Yii::$app->request->post()))
         {
             $time = str_pad($rfqModel->deadline_time, 2, '0', STR_PAD_LEFT).':'.str_pad($rfqModel->minute, 2, '0', STR_PAD_LEFT).' '.$rfqModel->meridian;
-            $lastRfq = Rfq::find()->orderBy(['id' => SORT_DESC])->one();
-            $lastNumber = $lastRfq ? intval(substr($lastRfq->rfq_no, -3)) : '001';
-            $rfqModel->rfq_no = $lastRfq ? substr(date("Y"), -2).'-'.date("m").'-'.str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT) : substr(date("Y"), -2).'-'.date("m").'-'.$lastNumber;
+            $lastRfq = Rfq::find()->where(['pr_id' => $model->id])->orderBy(['id' => SORT_DESC])->one();
+            $lastNumber = $lastRfq ? intval(substr($lastRfq->rfq_no, -2)) : '01';
+            $rfqModel->rfq_no = $lastRfq ? $model->pr_no.'-'.str_pad($lastNumber + 1, 2, '0', STR_PAD_LEFT) : $model->pr_no.'-'.$lastNumber;
             $rfqModel->deadline_time = $time;
             $rfqModel->save();
         }

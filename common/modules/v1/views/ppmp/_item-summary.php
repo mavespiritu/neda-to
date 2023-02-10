@@ -28,7 +28,7 @@ use common\modules\v1\models\PpmpItem;
                             <tr>
                                 <td>&nbsp;</td>
                                 <td style="font-size: 12px;" colspan=2> <?= $subActivities['title'] ?></td>
-                                <td style="font-size: 12px;" align=right><?= number_format(PpmpItem::getTotalPerSubActivity($model->id, $activityID, $subActivityID, $fundSourceID), 2) ?></td>
+                                <td style="font-size: 12px;" align=right><?= number_format(PpmpItem::getTotalPerSubActivity($model->id, $activityID, $subActivityID, $fundSourceID, 'Original'), 2) ?></td>
                             </tr>
                             <?php //if(!empty($subActivities['contents'])){ ?>
                                 <?php //foreach($subActivities['contents'] as $objectID => $object): ?>

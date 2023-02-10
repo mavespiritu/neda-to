@@ -41,8 +41,9 @@ use fedemotta\datatables\DataTables;
         [
             'header' => '&nbsp;', 
             'format' => 'raw', 
+            'contentOptions' => ['style' => 'width: 10%;'],
             'value' => function($item){
-                return '<u>T</u> <br> <u>U</u> <br> <b>R</b>';
+                return '<u>Total</u> <br> <u>Originally Used</u> <br> <b>Remaining</b>';
             }
         ],
         [

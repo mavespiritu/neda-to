@@ -187,7 +187,6 @@ $asset = AppAsset::register($this);
                         <?php } ?>
                         </td>
                         <td>&nbsp;</td>
-                        <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                         <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                         <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                     </tr>

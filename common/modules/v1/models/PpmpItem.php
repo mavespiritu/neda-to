@@ -525,7 +525,7 @@ class PpmpItem extends \yii\db\ActiveRecord
                     'activity_id' => $activity_id,
                     'sub_activity_id' => $sub_activity_id,
                     'fund_source_id' => $fund_source_id,
-                    'type' => $type
+                    'type' => $type,
                 ])
                 ->asArray()
                 ->one();

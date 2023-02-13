@@ -26,7 +26,8 @@
         "kartik-v/yii2-sortable-input": "dev-master",
         "faryshta/yii2-disable-submit-buttons": "~2.0.0",
         "bedezign/yii2-audit": "^1.0",
-        "fedemotta/yii2-widget-datatables": "*"
+        "fedemotta/yii2-widget-datatables": "*",
+        "kartik-v/yii2-dialog": "^1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

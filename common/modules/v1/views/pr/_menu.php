@@ -15,7 +15,7 @@ use yii\bootstrap\ButtonDropdown;
     <a onclick="manageItems(<?= $model->id?>);" class="btn btn-app main-menu" id="manage-item">
       <i class="fa fa-folder-o"></i>Manage Items
     </a>
-    <?= $this->render('menu/menu', ['model' => $model]) ?>
+    <?php // $this->render('menu/menu', ['model' => $model]) ?>
   </div>
   <div class="pull-right">
     <?= ($model->status->status == 'Draft' || $model->status->status == 'For Revision') || (Yii::$app->user->can('ProcurementStaff') || Yii::$app->user->can('Administrator')) ? Html::button('<i class="fa fa-edit"></i> Edit PR', ['value' => Url::to(['/v1/pr/update', 'id' => $model->id]), 'class' => 'btn btn-app', 'id' => 'update-button']) : '' ?>

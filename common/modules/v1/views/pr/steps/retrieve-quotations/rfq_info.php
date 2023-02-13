@@ -76,7 +76,7 @@ $asset = AppAsset::register($this);
         </div>
     </div>
 
-    <table class="table table-bordered table-condensed table-striped table-hover">
+    <table class="table table-bordered table-condensed table-hover">
         <thead>
             <tr>
                 <td align=center><b>ITEM NO.</b></td>

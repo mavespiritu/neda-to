@@ -86,6 +86,16 @@ class PrItem extends \yii\db\ActiveRecord
         return $this->hasOne(RisItem::className(), ['id' => 'ris_item_id']);
     }
 
+    public function getLotItem()
+    {
+        return $this->hasOne(LotItem::className(), ['pr_item_id' => 'id']);
+    }
+
+    public function getLot()
+    {
+        return $this->lotItem ? $this->lotItem->lot : null;
+    }
+
     public function getPpmpItem()
     {
         return $this->hasOne(PpmpItem::className(), ['id' => 'ppmp_item_id']);

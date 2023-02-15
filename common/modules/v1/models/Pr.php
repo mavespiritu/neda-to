@@ -131,6 +131,36 @@ class Pr extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Rfq::className(), ['pr_id' => 'id']);
     }
+
+    public function getHasBid()
+    {
+        $rfqs = $this->rfqs;
+        $withBidCount = $this->getRfqs()->count();
+        $hasBid = 0;
+        if($rfqs)
+        {
+            foreach($rfqs as $rfq)
+            {
+                $hasBid = $rfq->hasBid ? $hasBid + 1 : $hasBid;
+            }
+        }
+
+        return $withBidCount > 0 ? $withBidCount == $hasBid ? true : false : false;
+    }
+
+    public function getHasNoa()
+    {
+        $withNoaCount = $this->noaCount;
+
+        $winners = BidWinner::find()
+                ->leftJoin('ppmp_bid', 'ppmp_bid.id = ppmp_bid_winner.bid_id')
+                ->andWhere(['pr_id' => $this->id])
+                ->andWhere(['IS NOT', 'supplier_id', null])
+                ->all();
+        $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
+
+        return count($winners) > 0 ? count($winners) == $withNoaCount ? true : false : false;
+    }
     
     public function getLots()
     {
@@ -203,7 +233,7 @@ class Pr extends \yii\db\ActiveRecord
         $winners = BidWinner::find()->where(['bid_id' => $bids])->all();
         $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
 
-        $suppliers = Supplier::find()->where(['id' => $winners])->all();
+        $suppliers = Supplier::find()->andWhere(['<>', 'supplier_id', 1])->andWhere(['id' => $winners])->all();
 
         return $suppliers;
     }
@@ -544,30 +574,22 @@ class Pr extends \yii\db\ActiveRecord
         $rfqItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
                 'sum(ppmp_pr_item.quantity) as total'
             ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
             ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
             ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
             ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $this->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-            ->groupBy(['ppmp_item.id', 'ppmp_ris.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_pr_item.cost'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -609,70 +631,6 @@ class Pr extends \yii\db\ActiveRecord
         $rfqItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
-                'ppmp_item.id as item_id',
-                'ppmp_item.title as item',
-                'ppmp_item.unit_of_measure as unit',
-                'ppmp_pr_item.cost as cost',
-                'sum(ppmp_pr_item.quantity) as total'
-            ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
-            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
-            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
-            ->andWhere([
-                'ppmp_pr_item.pr_id' => $this->id,
-            ])
-            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost'])
-            ->orderBy(['item' => SORT_ASC])
-            ->asArray()
-            ->all();
-        
-        return $rfqItems;
-    }
-
-    public function getRfqItemsWithAprItemsPerLot()
-    {
-        $aprItemsWithValueIDs = PrItemCost::find()
-                            ->select(['pr_item_id'])
-                            ->andWhere(['pr_id' => $this->id])
-                            ->andWhere(['supplier_id' => 1])
-                            ->andWhere(['>', 'cost', 0])
-                            ->asArray()
-                            ->all();
-        
-        $aprItemsWithValueIDs = ArrayHelper::map($aprItemsWithValueIDs, 'pr_item_id', 'pr_item_id');
-
-        $aprItemIDs = AprItem::find()
-                    ->select(['pr_item_id'])
-                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
-                    ->andWhere(['pr_id' => $this->id])
-                    ->asArray()
-                    ->all();
-
-        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
-
-        $aprItemIDs = array_intersect($aprItemIDs, $aprItemsWithValueIDs);
-
-        $nonProcurableItemIDs = NonProcurableItem::find()
-                ->select(['pr_item_id'])
-                ->where(['pr_id' => $this->id])
-                ->asArray()
-                ->all();
-
-        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
-
-        $rfqItems = PrItem::find()
-            ->select([
-                'ppmp_pr_item.id as id',
-                's.id as ris_item_spec_id',
                 'ppmp_item.id as item_id',
                 'ppmp_item.title as item',
                 'IF(ppmp_lot.title IS NOT NULL, concat("Lot No. ",ppmp_lot.lot_no," - ",ppmp_lot.title), 0) as lotTitle',
@@ -680,23 +638,16 @@ class Pr extends \yii\db\ActiveRecord
                 'ppmp_pr_item.cost as cost',
                 'sum(ppmp_pr_item.quantity) as total'
             ])
-            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
-            ->leftJoin('ppmp_ris_item', 'ppmp_ris_item.id = ppmp_pr_item.ris_item_id')
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->leftJoin('ppmp_lot_item', 'ppmp_lot_item.pr_item_id = ppmp_pr_item.id')
             ->leftJoin('ppmp_lot', 'ppmp_lot.id = ppmp_lot_item.lot_id')
-            ->leftJoin('ppmp_ris_item_spec s', 's.ris_id = ppmp_ris.id and 
-                                                s.activity_id = ppmp_ppmp_item.activity_id and 
-                                                s.item_id = ppmp_ppmp_item.item_id and 
-                                                s.cost = ppmp_pr_item.cost and 
-                                                s.type = ppmp_pr_item.type')
-            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
             ->andWhere([
                 'ppmp_pr_item.pr_id' => $this->id,
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-            ->groupBy(['ppmp_item.id', 's.id', 'ppmp_pr_item.cost', 'lotTitle'])
+            ->groupBy(['ppmp_item.id'])
             ->orderBy(['lotTitle' => SORT_ASC, 'item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -908,14 +859,14 @@ class Pr extends \yii\db\ActiveRecord
         $i = 0;
         $j = 1;
 
-        $items[$i]['label'] = '<span onclick="selectItemMenu('.$this->id.','.$j.')">'.$j.'. Manage PR Items</span>';
+        $items[$i]['label'] = '<span onclick="selectItemMenu('.$this->id.','.$j.')">'.$j.'. Manage Purchase Request (PR) Items</span>';
         $items[$i]['content'] = '<div id="select-item-menu"></div>';
         $items[$i]['options'] = ['class' => $this->prItems ? 'panel panel-success' : 'panel panel-default'];
 
         $i++;
         $j++;
 
-        $items[$i]['label'] = '<span onclick="groupItemMenu('.$this->id.','.$j.')">'.$j.'. Group PR Items</span>';
+        $items[$i]['label'] = '<span onclick="groupItemMenu('.$this->id.','.$j.')">'.$j.'. Group Purchase Request (PR) Items</span>';
         $items[$i]['content'] = '<div id="group-item-menu"></div>';
         $items[$i]['options'] = ['class' => !empty($this->aprItems) || !empty($this->rfqItems) || !empty($this->nonProcurableItems) ? 'panel panel-success' : 'panel panel-default'];
 
@@ -926,7 +877,7 @@ class Pr extends \yii\db\ActiveRecord
         {
             $apr = $this->apr;
 
-            $items[$i]['label'] = '<span onclick="aprMenu('.$this->id.','.$j.')">'.$j.'. APR</span>';
+            $items[$i]['label'] = '<span onclick="aprMenu('.$this->id.','.$j.')">'.$j.'. Agency Procurement Request (APR)</span>';
             $items[$i]['content'] = '<div id="apr-menu"></div>';
             $items[$i]['options'] = ['class' => $this->apr ? !is_null($this->apr->date_prepared) ? 'panel panel-success' : 'panel panel-default' : 'panel panel-default'];
 
@@ -936,35 +887,35 @@ class Pr extends \yii\db\ActiveRecord
 
         if(!empty($this->rfqItemsWithAprItems))
         {
-            $items[$i]['label'] = '<span onclick="rfqMenu('.$this->id.','.$j.')">'.$j.'. RFQ</span>';
+            $items[$i]['label'] = '<span onclick="rfqMenu('.$this->id.','.$j.')">'.$j.'. Request for Quotation (RFQ)</span>';
             $items[$i]['content'] = '<div id="rfq-menu"></div>';
             $items[$i]['options'] = ['class' => $this->rfqInfos ? 'panel panel-success' : 'panel panel-default'];
 
             $i++;
             $j++;
 
-            $items[$i]['label'] = '<span onclick="aoqMenu('.$this->id.','.$j.')">'.$j.'. AOQ</span>';
+            $items[$i]['label'] = '<span onclick="aoqMenu('.$this->id.','.$j.')">'.$j.'. Abstract of Quotation (AOQ)</span>';
             $items[$i]['content'] = '<div id="aoq-menu"></div>';
-            $items[$i]['options'] = ['class' => 'panel panel-default'];
+            $items[$i]['options'] = ['class' => $this->hasBid ? 'panel panel-success' : 'panel panel-default'];
 
             $i++;
             $j++;
 
-            $items[$i]['label'] = $j.'. NOA';
+            $items[$i]['label'] = '<span onclick="noaMenu('.$this->id.','.$j.')">'.$j.'. Notice of Award (NOA)</span>';
             $items[$i]['content'] = '<div id="noa-menu"></div>';
+            $items[$i]['options'] = ['class' => $this->hasNoa ? 'panel panel-success' : 'panel panel-default'];
+
+            $i++;
+            $j++;
+
+            $items[$i]['label'] = '<span onclick="poMenu('.$this->id.','.$j.')">'.$j.'. Purchase Order (PO) / Contracts</span>';
+            $items[$i]['content'] = '<div id="po-menu"></div>';
             $items[$i]['options'] = ['class' => 'panel panel-default'];
 
             $i++;
             $j++;
 
-            $items[$i]['label'] = $j.'. PO/Contract';
-            $items[$i]['content'] = '<div id="po-contract-menu"></div>';
-            $items[$i]['options'] = ['class' => 'panel panel-default'];
-
-            $i++;
-            $j++;
-
-            $items[$i]['label'] = $j.'. NTP';
+            $items[$i]['label'] = $j.'. Notice to Proceed (NTP)';
             $items[$i]['content'] = '<div id="ntp-menu"></div>';
             $items[$i]['options'] = ['class' => 'panel panel-default'];
 
@@ -972,7 +923,7 @@ class Pr extends \yii\db\ActiveRecord
             $j++;
         }
 
-        $items[$i]['label'] = $j.'. ORS';
+        $items[$i]['label'] = $j.'. Obligation Request Status (ORS)';
         $items[$i]['content'] = '<div id="ors-menu"></div>';
         $items[$i]['options'] = ['class' => 'panel panel-default'];
 

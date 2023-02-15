@@ -74,6 +74,11 @@ class Rfq extends \yii\db\ActiveRecord
         return $this->hasOne(Pr::className(), ['id' => 'pr_id']);
     }
 
+    public function getBid()
+    {
+        return $this->hasOne(Bid::className(), ['id' => 'rfq_id']);
+    }
+
     public function getRfqInfo($supplier_id)
     {
         $info = RfqInfo::findOne(['rfq_id' => $this->id, 'supplier_id' => $supplier_id]);
@@ -92,5 +97,24 @@ class Rfq extends \yii\db\ActiveRecord
         $ids = ArrayHelper::map($ids, 'supplier_id', 'supplier_id');
 
         return Supplier::findAll(['id' => $ids]);
+    }
+
+    public function getHasBid()
+    {
+        $bid = Bid::findOne(['rfq_id' => $this->id]);
+
+        return $bid ? true : false;
+    }
+
+    public function getWinners()
+    {
+        $bid = Bid::findOne(['rfq_id' => $this->id]);
+
+        $winners = BidWinner::find()->where(['bid_id' => $bid->id])->all();
+        $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()->andWhere(['<>', 'supplier_id', 1])->andWhere(['id' => $winners])->all();
+
+        return $suppliers;
     }
 }

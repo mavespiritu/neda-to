@@ -41,7 +41,7 @@ use yii\bootstrap\Modal;
                 <td align=center><?= $i ?></td>
                 <td align=center><?= $item['unit'] ?></td>
                 <td><?= $item['item'] ?>
-                <br>
+                <!-- <br>
                 <?php if(isset($specifications[$item['id']])){ ?>
                     <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
                     <table style="width: 100%">
@@ -60,7 +60,7 @@ use yii\bootstrap\Modal;
                     <br>
                     <?php } ?>
                     <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                <?php } ?>
+                <?php } ?> -->
                 </td>
                 <td align=center><?= number_format($item['total'], 0) ?></td>
                 <td align=right><?= number_format($item['cost'], 2) ?></td>

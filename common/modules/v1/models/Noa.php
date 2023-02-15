@@ -32,9 +32,9 @@ class Noa extends \yii\db\ActiveRecord
     {
         return [
             [['date_created'], 'required'],
-            [['pr_id', 'po_id', 'created_by'], 'integer'],
+            [['pr_id', 'bid_id', 'supplier_id', 'created_by'], 'integer'],
             [['date_created'], 'safe'],
-            [['po_id'], 'exist', 'skipOnError' => true, 'targetClass' => Po::className(), 'targetAttribute' => ['po_id' => 'id']],
+            [['bid_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bid::className(), 'targetAttribute' => ['bid_id' => 'id']],
         ];
     }
 
@@ -46,7 +46,8 @@ class Noa extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'pr_id' => 'Pr ID',
-            'po_id' => 'Po ID',
+            'bid_id' => 'Bid ID',
+            'supplier_id' => 'Supplier ID',
             'created_by' => 'Created By',
             'date_created' => 'Date Created',
         ];
@@ -57,8 +58,18 @@ class Noa extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPo()
+    public function getBid()
     {
-        return $this->hasOne(Po::className(), ['id' => 'po_id']);
+        return $this->hasOne(Bid::className(), ['id' => 'bid_id']);
+    }
+
+    /**
+     * Gets query for [[Po]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSupplier()
+    {
+        return $this->hasOne(Supplier::className(), ['id' => 'supplier_id']);
     }
 }

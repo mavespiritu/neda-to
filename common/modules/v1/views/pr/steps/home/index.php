@@ -84,11 +84,6 @@ use  yii\web\View;
                 <?= $po->type == 'PO' ? Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;PO No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo("'.$model->id.'","'.$po->bid_id.'","'.$po->supplier_id.'","'.$po->type.'")']) : Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;Contract No. '.$po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printPo("'.$model->id.'","'.$po->bid_id.'","'.$po->supplier_id.'","'.$po->type.'")'])?>
             <?php } ?>
         <?php } ?>
-        <?php if($noas){ ?>
-            <?php foreach($noas as $noa){ ?>
-                <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;NOA No. '.$noa->po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printNoa('.$model->id.','.$noa->po->id.')']) ?>
-            <?php } ?>
-        <?php } ?>
         <?php if($ntps){ ?>
             <?php foreach($ntps as $ntp){ ?>
                 <?= Html::button('<i class="fa fa-file-o"></i>&nbsp;&nbsp;&nbsp;NTP No. '.$ntp->po->pocnNo, ['class' => 'btn btn-default btn-xs report-button', 'onclick' => 'printNtp('.$model->id.','.$ntp->po->id.')']) ?>

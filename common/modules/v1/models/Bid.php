@@ -3,7 +3,7 @@
 namespace common\modules\v1\models;
 
 use Yii;
-
+use yii\helpers\ArrayHelper;
 /**
  * This is the model class for table "ppmp_bid".
  *
@@ -84,6 +84,51 @@ class Bid extends \yii\db\ActiveRecord
     public function getBidWinners()
     {
         return $this->hasMany(BidWinner::className(), ['bid_id' => 'id']);
+    }
+
+    public function getWinners()
+    {
+        $winners = BidWinner::find()->where(['bid_id' => $this->id])->all();
+        $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()->andWhere(['<>', 'id', 1])->andWhere(['id' => $winners])->all();
+
+        return $suppliers;
+    }
+
+    public function getNoaForWinner($supplier_id)
+    {
+        $noa = Noa::findOne(['pr_id' => $this->pr_id, 'bid_id' => $this->id, 'supplier_id' => $supplier_id]);
+
+        return $noa ? true : false;
+    }
+
+    public function getBidTotal($supplier_id)
+    {
+        $awardedItems = BidWinner::find()
+                ->select(['pr_item_id'])
+                ->where([
+                    'bid_id' => $this->id,
+                    'supplier_id' => $supplier_id,
+                    'status' => 'Awarded'
+                ])
+                ->asArray()
+                ->all();
+        $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
+
+        $total = PrItemCost::find()
+            ->select([
+                'COALESCE(sum(ppmp_pr_item_cost.cost * ppmp_pr_item.quantity), 0) as total',
+            ])
+            ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+            ->andWhere(['ppmp_pr_item.pr_id' => $this->pr_id])
+            ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier_id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_id' => $this->rfq->id])
+            ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
+            ->asArray()
+            ->one();
+
+        return $total['total'];
     }
 
     public function getChairperson()

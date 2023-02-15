@@ -125,6 +125,7 @@ $totals = [];
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                $("body").removeAttr("style");
                 bidRfq('.$model->id.','.$rfq->id.','.$i.');
                 $("html").animate({ scrollTop: 0 }, "slow");
             },

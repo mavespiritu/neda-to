@@ -12,11 +12,15 @@ use yii\bootstrap\ButtonDropdown;
     <?php foreach($rfqs as $rfq){ ?>
         <tr onclick="bidRfq('<?= $model->id?>','<?= $rfq->id?>','<?= $i ?>');">
             <td style="width: 10%;"><a href="javascript:void(0);"><?= $j ?>.<?= $i ?></a></td>
-            <td style="width: 85%;"><a href="javascript:void(0);">RFQ No. <?= $rfq->rfq_no ?></a></td>
-            <td style="width: 5%;" align=right>&nbsp;</td>
+            <td style="width: 85%;"><a href="javascript:void(0);">AOQ for RFQ No. <?= $rfq->rfq_no ?></a></td>
+            <td style="width: 5%;" align=right><?= $rfq->hasBid ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
         </tr>
         <?php $i++ ?>
     <?php } ?>
+<?php }else{ ?>
+    <tr>
+        <td colspan=3>No RFQ created.</td>
+    </tr>
 <?php } ?>
 </table>
 <?php

@@ -111,6 +111,26 @@ use yii\bootstrap\Collapse;
                 }
             });
         }
+
+        function noaMenu(id, j)
+        {
+            $.ajax({
+                url: "'.Url::to(['/v1/pr/pr-menu']).'?id=" + id + "&j=" + j + "&menu=noa",
+                beforeSend: function(){
+                    $("#noa-menu").html("<div class=\"text-center\"><svg class=\"spinner\" width=\"20px\" height=\"20px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                },
+                success: function (data) {
+                    console.log(this.data);
+                    $("#noa-menu").empty();
+                    $("#noa-menu").hide();
+                    $("#noa-menu").fadeIn("slow");
+                    $("#noa-menu").html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        }
     ';
 
     $this->registerJs($script, View::POS_END);

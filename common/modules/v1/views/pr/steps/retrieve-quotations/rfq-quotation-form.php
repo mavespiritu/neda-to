@@ -86,7 +86,7 @@ use yii\bootstrap\Modal;
 </div>
 <?php } ?>
 <p><i class="fa fa-exclamation-circle"></i> Set amount to zero if supplier does not include the item.</p>
-<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
+<table class="table table-bordered table-responsive table-hover table-condensed">
     <thead>
         <tr>
             <th>#</th>
@@ -100,59 +100,49 @@ use yii\bootstrap\Modal;
         </tr>
     </thead>
     <tbody>
+        <tr>
+            <td colspan=8 style="background-color: #D9D9D9;"><b><?= $model->purpose ?></b></td>
+        </tr>
     <?php $i = 1; ?>
     <?php $total = 0; ?>
-    <?php if(!empty($rfqItems)){ ?>
-        <?php foreach($rfqItems as $item){ ?>
-            <?php $id = $item['id']; ?>
-            <?= Html::hiddenInput('total-pricing-'.$item['id'].'-hidden', $item['total'] * $costModels[$item['id']]['cost'], ['id' => 'total-pricing-'.$item['id'].'-hidden']) ?>
-            <tr>
-                <td align=center><?= $i ?></td>
-                <td align=center><?= $item['unit'] ?></td>
-                <td>
-                    <?= $item['item'] ?>
-                    <br>
-                    <?php if(isset($specifications[$item['id']])){ ?>
-                        <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                        <table style="width: 100%">
-                        <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
-                            <tr>
-                            <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
-                            <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
-                                    'data' => [
-                                        'confirm' => 'Are you sure you want to remove this item?',
-                                        'method' => 'post',
-                                    ],
-                                ]) ?></td> -->
-                            </tr>
-                        <?php } ?>
-                        </table>
-                        <br>
-                        <?php } ?>
-                        <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                    <?php } ?>
-                </td>
-                <td align=center><?= number_format($item['total'], 0) ?></td>
-                <td><?= $form->field($costModels[$item['id']], "[$id]specification")->textInput(['maxlength' => true])->label(false) ?></td>
-                <td align=right><?= number_format($item['cost'], 2) ?></td>
-                <td style="width: 20%;"><?= $form->field($costModels[$item['id']], "[$id]cost")->widget(MaskedInput::classname(), [
-                    'options' => [
-                        'autocomplete' => 'off',
-                        'onKeyup' => 'getRetrievedPriceTotal('.$item['id'].','.$item['total'].','.json_encode($itemIDs).')',
-                    ],
-                    'clientOptions' => [
-                        'alias' =>  'decimal',
-                        'removeMaskOnSubmit' => true,
-                        'groupSeparator' => ',',
-                        'autoGroup' => true,
-                    ],
-                ])->label(false) ?>
-                </td>
-                <td align=right><p id="total-pricing-<?= $item['id'] ?>"><?= isset($costModels[$item['id']]['cost']) ? number_format($item['total'] * $costModels[$item['id']]['cost'], 2) : '0.00' ?></p></td>
-            </tr>
-            <?php $total += isset($costModels[$item['id']]['cost']) ? $item['total'] * $costModels[$item['id']]['cost'] : 0 ?>
-            <?php $i++; ?>
-        <?php } ?>
+    <?php if(!empty($lotItems)){ ?>
+        <?php foreach($lotItems as $lot => $items){ ?>
+            <?php if($lot != 0){ ?>
+                <tr>
+                    <td colspan=8 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                </tr>
+            <?php } ?>
+            <?php if(!empty($items)){ ?>
+                <?php foreach($items as $item){ ?>
+                    <?php $id = $item['id']; ?>
+                    <?= Html::hiddenInput('total-pricing-'.$item['id'].'-hidden', $item['total'] * $costModels[$item['id']]['cost'], ['id' => 'total-pricing-'.$item['id'].'-hidden']) ?>
+                    <tr>
+                        <td align=center><?= $i ?></td>
+                        <td align=center><?= $item['unit'] ?></td>
+                        <td><?= $item['item'] ?></td>
+                        <td align=center><?= number_format($item['total'], 0) ?></td>
+                        <td><?= $form->field($costModels[$item['id']], "[$id]specification")->textInput(['maxlength' => true])->label(false) ?></td>
+                        <td align=right><?= number_format($item['cost'], 2) ?></td>
+                        <td style="width: 20%;"><?= $form->field($costModels[$item['id']], "[$id]cost")->widget(MaskedInput::classname(), [
+                            'options' => [
+                                'autocomplete' => 'off',
+                                'onKeyup' => 'getRetrievedPriceTotal('.$item['id'].','.$item['total'].','.json_encode($itemIDs).')',
+                            ],
+                            'clientOptions' => [
+                                'alias' =>  'decimal',
+                                'removeMaskOnSubmit' => true,
+                                'groupSeparator' => ',',
+                                'autoGroup' => true,
+                            ],
+                        ])->label(false) ?>
+                        </td>
+                        <td align=right><p id="total-pricing-<?= $item['id'] ?>"><?= isset($costModels[$item['id']]['cost']) ? number_format($item['total'] * $costModels[$item['id']]['cost'], 2) : '0.00' ?></p></td>
+                    </tr>
+                    <?php $total += isset($costModels[$item['id']]['cost']) ? $item['total'] * $costModels[$item['id']]['cost'] : 0 ?>
+                    <?php $i++; ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>    
     <?php }else{ ?>
         <tr>
             <td colspan=8 align=center>No items included</td>
@@ -245,6 +235,7 @@ use yii\bootstrap\Modal;
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
+                $("body").removeAttr("style");
                 rfqRetrieveQuotation('.$model->id.');
                 $("html").animate({ scrollTop: 0 }, "slow");
             },

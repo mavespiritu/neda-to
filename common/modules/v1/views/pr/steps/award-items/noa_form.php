@@ -97,7 +97,7 @@ return $rettxt;
 }
 ?>
 
-<h3 class="panel-title">NOA No. <?= $po->pocnNo ?></h3>
+<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> NOA for <?= $supplier->business_name ?></h3>
 <br>
 <?php $form = ActiveForm::begin([
     'id' => 'noa-form',
@@ -127,7 +127,7 @@ return $rettxt;
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to notify you that the <?= $model->purpose ?> with <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>;
+    <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
     <br>
     <br>
     <table class="table table-bordered table-striped table-responsive table-condensed">
@@ -154,13 +154,10 @@ return $rettxt;
             <?php } ?>
             <tr>
                 <td align=right colspan=4><b>TOTAL AMOUNT</b></td>
-                <td align=right><b>Php <?= number_format($po->total, 2) ?></b></td>
+                <td align=right><b>Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?></b></td>
             </tr>
         </tbody>
     </table>
-    <br>
-    <br>
-    is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($po->total)) ?> (Php <?= number_format($po->total, 2) ?>).</b>
     <br>
     <br>
     You are, therefore, requested to enter into a contract with us upon receipt of this notice.
@@ -201,7 +198,8 @@ return $rettxt;
 <br>
 <br>
 <div class="pull-right">
-<?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
+<?= !$noaModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printNoa('.$noaModel->id.')', 'class' => 'btn btn-danger']) : '' ?>&nbsp;
+<?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -218,9 +216,8 @@ return $rettxt;
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
-                    form.enableSubmitButtons();
-                    printNoa('.$model->id.','.$po->id.');
-                    menu('.$model->id.');
+                    alert("NOA has been saved");
+                    noaWinner('.$model->id.','.$bid->id.','.$supplier->id.','.$j.','.$i.','.$k.');
                 },
                 error: function (err) {
                     console.log(err);
@@ -230,10 +227,10 @@ return $rettxt;
             return false;
         });
 
-        function printNoa(id, po_id)
+        function printNoa(id)
         {
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-noa']).'?id="+ id +"&po_id=" + po_id, 
+            "'.Url::to(['/v1/pr/print-noa']).'?id="+ id, 
             "Print",
             "left=200", 
             "top=200", 

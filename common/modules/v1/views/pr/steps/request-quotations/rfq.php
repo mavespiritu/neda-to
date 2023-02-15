@@ -91,7 +91,6 @@ $asset = AppAsset::register($this);
                 <td align=center><b>UNIT</b></td>
                 <td align=center><b>ITEM DESCRIPTION</b></td>
                 <td align=center><b>BRAND & MODEL</b></td>
-                <td align=center><b>TOTAL ABC PRICE <br> PER ITEM</b></td>
                 <td align=center><b>UNIT PRICE</b></td>
                 <td align=center><b>TOTAL AMOUNT</b></td>
             </tr>
@@ -135,7 +134,6 @@ $asset = AppAsset::register($this);
                                 <?php } ?>
                                 </td>
                                 <td>&nbsp;</td>
-                                <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                                 <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                                 <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                             </tr>
@@ -174,7 +172,6 @@ $asset = AppAsset::register($this);
                     <?php } ?>
                     </td>
                     <td>&nbsp;</td>
-                    <td align=right>P<?= number_format($item['cost'], 2) ?></td>
                     <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                     <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
                 </tr>
@@ -187,7 +184,6 @@ $asset = AppAsset::register($this);
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td align=center><i><b>xxxxx NOTHING FOLLOWS xxxxx</b></i></td>
-                <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>

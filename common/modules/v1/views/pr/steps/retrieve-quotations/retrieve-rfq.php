@@ -41,10 +41,10 @@ use yii\web\View;
                         <td><?= $supplier->business_address ?></td>
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
                         <td align=right><b><?= number_format($rfq->getRfqInfo($supplier->id)->total, 2) ?></b></td>
-                        <td>
-                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-sm btn-info']) ?>
-                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-sm btn-warning update-rfq-quotation-button']) ?>
-                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-sm btn-danger']) ?>
+                        <td align=center>
+                            <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-info']) ?>
+                            <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-xs btn-warning update-rfq-quotation-button']) ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-xs btn-danger']) ?>
                         </td>
                     </tr>
                 <?php } ?>

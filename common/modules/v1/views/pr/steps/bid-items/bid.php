@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 use yii\web\View;
 
 $letters = range('A', 'Z');
-$abcTotal = 0;
+$costTotal = 0;
 $totals = [];
 ?>
 
@@ -58,89 +58,91 @@ $totals = [];
 <h3 class="panel-title">Bid Items <span class="pull-right"><?= $bid ? Html::button('<i class="fa fa-gavel"></i> Select Winners', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-success winner-button']).' ' : ' ' ?></span></h3>
 <p><i class="fa fa-exclamation-circle"></i> Choose winning bidders in each item.</p>
 <br>
-<table class="table table-bordered table-condensed table-striped table-hover table-responsive">
-    <thead>
-        <tr>
-            <td rowspan=3 align=center><b>Item No.</b></td>
-            <td rowspan=3 align=center><b>Nomenclature</b></td>
-            <td rowspan=3 align=center><b>Unit of Measure</b></td>
-            <td rowspan=3 align=center><b>Qty</b></td>
-            <td rowspan=3 align=center><b>Unit Cost</b></td>
-            <td rowspan=3 align=center><b>ABC</b></td>
-            <?php if(!empty($suppliers)){ ?>
-                <td colspan=<?= count($suppliers) * 2 ?> align=center><b>Participating Establishments</b></td>
+<div class="bidding-table" style="height: 800px;">
+    <table class="table table-bordered table-condensed table-hover table-responsive" cellspacing="0" style="min-width: 1400px;">
+        <thead>
+            <tr>
+                <td rowspan=3 align=center><b>Item No.</b></td>
+                <td rowspan=3 align=center style="width: 10%;"><b>Nomenclature</b></td>
+                <td rowspan=3 align=center style="width: 6%;"><b>Unit of Measure</b></td>
+                <td rowspan=3 align=center><b>Qty</b></td>
+                <td rowspan=3 align=center><b>Unit Cost</b></td>
+                <td rowspan=3 align=center><b>ABC</b></td>
+                <?php if(!empty($suppliers)){ ?>
+                    <td colspan=<?= count($suppliers) * 2 ?> align=center><b>Participating Establishments</b></td>
+                <?php } ?>
+                <td rowspan=3 align=center style="width: 10%;"><b>Justification</b></td>
+                <td rowspan=3 align=center style="width: 10%;"><b>Awarded to</b></td>
+            </tr>
+            <tr>
+                <?php if($suppliers){ ?>
+                    <?php foreach($suppliers as $idx => $supplier){ ?>
+                        <?php $totals[$supplier->id] = 0; ?>
+                        <td align=center style="width: 10%;"><b><?= $letters[$idx] ?><br><?= $supplier->business_name ?></b></td>
+                        <td align=center style="width: 10%;"><b>Specifications</b></td>
+                    <?php } ?>
+                <?php } ?>
+            </tr>
+        </thead>
+        <tbody>
+        <?php if(!empty($rfqItems)){ ?>
+            <?php $j = 1; ?>
+            <?php foreach($rfqItems as $rfqItem){ ?>
+                <?php if($j == 1){ ?>
+                    <tr>
+                        <td align=center><?= $j ?></td>
+                        <td><?= $rfqItem['item'] ?></td>
+                        <td align=center><?= $rfqItem['unit'] ?></td>
+                        <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
+                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
+                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                        <?php if($suppliers){ ?>
+                            <?php foreach($suppliers as $supplier){ ?>
+                                <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
+                            <?php } ?>
+                        <?php } ?>
+                        <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->justification : '' ?></td>
+                        <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->recommendation : '' ?></td>
+                        <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                    </tr>
+                <?php }else{ ?>
+                    <tr>
+                        <td align=center><?= $j ?></td>
+                        <td><?= $rfqItem['item'] ?></td>
+                        <td align=center><?= $rfqItem['unit'] ?></td>
+                        <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
+                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
+                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                        <?php if($suppliers){ ?>
+                            <?php foreach($suppliers as $supplier){ ?>
+                                <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
+                            <?php } ?>
+                        <?php } ?>
+                        <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                    </tr>
+                <?php } ?>
+                <?php $j++; ?>
             <?php } ?>
-            <td rowspan=3 align=center style="width: 10%;"><b>Justification</b></td>
-            <td rowspan=3 align=center style="width: 10%;"><b>Awarded to</b></td>
-        </tr>
+        <?php } ?>
         <tr>
+            <td colspan=5 align=right><b>Total cost</b></td>
+            <td align=right><b><?= number_format($costTotal, 2) ?></b></td>
             <?php if($suppliers){ ?>
-                <?php foreach($suppliers as $idx => $supplier){ ?>
-                    <?php $totals[$supplier->id] = 0; ?>
-                    <td align=center><b><?= $letters[$idx] ?><br><?= $supplier->business_name ?></b></td>
-                    <td align=center><b>Specifications</b></td>
+                <?php foreach($suppliers as $supplier){ ?>
+                    <td align=right><b><?= number_format($totals[$supplier->id], 2) ?></b></td>
+                    <td>&nbsp;</td>
                 <?php } ?>
             <?php } ?>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
         </tr>
-    </thead>
-    <tbody>
-    <?php if(!empty($rfqItems)){ ?>
-        <?php $j = 1; ?>
-        <?php foreach($rfqItems as $rfqItem){ ?>
-            <?php if($j == 1){ ?>
-                <tr>
-                    <td align=center><?= $j ?></td>
-                    <td><?= $rfqItem['item'] ?></td>
-                    <td align=center><?= $rfqItem['unit'] ?></td>
-                    <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                    <td align=right><?= number_format($rfqItem['abc'], 2) ?></td>
-                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['abc'], 2) ?></b></td>
-                    <?php if($suppliers){ ?>
-                        <?php foreach($suppliers as $supplier){ ?>
-                            <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                            <td><?= $costs[$rfqItem['id']][$supplier->id]['specification'] ?></td>
-                            <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
-                        <?php } ?>
-                    <?php } ?>
-                    <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->justification : '' ?></td>
-                    <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->recommendation : '' ?></td>
-                    <?php $abcTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
-                </tr>
-            <?php }else{ ?>
-                <tr>
-                    <td align=center><?= $j ?></td>
-                    <td><?= $rfqItem['item'] ?></td>
-                    <td align=center><?= $rfqItem['unit'] ?></td>
-                    <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                    <td align=right><?= number_format($rfqItem['abc'], 2) ?></td>
-                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['abc'], 2) ?></b></td>
-                    <?php if($suppliers){ ?>
-                        <?php foreach($suppliers as $supplier){ ?>
-                            <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                            <td><?= $costs[$rfqItem['id']][$supplier->id]['specification'] ?></td>
-                            <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
-                        <?php } ?>
-                    <?php } ?>
-                    <?php $abcTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
-                </tr>
-            <?php } ?>
-            <?php $j++; ?>
-        <?php } ?>
-    <?php } ?>
-    <tr>
-        <td colspan=5 align=right><b>Total ABC</b></td>
-        <td align=right><b><?= number_format($abcTotal, 2) ?></b></td>
-        <?php if($suppliers){ ?>
-            <?php foreach($suppliers as $supplier){ ?>
-                <td align=right><b><?= number_format($totals[$supplier->id], 2) ?></b></td>
-                <td>&nbsp;</td>
-            <?php } ?>
-        <?php } ?>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-    </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 
 <?php
   Modal::begin([
@@ -165,8 +167,8 @@ $totals = [];
 <?php
   Modal::begin([
     'id' => 'winner-modal',
-    'size' => "modal-xl",
-    'header' => '<div id="winner-modal-header"><h4>Set Winning Bidders</h4></div>',
+    'size' => "modal-xxl",
+    'header' => '<div id="winner-modal-header"><h4>Select Winners</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="winner-modal-content"></div>';
@@ -219,6 +221,11 @@ $totals = [];
             $(".winner-button").click(function(){
                 $("#winner-modal-content").html("");
                 $("#winner-modal").modal("show").find("#winner-modal-content").load($(this).attr("value"));
+            });
+
+            $(".bidding-table").freezeTable({
+                "scrollable": true,
+                "columnNum": 6
             });
         });     
     ';

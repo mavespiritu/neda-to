@@ -123,16 +123,6 @@ class Po extends \yii\db\ActiveRecord
         return $this->hasMany(Ntp::className(), ['po_id' => 'id']);
     }
 
-    /**
-     * Gets query for [[Nta]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getNoas()
-    {
-        return $this->hasMany(Noa::className(), ['po_id' => 'id']);
-    }
-
     public function getOrs()
     {
         return $this->hasMany(Ors::className(), ['po_id' => 'id']);

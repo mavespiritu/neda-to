@@ -3310,7 +3310,7 @@ class PrController extends Controller
                                     'ppmp_item.id' => $item->ppmpItem->item_id,
                                     'ppmp_pr_item.cost' => $item->cost,
                                 ])
-                                ->having(['lotTitle' => !is_null($item->lot) ? 'Lot No.'.$item->lot->lot_no.' - '.$item->lot->title : 0])
+                                ->having(['lotTitle' => !is_null($item->lot) ? 'Lot No. '.$item->lot->lot_no.' - '.$item->lot->title : 0])
                                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
                                 ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
                                 ->all();
@@ -3474,7 +3474,7 @@ class PrController extends Controller
                                     'ppmp_item.id' => $item->ppmpItem->item_id,
                                     'ppmp_pr_item.cost' => $item->cost,
                                 ])
-                                ->having(['lotTitle' => !is_null($item->lot) ? 'Lot No.'.$item->lot->lot_no.' - '.$item->lot->title : 0])
+                                ->having(['lotTitle' => !is_null($item->lot) ? 'Lot No. '.$item->lot->lot_no.' - '.$item->lot->title : 0])
                                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
                                 ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
                                 ->all();

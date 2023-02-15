@@ -7,6 +7,7 @@ use markavespiritu\user\models\Office;
 use markavespiritu\user\models\Section;
 use markavespiritu\user\models\Unit;
 use markavespiritu\user\models\UserInfo;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "ppmp_apr".
@@ -100,6 +101,22 @@ class Apr extends \yii\db\ActiveRecord
     public function getAprItems()
     {
         return $this->hasMany(AprItem::className(), ['apr_id' => 'id']);
+    }
+    
+
+    public function getAprItemCosts()
+    {
+        $aprItemIDs = AprItem::findAll(['apr_id' => $this->id]);
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $costs = PrItemCost::find()
+                ->andWhere(['pr_id' => $this->pr_id])
+                ->andWhere(['supplier_id' => 1])
+                ->andWhere(['pr_item_id' => $aprItemIDs])
+                ->asArray()
+                ->all();
+
+        return $costs;
     }
 
     public function getStockCertifier()

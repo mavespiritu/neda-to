@@ -69,6 +69,7 @@ class ComposerStaticInit5dc79614d4211f4e341f1ed4c7fbc2a9
             'kartik\\plugins\\fileinput\\' => 25,
             'kartik\\mpdf\\' => 12,
             'kartik\\file\\' => 12,
+            'kartik\\dialog\\' => 14,
             'kartik\\daterange\\' => 17,
             'kartik\\date\\' => 12,
             'kartik\\base\\' => 12,
@@ -283,6 +284,10 @@ class ComposerStaticInit5dc79614d4211f4e341f1ed4c7fbc2a9
         'kartik\\file\\' => 
         array (
             0 => __DIR__ . '/..' . '/kartik-v/yii2-widget-fileinput',
+        ),
+        'kartik\\dialog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-dialog/src',
         ),
         'kartik\\daterange\\' => 
         array (

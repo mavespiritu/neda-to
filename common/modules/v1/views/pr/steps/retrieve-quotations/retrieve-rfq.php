@@ -6,9 +6,9 @@ use yii\widgets\DetailView;
 use yii\web\View;
 ?>
 
-<h3 class="panel-title">4.2 Retrieved RFQs</h3>
+<h3 class="panel-title">4.2 Retrieve RFQ</h3>
 <br>
-<p><i class="fa fa-exclamation-circle"></i> Input prices from supplier quotations.</p>
+<p><i class="fa fa-exclamation-circle"></i> Input prices from retrieved RFQs.</p>
 <h3 class="panel-title">List of Suppliers <span class="pull-right"><?= Html::button('<i class="fa fa-envelope-open-o"></i> Input Prices', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'retrieve-rfq-button']) ?></span></h3>
 <br>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
@@ -40,7 +40,7 @@ use yii\web\View;
                         <td><b><?= Html::a($supplier->business_name, null, ['href' => 'javascript:void(0)', 'onclick' => 'viewRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')']) ?></b></td>
                         <td><?= $supplier->business_address ?></td>
                         <td><?= $rfq->getRfqInfo($supplier->id)->date_retrieved ?></td>
-                        <td align=right><?= number_format($rfq->getRfqInfo($supplier->id)->total, 2) ?></td>
+                        <td align=right><b><?= number_format($rfq->getRfqInfo($supplier->id)->total, 2) ?></b></td>
                         <td>
                             <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printRfqInfo('.$model->id.','.$rfq->id.','.$supplier->id.')', 'class' => 'btn btn-sm btn-info']) ?>
                             <?= Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-rfq-quotation', 'id' => $model->id, 'rfq_id' => $rfq->id, 'supplier_id' => $supplier->id]), 'class' => 'btn btn-sm btn-warning update-rfq-quotation-button']) ?>

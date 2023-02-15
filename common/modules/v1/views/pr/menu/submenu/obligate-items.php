@@ -45,7 +45,7 @@ use yii\bootstrap\ButtonDropdown;
             <div class="circle">9.<?= $i ?></div>
         </div>
         <div class="product-info">
-            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i ?>','NP');" class="product-title">Non-procurable Items
+            <a href="javascript:void(0)" onclick="obligatePo('<?= $model->id ?>', null , '<?= $i ?>','NP');" class="product-title">NP Items
             <?= $model->orsWithoutPo > 0 ? '<span class="badge bg-green pull-right"><i class="fa fa-check"></i></span>' : '' ?>
             </a>
             <span class="product-description">Obligate non-procurable items</span>

@@ -14,48 +14,49 @@ $totals = [];
 <br>
 <h3 class="panel-title">AOQ Information
     <span class="pull-right">
-    <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit AOQ', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-warning', 'id' => 'update-bid-button']).' '.
-               Html::a('<i class="fa fa-trash"></i> Delete AOQ', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger btn-sm delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
+    <?= $bid ? Html::a('<i class="fa fa-print"></i> Print', null, ['class' => 'btn btn-sm btn-info', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?>
+    <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-warning', 'id' => 'update-bid-button']).' '.
+               Html::a('<i class="fa fa-trash"></i> Delete', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger btn-sm delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
                     'confirm' => 'Are you sure you want to delete this bid?',
                     'method' => 'post',
                 ],]).'</div>'
     :
-    Html::button('<i class="fa fa-legal"></i> Create AOQ', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-bid-button']) ?>
+    Html::button('Create AOQ', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-bid-button']) ?>
     </span>
 </h3>
-<p><i class="fa fa-exclamation-circle"></i> To accomplish the step, create a bid and proceed to the selection of winning bidders.</p>
+<p><i class="fa fa-exclamation-circle"></i> Create AOQ to enable selection of winning bidders.</p>
 <br>
 <table class="table table-bordered table-responsive table-condensed">
     <tbody>
         <tr>
             <td align=right style="width: 20%;"><b>Canvas/Bid No.</b></td>
-            <td><?= $bid ? $bid->bid_no : '&nbsp;' ?></td>
+            <td style="width: 30%;"><?= $bid ? $bid->bid_no : '&nbsp;' ?></td>
             <td align=right style="width: 20%;"><b>Date and Time of Opening</b></td>
-            <td><?= $bid ? date("F j, Y", strtotime($bid->date_opened)) : '&nbsp;' ?> <?= $bid ? $bid->time_opened : '&nbsp;' ?></td>
+            <td style="width: 30%;"><?= $bid ? date("F j, Y", strtotime($bid->date_opened)) : '&nbsp;' ?> <?= $bid ? $bid->time_opened : '&nbsp;' ?></td>
         </tr>
         <tr>
-            <td align=right style="width: 20%;"><b>BAC Chairperson</b></td>
+            <td align=right><b>BAC Chairperson</b></td>
             <td><?= $bid ? $bid->chairperson : '&nbsp;' ?></td>
-            <td align=right style="width: 20%;"><b>BAC Vice-Chairperson</b></td>
+            <td align=right><b>BAC Vice-Chairperson</b></td>
             <td><?= $bid ? $bid->viceChairperson : '&nbsp;' ?></td>
         </tr>
         <tr>
-            <td align=right style="width: 20%;"><b>Member</b></td>
+            <td align=right><b>Member</b></td>
             <td><?= $bid ? $bid->member : '&nbsp;' ?></td>
-            <td align=right style="width: 20%;"><b>Provisional Member with Technical Expertise</b></td>
+            <td align=right><b>Provisional Member with Technical Expertise</b></td>
             <td><?= $bid ? $bid->expert : '&nbsp;' ?></td>
         </tr>
         <tr>
-            <td align=right style="width: 20%;"><b>Provisional Member - End User (<?= $model->officeName ?>)</b></td>
+            <td align=right><b>Provisional Member - End User (<?= $model->officeName ?>)</b></td>
             <td><?= $bid ? $bid->endUser : '&nbsp;' ?></td>
-            <td align=right style="width: 20%;">&nbsp;</td>
+            <td align=right>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
     </tbody>
 </table>
-<h3 class="panel-title">Bid Items <span class="pull-right"><?= $bid ? Html::button('<i class="fa fa-gavel"></i> Set Winning Bidders', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-success winner-button']).' ' : ' ' ?>
-<?= $bid ? Html::a('<i class="fa fa-print"></i> Print AOQ', null, ['class' => 'btn btn-sm btn-info', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?></span></h3>
-<p><i class="fa fa-exclamation-circle"></i> Create canvas/bid to enable selection of winners.</p>
+<br>
+<h3 class="panel-title">Bid Items <span class="pull-right"><?= $bid ? Html::button('<i class="fa fa-gavel"></i> Select Winners', ['value' => Url::to(['/v1/pr/select-winner', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-success winner-button']).' ' : ' ' ?></span></h3>
+<p><i class="fa fa-exclamation-circle"></i> Choose winning bidders in each item.</p>
 <br>
 <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
     <thead>
@@ -92,8 +93,8 @@ $totals = [];
                     <td><?= $rfqItem['item'] ?></td>
                     <td align=center><?= $rfqItem['unit'] ?></td>
                     <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                    <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                    <td align=right><?= number_format($rfqItem['abc'], 2) ?></td>
+                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['abc'], 2) ?></b></td>
                     <?php if($suppliers){ ?>
                         <?php foreach($suppliers as $supplier){ ?>
                             <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
@@ -111,8 +112,8 @@ $totals = [];
                     <td><?= $rfqItem['item'] ?></td>
                     <td align=center><?= $rfqItem['unit'] ?></td>
                     <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                    <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                    <td align=right><?= number_format($rfqItem['abc'], 2) ?></td>
+                    <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['abc'], 2) ?></b></td>
                     <?php if($suppliers){ ?>
                         <?php foreach($suppliers as $supplier){ ?>
                             <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>

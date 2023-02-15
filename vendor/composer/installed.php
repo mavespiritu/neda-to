@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '8f405789763c23ed070af25caf8641f69c46abc2',
+        'reference' => '74db9517287ce1c7b4601bf2b4bf0850d9d7bafe',
         'name' => 'yiisoft/yii2-app-advanced',
         'dev' => true,
     ),
@@ -454,6 +454,15 @@
             'aliases' => array(),
             'reference' => 'ed12260339f4699c363360465a22a46c714eb6be',
             'dev_requirement' => true,
+        ),
+        'kartik-v/yii2-dialog' => array(
+            'pretty_version' => 'v1.0.4',
+            'version' => '1.0.4.0',
+            'type' => 'yii2-extension',
+            'install_path' => __DIR__ . '/../kartik-v/yii2-dialog',
+            'aliases' => array(),
+            'reference' => '6afae03a4d9f7b99ddc173d2a29dd6e3cc1c56cb',
+            'dev_requirement' => false,
         ),
         'kartik-v/yii2-krajee-base' => array(
             'pretty_version' => 'v1.9.9',
@@ -1240,7 +1249,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '8f405789763c23ed070af25caf8641f69c46abc2',
+            'reference' => '74db9517287ce1c7b4601bf2b4bf0850d9d7bafe',
             'dev_requirement' => false,
         ),
         'yiisoft/yii2-authclient' => array(

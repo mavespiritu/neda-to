@@ -245,8 +245,8 @@ use yii\bootstrap\Modal;
                 $(".modal").remove();
                 $(".modal-backdrop").remove();
                 $("body").removeClass("modal-open");
-                menu('.$model->id.');
                 rfqRetrieveQuotation('.$model->id.');
+                $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {
                 console.log(err);

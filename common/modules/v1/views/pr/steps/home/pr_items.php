@@ -17,7 +17,7 @@ use yii\bootstrap\Modal;
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
 
-<table class="table table-bordered table-responsive table-hover table-condensed table-striped">
+<table class="table table-bordered table-responsive table-hover table-condensed" id="pr-items-table">
     <thead>
         <tr>
             <th>#</th>
@@ -89,25 +89,37 @@ use yii\bootstrap\Modal;
 
 <?php
     $script = '
-    function enableRemoveButton()
-    {
-        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#remove-pr-button").attr("disabled", false) : $("#remove-pr-button").attr("disabled", true);
-        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#add-apr-button").attr("disabled", false) : $("#add-apr-button").attr("disabled", true);
-    }
-
     $(".check-pr-items").click(function(){
         $(".check-pr-item").not(this).prop("checked", this.checked);
-        enableRemoveButton();
-    });
-
-    $(".check-pr-item").click(function(){
+        $("#pr-items-table tr").toggleClass("isChecked", $(".check-pr-item").is(":checked"));
         enableRemoveButton();
     });
 
     $(document).ready(function(){
         $(".check-pr-item").removeAttr("checked");
         enableRemoveButton();
+
+        $("tr").click(function() {
+            var inp = $(this).find(".check-pr-item");
+            var tr = $(this).closest("tr");
+            inp.prop("checked", !inp.is(":checked"));
+         
+            tr.toggleClass("isChecked", inp.is(":checked"));
+            enableRemoveButton();
+        });
+        
+        // do nothing when clicking on checkbox, but bubble up to tr
+        $(".check-pr-item").click(function(e){
+            e.preventDefault();
+            enableRemoveButton();
+        });
     });
+
+    function enableRemoveButton()
+    {
+        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#remove-pr-button").attr("disabled", false) : $("#remove-pr-button").attr("disabled", true);
+        $("#pr-items-form input:checkbox:checked").length > 0 ? $("#add-apr-button").attr("disabled", false) : $("#add-apr-button").attr("disabled", true);
+    }
 
     $("#remove-pr-button").on("click", function(e) {
         e.preventDefault();
@@ -128,6 +140,7 @@ use yii\bootstrap\Modal;
                     form.enableSubmitButtons();
                     alert("Items Removed");
                     home('.$model->id.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -141,3 +154,15 @@ use yii\bootstrap\Modal;
 
     $this->registerJs($script, View::POS_END);
 ?>
+<style>
+.isChecked {
+  background-color: #F5F5F5;
+}
+tr{
+  background-color: white;
+}
+/* click-through element */
+.check-pr-item {
+  pointer-events: none;
+}
+</style>

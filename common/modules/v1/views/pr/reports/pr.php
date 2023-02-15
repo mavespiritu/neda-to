@@ -55,17 +55,55 @@
     </thead>
     <tbody>
     <?php $total = 0; ?>
-    <?php if(!empty($items)){ ?>
-        <?php foreach($items as $item){ ?>
-            <tr>
-                <td align=center><?= $item['item_id'] ?></td>
-                <td align=center><?= $item['unit'] ?></td>
-                <td><?= $item['item'] ?></td>
-                <td align=center><?= number_format($item['total'], 0) ?></td>
-                <td align=right><?= number_format($item['cost'], 2) ?></td>
-                <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
-            </tr>
-            <?php $total += $item['total'] * $item['cost'] ?>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td><b><?= $model->purpose ?></b></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>   
+    <?php if($model->lots){ ?>
+        <?php if(!empty($lotItems)){ ?>
+            <?php foreach($lotItems as $lot => $items){ ?>
+                <?php if($lot != 0){ ?>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td><b><?= $lot ?></b></td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <?php } ?>
+                <?php if(!empty($items)){ ?>
+                    <?php foreach($items as $item){ ?>
+                        <tr>
+                            <td align=center><?= $item['item_id'] ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <td><?= $item['item'] ?></td>
+                            <td align=center><?= number_format($item['total'], 0) ?></td>
+                            <td align=right><?= number_format($item['cost'], 2) ?></td>
+                            <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
+                        </tr>
+                        <?php $total += $item['total'] * $item['cost'] ?>
+                    <?php } ?>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
+    <?php }else{ ?>
+        <?php if(!empty($items)){ ?>
+            <?php foreach($items as $item){ ?>
+                <tr>
+                    <td align=center><?= $item['item_id'] ?></td>
+                    <td align=center><?= $item['unit'] ?></td>
+                    <td><?= $item['item'] ?></td>
+                    <td align=center><?= number_format($item['total'], 0) ?></td>
+                    <td align=right><?= number_format($item['cost'], 2) ?></td>
+                    <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
+                </tr>
+                <?php $total += $item['total'] * $item['cost'] ?>
+            <?php } ?>
         <?php } ?>
     <?php } ?>
     <?php if(!empty($specifications)){ ?>

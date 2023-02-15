@@ -111,7 +111,7 @@ class PpmpItem extends \yii\db\ActiveRecord
 
     public function getActivityName()
     {
-        return $this->activity ? $this->activity->pap->codeTitle.' - '.$this->activity->code.' - '.$this->activity->title : '';
+        return $this->activity ? $this->activity->pap->codeTitle.'-'.$this->activity->code.' - '.$this->activity->title : '';
     }
 
     /**
@@ -504,7 +504,7 @@ class PpmpItem extends \yii\db\ActiveRecord
         return $total['total'];
     }
 
-    public static function getTotalPerSubActivity($ppmp_id, $activity_id, $sub_activity_id, $fund_source_id)
+    public static function getTotalPerSubActivity($ppmp_id, $activity_id, $sub_activity_id, $fund_source_id, $type)
     {
         $quantity = ItemBreakdown::find()
                    ->select([
@@ -525,6 +525,7 @@ class PpmpItem extends \yii\db\ActiveRecord
                     'activity_id' => $activity_id,
                     'sub_activity_id' => $sub_activity_id,
                     'fund_source_id' => $fund_source_id,
+                    'type' => $type,
                 ])
                 ->asArray()
                 ->one();
@@ -532,7 +533,7 @@ class PpmpItem extends \yii\db\ActiveRecord
         return $total['total'];
     }
 
-    public static function getCountPerSubActivity($ppmp_id, $activity_id, $sub_activity_id, $fund_source_id)
+    public static function getCountPerSubActivity($ppmp_id, $activity_id, $sub_activity_id, $fund_source_id, $type)
     {
         $total = PpmpItem::find()
                 ->andWhere([
@@ -540,6 +541,7 @@ class PpmpItem extends \yii\db\ActiveRecord
                     'activity_id' => $activity_id,
                     'sub_activity_id' => $sub_activity_id,
                     'fund_source_id' => $fund_source_id,
+                    'type' => $type
                 ])
                 ->count();
         

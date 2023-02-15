@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'pr_no',
                                 'format' => 'raw',
                                 'value' => function($model){
-                                    return '<b>'.Html::a($model->pr_no, ['/v1/pr/view', 'id' => $model->id]).'</b>';
+                                    return $model->fundSourceName == 'RDC' ? '<b>'.Html::a($model->pr_no, ['/v1/pr/view', 'id' => $model->id], ['style' => 'color: #EF4444;']).'</b>' : '<b>'.Html::a($model->pr_no, ['/v1/pr/view', 'id' => $model->id]).'</b>';
                                 }
                             ],
                             [
@@ -92,7 +92,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                     return $model->purpose;
                                 }
                             ],
-                            'fundSourceName',
+                            [
+                                'attribute' => 'fundSourceName',
+                                'format' => 'raw',
+                                'value' => function($model){
+                                    return $model->fundSourceName == 'RDC' ? '<span style="color: #EF4444;">'.$model->fundSourceName.'</span>' : $model->fundSourceName;
+                                }
+                            ],
                             'creatorName',
                             'requesterName',
                             'date_requested',

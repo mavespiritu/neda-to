@@ -58,6 +58,11 @@ class AprItem extends \yii\db\ActiveRecord
         return $this->hasOne(Apr::className(), ['id' => 'apr_id']);
     }
 
+    public function getPrItemCost()
+    {
+        return $this->hasOne(PrItemCost::className(), ['pr_item_id' => 'pr_item_id', 'supplier_id' => 1]);
+    }
+
     /**
      * Gets query for [[PrItem]].
      *

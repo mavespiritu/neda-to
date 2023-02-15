@@ -20,7 +20,7 @@ use yii\bootstrap\ButtonDropdown;
 </a>
 <a onclick="retrieveQuotations(<?= $model->id?>);" class="btn btn-app main-menu" id="step-4">
     <?= $model->aprInfoCount + $model->rfqInfoCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
-    <i class="fa fa-envelope-open-o"></i>4. Retrieved <br> RFQs/APR
+    <i class="fa fa-envelope-open-o"></i>4. Retrieve <br> RFQs/APR
 </a>
 <a onclick="bidItems(<?= $model->id?>);" class="btn btn-app main-menu" id="step-5">
     <?= $model->bidCount > 0 ? '<span class="badge bg-green"><i class="fa fa-check"></i></span>' : '' ?>
@@ -97,20 +97,19 @@ use yii\bootstrap\ButtonDropdown;
             });
         }
 
-        function items(id)
+        function items(id, ctr)
         {
             $.ajax({
-                url: "'.Url::to(['/v1/pr/items']).'?id=" + id,
+                url: "'.Url::to(['/v1/pr/items']).'?id=" + id + "&ctr=" + ctr,
                 beforeSend: function(){
-                    $("#pr-main").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
+                    $("#pr-container").html("<div class=\"text-center\" style=\"margin-top: 50px;\"><svg class=\"spinner\" width=\"30px\" height=\"30px\" viewBox=\"0 0 66 66\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"path\" fill=\"none\" stroke-width=\"6\" stroke-linecap=\"round\" cx=\"33\" cy=\"33\" r=\"30\"></circle></svg></div>");
                 },
                 success: function (data) {
                     console.log(this.data);
-                    $("#pr-main").empty();
-                    $("#pr-main").hide();
-                    $("#pr-main").fadeIn("slow");
-                    $("#pr-main").html(data);
-                    updateNavigation("items-link");
+                    $("#pr-container").empty();
+                    $("#pr-container").hide();
+                    $("#pr-container").fadeIn("slow");
+                    $("#pr-container").html(data);
                 },
                 error: function (err) {
                     console.log(err);

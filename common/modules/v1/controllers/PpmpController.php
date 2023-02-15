@@ -413,14 +413,14 @@ class PpmpController extends Controller
                 $items[$key]['label'] = '<table style="width:100%;" id="item-table-'.$subActivity->id.'" onclick="loadItemsInSubActivity('.$model->id.','.$subActivity->id.','.$activity->id.','.$fundSource->id.')">'; 
                 $items[$key]['label'] .= '<tr>'; 
                 $items[$key]['label'] .= '<td>'.$subActivity->subActivityTitle.'</td>'; 
-                $items[$key]['label'] .= '<td align=right>'.PpmpItem::getCountPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id).'</td>'; 
-                $items[$key]['label'] .= '<td align=right style="width: 45%;">'.number_format(PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id), 2).'</td>'; 
+                $items[$key]['label'] .= '<td align=right>'.PpmpItem::getCountPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original').'</td>'; 
+                $items[$key]['label'] .= '<td align=right style="width: 45%;">'.number_format(PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original'), 2).'</td>'; 
                 $items[$key]['label'] .= '</tr>'; 
                 $items[$key]['label'] .= '</table>';
                 $items[$key]['content'] = '<div id="item-list-'.$subActivity->id.'"></div>';
-                $items[$key]['options'] = ['class' => PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id) > 0 ? 'panel panel-success' : 'panel panel-default'];
+                $items[$key]['options'] = ['class' => PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original') > 0 ? 'panel panel-success' : 'panel panel-default'];
 
-                $total += PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id);
+                $total += PpmpItem::getTotalPerSubActivity($model->id, $activity->id, $subActivity->id, $fundSource->id, 'Original');
             }
         }
 
@@ -763,6 +763,7 @@ class PpmpController extends Controller
         $searchModel->activity_id = $activity->id;
         $searchModel->fund_source_id = $fundSource->id;
         $searchModel->sub_activity_id = $subActivity->id;
+        $searchModel->type = 'Original';
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'true');
 
@@ -1111,66 +1112,51 @@ class PpmpController extends Controller
     {
         $model = $this->findModel($id);
 
-       $activities = Activity::find()
-                     ->select([
-                         'ppmp_activity.id as id',
-                         'ppmp_activity.pap_id as pap_id',
-                         'IF(ppmp_pap.short_code IS NULL,
-                            concat(
-                                ppmp_cost_structure.code,"",
-                                ppmp_organizational_outcome.code,"",
-                                ppmp_program.code,"",
-                                ppmp_sub_program.code,"",
-                                ppmp_identifier.code,"",
-                                ppmp_pap.code,"000-",
-                                ppmp_activity.code," - ",
-                                ppmp_activity.title
-                            )
-                            ,
-                            concat(
-                                ppmp_pap.short_code,"-",
-                                ppmp_activity.code," - ",
-                                ppmp_activity.title
-                            )
-                        ) as text',
-                         'p.title as groupTitle'
-                     ])
-                    ->leftJoin(['p' => '(
-                        SELECT 
-                        ppmp_pap.id as id, 
-                        ppmp_pap.code as code, 
-                        IF(ppmp_pap.short_code IS NULL,
-                            concat(
-                                ppmp_cost_structure.code,"",
-                                ppmp_organizational_outcome.code,"",
-                                ppmp_program.code,"",
-                                ppmp_sub_program.code,"",
-                                ppmp_identifier.code,"",
-                                ppmp_pap.code,"000 - ",
-                                ppmp_pap.title
-                            )
-                            ,
-                            concat(
-                                ppmp_pap.short_code," - ",
-                                ppmp_pap.title
-                            )
-                        ) as title
-                        from 
-                        ppmp_pap
-                        left join ppmp_identifier on ppmp_identifier.id = ppmp_pap.identifier_id
-                        left join ppmp_sub_program on ppmp_sub_program.id = ppmp_pap.sub_program_id
-                        left join ppmp_program on ppmp_program.id = ppmp_pap.program_id
-                        left join ppmp_organizational_outcome on ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id
-                        left join ppmp_cost_structure on ppmp_cost_structure.id = ppmp_pap.cost_structure_id
-                    )'], 'p.id = ppmp_activity.pap_id')
-                    ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
-                    ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
-                    ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
-                    ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
-                    ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
-                    ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
-                    ->asArray()
-                    ->all();
+        $activities = Activity::find()
+        ->select([
+            'ppmp_activity.id as id',
+            'ppmp_activity.pap_id as pap_id',
+            'concat(
+               ppmp_cost_structure.code,"",
+               ppmp_organizational_outcome.code,"",
+               ppmp_program.code,"",
+               ppmp_sub_program.code,"",
+               ppmp_identifier.code,"",
+               ppmp_pap.code,"000-",
+               ppmp_activity.code," - ",
+               ppmp_activity.title
+           ) as text',
+            'p.title as groupTitle'
+        ])
+       ->leftJoin(['p' => '(
+           SELECT 
+           ppmp_pap.id as id, 
+           ppmp_pap.code as code, 
+           concat(
+               ppmp_cost_structure.code,"",
+               ppmp_organizational_outcome.code,"",
+               ppmp_program.code,"",
+               ppmp_sub_program.code,"",
+               ppmp_identifier.code,"",
+               ppmp_pap.code,"000 - ",
+               ppmp_pap.title
+           ) as title
+           from 
+           ppmp_pap
+           left join ppmp_identifier on ppmp_identifier.id = ppmp_pap.identifier_id
+           left join ppmp_sub_program on ppmp_sub_program.id = ppmp_pap.sub_program_id
+           left join ppmp_program on ppmp_program.id = ppmp_pap.program_id
+           left join ppmp_organizational_outcome on ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id
+           left join ppmp_cost_structure on ppmp_cost_structure.id = ppmp_pap.cost_structure_id
+       )'], 'p.id = ppmp_activity.pap_id')
+       ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+       ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+       ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+       ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+       ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+       ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+       ->asArray()
+       ->all();
 
         $params = Yii::$app->request->queryParams;
 

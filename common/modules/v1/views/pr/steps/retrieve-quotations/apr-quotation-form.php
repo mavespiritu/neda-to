@@ -170,8 +170,8 @@ use yii\bootstrap\Modal;
             success: function (data) {
                 form.enableSubmitButtons();
                 alert("APR quotation saved successfully");
-                menu('.$model->id.');
                 aprRetrieveQuotation('.$model->id.');
+                $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {
                 console.log(err);

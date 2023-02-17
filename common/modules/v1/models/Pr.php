@@ -161,6 +161,44 @@ class Pr extends \yii\db\ActiveRecord
 
         return count($winners) > 0 ? count($winners) == $withNoaCount ? true : false : false;
     }
+
+    public function getSupplierHasPoOrContract($bid_id, $supplier_id)
+    {
+        $po = !is_null($bid_id) ? Po::findOne(['pr_id' => $this->id, 'bid_id' => $bid_id, 'supplier_id' => $supplier_id]) : Po::find()
+                            ->andWhere(['pr_id' => $this->id, 'supplier_id' => $supplier_id])
+                            ->andWhere(['is', 'bid_id', null])
+                            ->one();
+
+        return $po ? true : false;
+    }
+
+    public function getSupplierHasPo($bid_id, $supplier_id, $type)
+    {
+        $po = !is_null($bid_id) ? Po::findOne(['pr_id' => $this->id, 'bid_id' => $bid_id, 'supplier_id' => $supplier_id, 'type' => $type]) : Po::find()
+                            ->andWhere(['pr_id' => $this->id, 'supplier_id' => $supplier_id, 'type' => $type])
+                            ->andWhere(['is', 'bid_id', null])
+                            ->one();
+        return $po ? true : false;
+    }
+
+    public function getSupplierHasNtps($supplier_id)
+    {
+        $pos = Po::findAll(['pr_id' => $this->id, 'supplier_id' => $supplier_id]);
+        $ntps = Ntp::find()
+                ->leftJoin('ppmp_po', 'ppmp_po.id = ppmp_ntp.po_id')
+                ->andWhere(['ppmp_po.supplier_id' => $supplier_id])
+                ->andWhere(['ppmp_ntp.pr_id' => $this->id])
+                ->all();
+
+        return count($pos) > 0 ? count($pos) == count($ntps) ? true : false : false;
+    }
+
+    public function getSupplierHasNtp($po_id)
+    {
+        $ntp = Ntp::findOne(['pr_id' => $this->id, 'po_id' => $po_id]);
+
+        return $ntp ? true : false;
+    }
     
     public function getLots()
     {
@@ -230,12 +268,35 @@ class Pr extends \yii\db\ActiveRecord
         $bids = Bid::findAll(['pr_id' => $this->id]);
         $bids = ArrayHelper::map($bids, 'id', 'id');
 
-        $winners = BidWinner::find()->where(['bid_id' => $bids])->all();
+        $winners = BidWinner::find()
+                ->select(['supplier_id'])
+                ->andWhere(['bid_id' => $bids])
+                ->andWhere(['status' => 'Awarded'])
+                ->asArray()
+                ->all();
+        
         $winners = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
 
         $suppliers = Supplier::find()->andWhere(['<>', 'supplier_id', 1])->andWhere(['id' => $winners])->all();
 
         return $suppliers;
+    }
+
+    public function getWinnerCount()
+    {
+        $bids = Bid::findAll(['pr_id' => $this->id]);
+        $bids = ArrayHelper::map($bids, 'id', 'id');
+
+        $winners = BidWinner::find()
+                ->select(['supplier_id'])
+                ->andWhere(['bid_id' => $bids])
+                ->andWhere(['status' => 'Awarded'])
+                ->asArray()
+                ->all();
+        
+        $suppliers = ArrayHelper::map($winners, 'supplier_id', 'supplier_id');
+
+        return count($suppliers);
     }
 
     public function getPoCount()
@@ -647,7 +708,7 @@ class Pr extends \yii\db\ActiveRecord
             ])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-            ->groupBy(['ppmp_item.id'])
+            ->groupBy(['ppmp_item.id', 'lotTitle'])
             ->orderBy(['lotTitle' => SORT_ASC, 'item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -883,6 +944,17 @@ class Pr extends \yii\db\ActiveRecord
 
             $i++;
             $j++;
+
+            //Activate if PO is also given to DBM
+            /* if(empty($this->rfqItemsWithAprItems))
+            {
+                $items[$i]['label'] = '<span onclick="poMenu('.$this->id.','.$j.')">'.$j.'. Purchase Order (PO) / Contracts</span>';
+                $items[$i]['content'] = '<div id="po-menu"></div>';
+                $items[$i]['options'] = ['class' => $this->poCount > 0 ? 'panel panel-success' : 'panel panel-default'];
+
+                $i++;
+                $j++;
+            } */
         }
 
         if(!empty($this->rfqItemsWithAprItems))
@@ -910,20 +982,20 @@ class Pr extends \yii\db\ActiveRecord
 
             $items[$i]['label'] = '<span onclick="poMenu('.$this->id.','.$j.')">'.$j.'. Purchase Order (PO) / Contracts</span>';
             $items[$i]['content'] = '<div id="po-menu"></div>';
-            $items[$i]['options'] = ['class' => 'panel panel-default'];
+            $items[$i]['options'] = ['class' => $this->poCount >= $this->winnerCount ? 'panel panel-success' : 'panel panel-default'];
 
             $i++;
             $j++;
 
-            $items[$i]['label'] = $j.'. Notice to Proceed (NTP)';
+            $items[$i]['label'] = '<span onclick="ntpMenu('.$this->id.','.$j.')">'.$j.'. Notice to Proceed (NTP)</span>';
             $items[$i]['content'] = '<div id="ntp-menu"></div>';
-            $items[$i]['options'] = ['class' => 'panel panel-default'];
+            $items[$i]['options'] = ['class' => $this->poCount == $this->ntpCount ? 'panel panel-success' : 'panel panel-default'];
 
             $i++;
             $j++;
         }
 
-        $items[$i]['label'] = $j.'. Obligation Request Status (ORS)';
+        $items[$i]['label'] = '<span onclick="orsMenu('.$this->id.','.$j.')">'.$j.'. Obligation Request Status (ORS)</span>';
         $items[$i]['content'] = '<div id="ors-menu"></div>';
         $items[$i]['options'] = ['class' => 'panel panel-default'];
 

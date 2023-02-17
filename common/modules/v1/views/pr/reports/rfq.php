@@ -128,7 +128,7 @@ $asset = AppAsset::register($this);
                     <?php foreach($lotItems as $lot => $items){ ?>
                         <?php if($lot != 0){ ?>
                         <tr>
-                            <td colspan=8 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                            <td colspan=8 style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
                         </tr>
                         <?php } ?>
                         <?php if(!empty($items)){ ?>

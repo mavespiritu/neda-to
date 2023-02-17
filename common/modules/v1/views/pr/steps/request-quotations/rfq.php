@@ -97,85 +97,47 @@ $asset = AppAsset::register($this);
         </thead>
         <tbody>
         <?php $i = 1; ?>
-        <?php if($model->lots){ ?>
-            <?php if(!empty($lotItems)){ ?>
-                <?php foreach($lotItems as $lot => $items){ ?>
-                    <?php if($lot != 0){ ?>
-                    <tr>
-                        <td colspan=8 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
-                    </tr>
-                    <?php } ?>
-                    <?php if(!empty($items)){ ?>
-                        <?php foreach($items as $item){ ?>
-                            <tr>
-                                <td align=center><?= $i ?></td>
-                                <td align=center><?= number_format($item['total'], 0) ?></td>
-                                <td align=center><?= $item['unit'] ?></td>
-                                <td><?= $item['item'] ?>
-                                <br>
-                                <?php if(isset($specifications[$item['id']])){ ?>
-                                    <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                                    <table style="width: 100%">
-                                    <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
-                                        <tr>
-                                        <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
-                                        <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
-                                                'data' => [
-                                                    'confirm' => 'Are you sure you want to remove this item?',
-                                                    'method' => 'post',
-                                                ],
-                                            ]) ?></td> -->
-                                        </tr>
-                                    <?php } ?>
-                                    </table>
-                                    <br>
-                                    <?php } ?>
-                                    <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                                <?php } ?>
-                                </td>
-                                <td>&nbsp;</td>
-                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                            </tr>
-                            <?php $i++; ?>
-                        <?php } ?>
-                    <?php } ?>
-                <?php } ?>
-            <?php } ?>
-        <?php }else{ ?>
-            <?php if(!empty($rfqItems)){ ?>
-                <?php foreach($rfqItems as $item){ ?>
+        <?php if(!empty($lotItems)){ ?>
+            <?php foreach($lotItems as $lot => $items){ ?>
+                <?php if($lot != 0){ ?>
                 <tr>
-                    <td align=center><?= $i ?></td>
-                    <td align=center><?= number_format($item['total'], 0) ?></td>
-                    <td align=center><?= $item['unit'] ?></td>
-                    <td><?= $item['item'] ?>
-                    <br>
-                    <?php if(isset($specifications[$item['id']])){ ?>
-                        <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                        <table style="width: 100%">
-                        <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
-                            <tr>
-                            <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
-                            <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
-                                    'data' => [
-                                        'confirm' => 'Are you sure you want to remove this item?',
-                                        'method' => 'post',
-                                    ],
-                                ]) ?></td> -->
-                            </tr>
-                        <?php } ?>
-                        </table>
-                        <br>
-                        <?php } ?>
-                        <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                    <?php } ?>
-                    </td>
-                    <td>&nbsp;</td>
-                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                    <td colspan=8 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
                 </tr>
-                <?php $i++; ?>
+                <?php } ?>
+                <?php if(!empty($items)){ ?>
+                    <?php foreach($items as $item){ ?>
+                        <tr>
+                            <td align=center><?= $i ?></td>
+                            <td align=center><?= number_format($item['total'], 0) ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <td><?= $item['item'] ?>
+                            <br>
+                            <?php if(isset($specifications[$item['id']])){ ?>
+                                <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+                                <table style="width: 100%">
+                                <?php foreach($specifications[$item['id']]->risItemSpecFiles as $file){ ?>
+                                    <tr>
+                                    <td><?= Html::a($file->name.'.'.$file->type, ['/file/file/download', 'id' => $file->id]) ?></td>
+                                    <!-- <td align=right><?= Html::a('<i class="fa fa-trash"></i>', ['/file/file/delete', 'id' => $file->id], [
+                                            'data' => [
+                                                'confirm' => 'Are you sure you want to remove this item?',
+                                                'method' => 'post',
+                                            ],
+                                        ]) ?></td> -->
+                                    </tr>
+                                <?php } ?>
+                                </table>
+                                <br>
+                                <?php } ?>
+                                <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
+                            <?php } ?>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                            <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                        </tr>
+                        <?php $i++; ?>
+                    <?php } ?>
                 <?php } ?>
             <?php } ?>
         <?php } ?>

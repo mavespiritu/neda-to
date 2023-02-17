@@ -140,7 +140,7 @@ return $rettxt;
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
+    <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> PESOS (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
     <br>
     <br>
     <table class="table table-bordered table-striped table-responsive table-condensed">

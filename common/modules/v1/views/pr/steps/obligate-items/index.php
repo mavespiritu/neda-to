@@ -14,11 +14,27 @@ use frontend\assets\AppAsset;
 $asset = AppAsset::register($this);
 ?>
 
-<h3 class="panel-title">9.<?= $i ?> Obligate <?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo : 'Non-procurable (NP) Items' ?></h3>
+<h3 class="panel-title">9.<?= $i ?> ORS for 
+<?php if($type == 'APR'){ ?>
+    <?= 'APR No. '.$model->pr_no ?>
+<?php }else if($type == 'PO'){ ?>
+    <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>
+<?php }else if($type == 'NP'){ ?>
+    Non-procurable Items
+<?php } ?>
+</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> Create ORS to obligate items.</p>
 
-<h3 class="panel-title">ORS List <span class="pull-right"><?= !is_null($po) ? Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => $po->id, 'i' => $i, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) : Html::button('<i class="fa fa-table"></i> Obligate Items', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'po_id' => 'null', 'i' => $i, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) ?></span></h3>
+<h3 class="panel-title">ORS List <span class="pull-right">
+<?php if($type == 'APR'){ ?>
+    <?= Html::button('Create ORS', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'apr_id' => $apr->id, 'po_id' => 'null', 'j' => $j, 'i' => $i, 'k' => $k, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) ?>
+<?php }else if($type == 'PO'){ ?>
+    <?= Html::button('Create ORS', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'apr_id' => 'null', 'po_id' => $po->id, 'j' => $j, 'i' => $i, 'k' => $k, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) ?>
+<?php }else if($type == 'NP'){ ?>
+    <?= Html::button('Create ORS', ['value' => Url::to(['/v1/pr/create-ors', 'id' => $model->id, 'apr_id' => 'null', 'po_id' => 'null', 'j' => $j, 'i' => $i, 'k' => $k, 'type' => $type]), 'class' => 'btn btn-sm btn-success', 'id' => 'create-ors-button']) ?>
+<?php } ?>
+</span></h3>
 <br>
 <div class="ors-content">
     <table class="table table-bordered table-condensed table-striped table-hover table-responsive">
@@ -40,16 +56,22 @@ $asset = AppAsset::register($this);
                     <td><?= date("F j, Y", strtotime($or->ors_date)) ?></td>
                     <td><?= $or->creatorName ?></td>
                     <td><?= date("F j, Y", strtotime($or->date_created)) ?></td>
-                    <td align=right><?= number_format($or->total, 2) ?></td>
-                    <td>
+                    <td align=right><b><?= number_format($or->total, 2) ?></b></td>
+                    <td align=center>
                         <?= Html::button('<i class="fa fa-print"></i>', ['onclick' => 'printOrs('.$or->id.')', 'class' => 'btn btn-sm btn-info']) ?>
                         <?php // Html::button('<i class="fa fa-edit"></i>', ['value' => Url::to(['/v1/pr/update-ors', 'id' => $or->id, 'i' => $i]), 'class' => 'btn btn-xs btn-block btn-warning update-ors-button']) ?>
-                        <?= !is_null($po) ? Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$po->id.','.$or->id.','.$i.')', 'class' => 'btn btn-sm btn-danger']) : Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.',"null",'.$or->id.','.$i.')', 'class' => 'btn btn-sm btn-danger']) ?>
+                        <?php if($type == 'APR'){ ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$or->id.','.$apr->id.',"null")', 'class' => 'btn btn-sm btn-danger']) ?>
+                        <?php }else if($type == 'PO'){ ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$or->id.',"null",'.$po->id.')', 'class' => 'btn btn-sm btn-danger']) ?>
+                        <?php }else if($type == 'NP'){ ?>
+                            <?= Html::button('<i class="fa fa-trash"></i>', ['onclick' => 'deleteOrs('.$model->id.','.$or->id.',"null","null")', 'class' => 'btn btn-sm btn-danger']) ?>
+                        <?php } ?>
                     </td>
                 </tr>
             <?php } ?>
         <?php }else{ ?>
-            <td colspan=8 align=center>No obligations found.</td>
+            <td colspan=8 align=center>No ORS found.</td>
         <?php } ?>
         </tbody>
     </table>    
@@ -59,7 +81,7 @@ $asset = AppAsset::register($this);
   Modal::begin([
     'id' => 'create-ors-modal',
     'size' => "modal-xl",
-    'header' => '<div id="create-ors-modal-header"><h4>Obligate Items</h4></div>',
+    'header' => '<div id="create-ors-modal-header"><h4>Create ORS</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="create-ors-modal-content"></div>';
@@ -69,7 +91,7 @@ $asset = AppAsset::register($this);
   Modal::begin([
     'id' => 'update-ors-modal',
     'size' => "modal-xl",
-    'header' => '<div id="update-ors-modal-header"><h4>Obligate Items</h4></div>',
+    'header' => '<div id="update-ors-modal-header"><h4>Update ORS</h4></div>',
     'options' => ['tabindex' => false],
   ]);
   echo '<div id="update-ors-modal-content"></div>';
@@ -97,7 +119,7 @@ $asset = AppAsset::register($this);
                 }, true);
         }
         
-        function deleteOrs(id, po_id, ors_id, i)
+        function deleteOrs(id, ors_id, apr_id, po_id)
         {
             if(confirm("Are you sure you want to delete this item?"))
             {
@@ -109,8 +131,8 @@ $asset = AppAsset::register($this);
                     },
                     success: function (data) {
                         console.log(this.data);
-                        alert("Obligation has been deleted");
-                        obligatePo(id, po_id, i);
+                        alert("ORS has been deleted");
+                        obligatePo(id, apr_id, po_id, '.$j.','.$i.','.$k.',"'.$type.'");
                     },
                     error: function (err) {
                         console.log(err);

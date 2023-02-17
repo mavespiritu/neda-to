@@ -12,14 +12,14 @@ use yii\bootstrap\ButtonDropdown;
     <?php foreach($bids as $bid){ ?>
         <tr>
             <td style="width: 10%;"><?= $j ?>.<?= $i ?></td>
-            <td colspan=2>AOQ No. <?= $bid->bid_no ?></td>
+            <td colspan=2>Canvas/Bid No. <?= $bid->bid_no ?></td>
         </tr>
         <?php if($bid->winners){ ?>
             <?php $k = 1; ?>
             <?php foreach($bid->winners as $winner){ ?>
-                <tr onclick="noaWinner('<?= $model->id?>','<?= $bid->id?>','<?= $winner->id?>','<?= $j ?>','<?= $i ?>','<?= $k ?>');">
+                <tr onclick="createNoa('<?= $model->id?>','<?= $bid->id?>','<?= $winner->id?>','<?= $j ?>','<?= $i ?>','<?= $k ?>');">
                     <td style="width: 10%;">&nbsp;</td>
-                    <td style="width: 85%;"><a href="javascript:void(0);"><?= $j ?>.<?= $i ?>.<?= $k ?> <?= $winner->business_name ?></a></td>
+                    <td style="width: 85%;"><a href="javascript:void(0);"><?= $j ?>.<?= $i ?>.<?= $k ?> NOA for <?= $winner->business_name ?></a></td>
                     <td style="width: 5%;" align=right><?= $bid->getNoaForWinner($winner->id) ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
                 </tr>
                 <?php $k++ ?>
@@ -35,7 +35,7 @@ use yii\bootstrap\ButtonDropdown;
 </table>
 <?php
     $script = '
-        function noaWinner(id, bid_id, supplier_id, j, i, k)
+        function createNoa(id, bid_id, supplier_id, j, i, k)
         {
             $.ajax({
                 url: "'.Url::to(['/v1/pr/create-noa']).'?id=" + id + "&bid_id=" + bid_id + "&supplier_id=" + supplier_id + "&j=" + j + "&i=" + i + "&k=" + k,

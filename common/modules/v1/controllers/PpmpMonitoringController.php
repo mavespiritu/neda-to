@@ -243,6 +243,8 @@ class PpmpMonitoringController extends \yii\web\Controller
                 $items = $items->andWhere(['ppmp_fund_source.id' => $postData['fund_source_id']]);
             }
 
+            $items = $items->andWhere(['ppmp_ppmp_item.type' => 'Original']);
+
             $items = $items
             ->orderBy([
                 'prexc' => SORT_ASC,
@@ -683,6 +685,8 @@ class PpmpMonitoringController extends \yii\web\Controller
         {
             $items = $items->andWhere(['ppmp_fund_source.id' => $postData['fund_source_id']]);
         }
+
+        $items = $items->andWhere(['ppmp_ppmp_item.type' => 'Original']);
 
         $items = $items
         ->orderBy([

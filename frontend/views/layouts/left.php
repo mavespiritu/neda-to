@@ -57,7 +57,12 @@
                     ['label' => 'Actual Procurement', 'options' => ['class' => 'header']],
                     ['label' => 'RIS', 'icon' => 'folder', 'url' => ['/v1/ris']],
                     ['label' => 'PR', 'icon' => 'folder', 'url' => ['/v1/pr'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
-
+                    ['label' => 'APR', 'icon' => 'folder', 'url' => ['/v1/apr'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
+                    ['label' => 'RFQ', 'icon' => 'folder', 'url' => ['/v1/rfq'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
+                    ['label' => 'AOQ', 'icon' => 'folder', 'url' => ['/v1/aoq'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
+                    ['label' => 'NOA', 'icon' => 'folder', 'url' => ['/v1/noa'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
+                    ['label' => 'PO/Contracts', 'icon' => 'folder', 'url' => ['/v1/po'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
+                    ['label' => 'NTP', 'icon' => 'folder', 'url' => ['/v1/ntp'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))],
                     ['label' => 'Inventory', 'options' => ['class' => 'header'], 'visible' => !Yii::$app->user->isGuest && (in_array('SupplyStaff', $userRoles) || in_array('Administrator', $userRoles))],
                     ['label' => 'Items', 'icon' => 'folder', 'url' => ['/v1/item'], 'visible' => !Yii::$app->user->isGuest && (in_array('SupplyStaff', $userRoles) || in_array('Administrator', $userRoles))], 
                     ['label' => 'For Contract Items', 'icon' => 'folder', 'url' => ['/v1/for-contract-item'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))], 

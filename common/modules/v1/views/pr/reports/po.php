@@ -170,7 +170,7 @@ return $rettxt;
             <td><?= $poModel->paymentTerm ? $poModel->paymentTerm->title : '' ?></td>
         </tr>
     </table>
-    <table class="table table-bordered table-striped table-hover table-responsive" style="width: 100%;">
+    <table class="table table-bordered table-hover table-responsive" style="width: 100%;">
         <tr>
             <td align=center><b>Stock/Property No.</b></td>
             <td align=center><b>Unit</b></td>

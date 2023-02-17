@@ -97,7 +97,11 @@ return $rettxt;
 }
 ?>
 
-<h3 class="panel-title">PO No. <?= !$poModel->isNewRecord ? $poModel->po_no : $model->pr_no.'-'.$no ?></h3>
+<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> Preview Purchase Order for Supplier, <?= $supplier->business_name ?>
+<span class="pull-right">
+<?= !$poModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printPo('.$poModel->id.')', 'class' => 'btn btn-info']) : '' ?>
+</span></h3>
+<br>
 <br>
 <?php $form = ActiveForm::begin([
     'id' => 'po-form',
@@ -276,7 +280,7 @@ return $rettxt;
     </table>
     <br>
     <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
     </div>
     <div class="clearfix"></div>
 </div>
@@ -295,8 +299,9 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.','.$bid->id.','.$supplier->id.',"PO");
-                    menu('.$model->id.');
+                    alert("Purchase order has been saved");
+                    createPurchaseOrder('.$model->id.','.$bid->id.','.$supplier->id.', '.$j.', '.$i.', '.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -317,8 +322,9 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.', "null" ,'.$supplier->id.',"PO");
-                    menu('.$model->id.');
+                    alert("Purchase order has been saved");
+                    createPurchaseOrder('.$model->id.',"null",'.$supplier->id.', '.$j.', '.$i.', '.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -329,10 +335,10 @@ return $rettxt;
         });';
 
     $script .= '
-        function printPo(id, bid_id, supplier_id, type)
+        function printPo(id)
         {
             var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-po']).'?id=" + id + "&bid_id=" + bid_id +"&supplier_id=" + supplier_id +"&type=" + type, 
+                "'.Url::to(['/v1/pr/print-po']).'?id=" + id, 
                 "Print",
                 "left=200", 
                 "top=200", 

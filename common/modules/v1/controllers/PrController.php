@@ -6111,7 +6111,7 @@ class PrController extends Controller
         $model = $this->findModel($ors->pr_id);
         $po = !is_null($ors->po_id) ? Po::findOne($ors->po_id) : null;
         $bid = !is_null($po) ? Bid::findOne($po->bid_id) : null;
-        $supplier = !is_null($po) ? Supplier::findOne($po->supplier_id) : null;
+        $supplier = null;
 
         $aprItemsWithValueIDs = PrItemCost::find()
                             ->select(['pr_item_id'])
@@ -6152,6 +6152,7 @@ class PrController extends Controller
         $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
 
         if($ors->type == 'APR'){
+            $supplier = Supplier::findOne(1);
 
             $awardedItems = PrItemCost::find()
                 ->select(['pr_item_id'])
@@ -6236,7 +6237,8 @@ class PrController extends Controller
                 ->all();
 
         }else if($ors->type == 'PO'){
-            
+            $supplier = Supplier::findOne(['id' => $po->supplier_id]);
+
             $awardedItems = BidWinner::find()
                 ->select(['pr_item_id'])
                 ->where([
@@ -6324,7 +6326,8 @@ class PrController extends Controller
                 ->all();
 
         }else if($ors->type == 'NP'){
-            
+            $supplier = null;
+
             $awardedItems = $nonProcurableItemIDs;
 
             $items = PrItem::find()
@@ -6422,7 +6425,7 @@ class PrController extends Controller
         $model = $this->findModel($ors->pr_id);
         $po = !is_null($ors->po_id) ? Po::findOne($ors->po_id) : null;
         $bid = !is_null($po) ? Bid::findOne($po->bid_id) : null;
-        $supplier = !is_null($po) ? Supplier::findOne($po->supplier_id) : null;
+        $supplier = null;
 
         $aprItemsWithValueIDs = PrItemCost::find()
                             ->select(['pr_item_id'])
@@ -6463,6 +6466,7 @@ class PrController extends Controller
         $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
 
         if($ors->type == 'APR'){
+            $supplier = Supplier::findOne(1);
 
             $awardedItems = PrItemCost::find()
                 ->select(['pr_item_id'])
@@ -6547,7 +6551,8 @@ class PrController extends Controller
                 ->all();
 
         }else if($ors->type == 'PO'){
-            
+            $supplier = Supplier::findOne(['id' => $po->supplier_id]);
+
             $awardedItems = BidWinner::find()
                 ->select(['pr_item_id'])
                 ->where([
@@ -6635,7 +6640,8 @@ class PrController extends Controller
                 ->all();
 
         }else if($ors->type == 'NP'){
-            
+             $supplier = null;
+             
             $awardedItems = $nonProcurableItemIDs;
 
             $items = PrItem::find()

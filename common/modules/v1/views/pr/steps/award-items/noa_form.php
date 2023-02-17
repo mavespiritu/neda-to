@@ -97,7 +97,11 @@ return $rettxt;
 }
 ?>
 
-<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> NOA for <?= $supplier->business_name ?></h3>
+<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> NOA for <?= $supplier->business_name ?>
+<span class="pull-right">
+<?= !$noaModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printNoa('.$noaModel->id.')', 'class' => 'btn btn-info']) : '' ?>
+</span>
+</h3>
 <br>
 <?php $form = ActiveForm::begin([
     'id' => 'noa-form',
@@ -127,7 +131,7 @@ return $rettxt;
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
+    <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> PESOS  (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
     <br>
     <br>
     <table class="table table-bordered table-striped table-responsive table-condensed">
@@ -198,8 +202,7 @@ return $rettxt;
 <br>
 <br>
 <div class="pull-right">
-<?= !$noaModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printNoa('.$noaModel->id.')', 'class' => 'btn btn-danger']) : '' ?>&nbsp;
-<?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -217,7 +220,8 @@ return $rettxt;
                 data: formData,
                 success: function (data) {
                     alert("NOA has been saved");
-                    noaWinner('.$model->id.','.$bid->id.','.$supplier->id.','.$j.','.$i.','.$k.');
+                    createNoa('.$model->id.','.$bid->id.','.$supplier->id.','.$j.','.$i.','.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);

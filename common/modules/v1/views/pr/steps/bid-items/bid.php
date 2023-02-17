@@ -85,47 +85,56 @@ $totals = [];
             </tr>
         </thead>
         <tbody>
-        <?php if(!empty($rfqItems)){ ?>
+        <?php if(!empty($lotItems)){ ?>
             <?php $j = 1; ?>
-            <?php foreach($rfqItems as $rfqItem){ ?>
-                <?php if($j == 1){ ?>
+            <?php foreach($lotItems as $lot => $items){ ?>
+                <?php if($lot != 0){ ?>
                     <tr>
-                        <td align=center><?= $j ?></td>
-                        <td><?= $rfqItem['item'] ?></td>
-                        <td align=center><?= $rfqItem['unit'] ?></td>
-                        <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
-                        <?php if($suppliers){ ?>
-                            <?php foreach($suppliers as $supplier){ ?>
-                                <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
-                                <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
-                            <?php } ?>
-                        <?php } ?>
-                        <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->justification : '' ?></td>
-                        <td rowspan=<?= count($rfqItems) ?>><?= $bid ? $bid->recommendation : '' ?></td>
-                        <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
-                    </tr>
-                <?php }else{ ?>
-                    <tr>
-                        <td align=center><?= $j ?></td>
-                        <td><?= $rfqItem['item'] ?></td>
-                        <td align=center><?= $rfqItem['unit'] ?></td>
-                        <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
-                        <?php if($suppliers){ ?>
-                            <?php foreach($suppliers as $supplier){ ?>
-                                <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
-                                <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
-                            <?php } ?>
-                        <?php } ?>
-                        <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                        <td colspan="<?= !empty($suppliers) ? 6 + (count($suppliers) * 2) : 6 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
                     </tr>
                 <?php } ?>
-                <?php $j++; ?>
+                <?php if(!empty($items)){ ?>
+                    <?php foreach($items as $rfqItem){ ?>
+                        <?php if($j == 1){ ?>
+                            <tr>
+                                <td align=center><?= $j ?></td>
+                                <td><?= $rfqItem['item'] ?></td>
+                                <td align=center><?= $rfqItem['unit'] ?></td>
+                                <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
+                                <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
+                                <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                                <?php if($suppliers){ ?>
+                                    <?php foreach($suppliers as $supplier){ ?>
+                                        <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                                        <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                        <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
+                                    <?php } ?>
+                                <?php } ?>
+                                <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?>><?= $bid ? $bid->justification : '' ?></td>
+                                <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?>><?= $bid ? $bid->recommendation : '' ?></td>
+                                <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                            </tr>
+                        <?php }else{ ?>
+                            <tr>
+                                <td align=center><?= $j ?></td>
+                                <td><?= $rfqItem['item'] ?></td>
+                                <td align=center><?= $rfqItem['unit'] ?></td>
+                                <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
+                                <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
+                                <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                                <?php if($suppliers){ ?>
+                                    <?php foreach($suppliers as $supplier){ ?>
+                                        <td align=right style="width: 15%; background-color: <?= isset($winners[$rfqItem['id']][$supplier->id]) ? $winners[$rfqItem['id']][$supplier->id]['status'] == 'Awarded' ? 'yellow' : 'transparent' : 'transparent' ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                                        <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                        <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
+                                    <?php } ?>
+                                <?php } ?>
+                                <?php $costTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                            </tr>
+                        <?php } ?>
+                        <?php $j++; ?>
+                    <?php } ?>
+                <?php } ?>
             <?php } ?>
         <?php } ?>
         <tr>

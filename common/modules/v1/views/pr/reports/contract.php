@@ -131,7 +131,7 @@ return $rettxt;
 <p style="text-indent: 50px;">1. That the Party of the Second Part shall provide the following:</p>
 <p style="text-indent: 50px;"><b><?= $model->purpose ?>:</b></p>
 <span style="text-indent: 50px;"><?= $contractModel->content ?></span>
-<p style="text-indent: 50px;">2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b><?= numberTowords($total['total']) ?> (Php <?= number_format($total['total'], 2) ?>) ONLY</b> upon satisfactory completion of the service contracted for.</p>
+<p style="text-indent: 50px;">2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b><?= numberTowords($total['total']) ?> PESOS (Php <?= number_format($total['total'], 2) ?>) ONLY</b> upon satisfactory completion of the service contracted for.</p>
 <p style="text-indent: 50px;">3. That this Contract shall automatically cease to be of any force and effect when sooner terminated at
 the option of any or both parties. In such case, payment shall be made on the basis of percentage of service
 completed.</p>

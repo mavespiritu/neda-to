@@ -131,6 +131,13 @@ class Bid extends \yii\db\ActiveRecord
         return $total['total'];
     }
 
+    public function getPoForWinner($supplier_id)
+    {
+        $po = Po::findOne(['pr_id' => $this->pr_id, 'bid_id' => $this->id, 'supplier_id' => $supplier_id]);
+
+        return $po ? true : false;
+    }
+
     public function getChairperson()
     {
         $member = BidMember::findOne(['bid_id' => $this->id, 'position' => 'BAC Chairperson']);

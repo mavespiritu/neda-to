@@ -76,4 +76,11 @@ class Supplier extends \yii\db\ActiveRecord
     {
         return $this->hasMany(PpmpPrItemCost::className(), ['supplier_id' => 'id']);
     }
+
+    public function getPos($bid_id)
+    {
+        $pos = Po::findAll(['supplier_id' => $this->id, 'bid_id' => $bid_id]);
+
+        return $pos;
+    }
 }

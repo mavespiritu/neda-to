@@ -41,7 +41,7 @@ $asset = AppAsset::register($this);
 </style>
 
 <div class="rfq-info-content">
-    <div style="width: 90%;" class="text-center flex-center">
+    <div style="width: 100%;" class="text-center flex-center">
         <img src="<?= $asset->baseUrl.'/images/logo.png' ?>" style="height: auto; width: 100px; float: left; z-index: 2; padding-right: 20px;" />
         <p class="text-center" style="float: left;">Republic of the Philippines<br>
         <b><?= $agency->value ?></b><br>
@@ -129,7 +129,7 @@ $asset = AppAsset::register($this);
                 <?php foreach($lotItems as $lot => $items){ ?>
                     <?php if($lot != 0){ ?>
                     <tr>
-                        <td colspan=7 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                        <td colspan=7 style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
                     </tr>
                     <?php } ?>
                     <?php if(!empty($items)){ ?>

@@ -12,7 +12,7 @@ use frontend\assets\AppAsset;
 
 ?>
 <div class="po-contract-content">
-    <h3 class="panel-title">7.<?= $i ?> <?= $supplier->business_name ?>
+    <h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> <?= $supplier->business_name ?>
     </h3>
     <p><?= $supplier->business_address ?></p>
     <div class="row">

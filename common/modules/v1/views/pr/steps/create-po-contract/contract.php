@@ -97,7 +97,11 @@ function numberTowords($num)
 return $rettxt;
 }
 ?>
-<h3 class="panel-title">Create Contract</h3>
+<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> Preview Contract for Supplier, <?= $supplier->business_name ?>
+<span class="pull-right">
+<?= !$contractModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printPo('.$contractModel->id.')', 'class' => 'btn btn-info']) : '' ?>
+</span></h3>
+<br>
 <br>
 <?php $form = ActiveForm::begin([
     'id' => 'contract-form',
@@ -127,7 +131,7 @@ return $rettxt;
         'options' => ['rows' => 3],
         'preset' => 'full'
     ])->label(false) ?>
-    <p>2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b><?= numberTowords($total['total']) ?> (Php <?= number_format($total['total'], 2) ?>) ONLY</b> upon satisfactory completion of the service contracted for.</p>
+    <p>2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b><?= numberTowords($total['total']) ?> PESOS (Php <?= number_format($total['total'], 2) ?>) ONLY</b> upon satisfactory completion of the service contracted for.</p>
     <p>3. That this Contract shall automatically cease to be of any force and effect when sooner terminated at
 the option of any or both parties. In such case, payment shall be made on the basis of percentage of service
 completed.</p>
@@ -175,7 +179,7 @@ completed.</p>
         </div>
     </div>
     <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
+    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
     </div>
     <div class="clearfix"></div>
 </div>
@@ -194,8 +198,9 @@ completed.</p>
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.','.$bid->id.','.$supplier->id.', "Contract");
-                    menu('.$model->id.');
+                    alert("Contract has been saved");
+                    createContract('.$model->id.','.$bid->id.','.$supplier->id.', '.$j.', '.$i.', '.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -216,8 +221,9 @@ completed.</p>
                 data: formData,
                 success: function (data) {
                     form.enableSubmitButtons();
-                    printPo('.$model->id.', "null" ,'.$supplier->id.', "Contract");
-                    menu('.$model->id.');
+                    alert("Contract has been saved");
+                    createContract('.$model->id.',"null",'.$supplier->id.', '.$j.', '.$i.', '.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -228,10 +234,10 @@ completed.</p>
         });';
 
     $script .= '
-        function printPo(id, bid_id, supplier_id, type)
+        function printPo(id)
         {
             var printWindow = window.open(
-                "'.Url::to(['/v1/pr/print-po']).'?id=" + id + "&bid_id=" + bid_id +"&supplier_id=" + supplier_id +"&type=" + type, 
+                "'.Url::to(['/v1/pr/print-po']).'?id=" + id, 
                 "Print",
                 "left=200", 
                 "top=200", 

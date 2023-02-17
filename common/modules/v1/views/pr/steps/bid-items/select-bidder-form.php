@@ -67,29 +67,38 @@ $totals = [];
         </tr>
     </thead>
     <tbody>
-    <?php if(!empty($rfqItems)){ ?>
-        <?php $i = 1; ?>
-        <?php foreach($rfqItems as $rfqItem){ ?>
-            <tr>
-                <td align=center><?= $i ?></td>
-                <td><?= $rfqItem['item'] ?></td>
-                <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
-                <?php if($supplierList){ ?>
-                    <?php foreach($supplierList as $supplier){ ?>
-                        <td align=right style="width: 15%;" id="cell-<?= $rfqItem['id'] ?>-<?= $supplier->id ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                        <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
-                        <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
-                    <?php } ?>
+    <?php if(!empty($lotItems)){ ?>
+        <?php foreach($lotItems as $lot => $items){ ?>
+            <?php if($lot != 0){ ?>
+                <tr>
+                    <td colspan="<?= !empty($supplierList) ? 6 + (count($supplierList) * 2) : 6 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                </tr>
+            <?php } ?>
+            <?php if(!empty($items)){ ?>
+                <?php $i = 1; ?>
+                <?php foreach($items as $rfqItem){ ?>
+                    <tr>
+                        <td align=center><?= $i ?></td>
+                        <td><?= $rfqItem['item'] ?></td>
+                        <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
+                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
+                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
+                        <?php if($supplierList){ ?>
+                            <?php foreach($supplierList as $supplier){ ?>
+                                <td align=right style="width: 15%;" id="cell-<?= $rfqItem['id'] ?>-<?= $supplier->id ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
+                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
+                            <?php } ?>
+                        <?php } ?>
+                        <td>
+                        <?php $id = $rfqItem['id']; ?>
+                        <?= $form->field($winnerModels[$id], "[$id]supplier_id")->dropdownList(['' => '-'] + $suppliers[$id], ['onchange' => 'colorTheCell('.$rfqItem['id'].',this.value,'.json_encode($supplierIDs).')'])->label(false); ?>
+                        </td>
+                        <?php $abcTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
+                    </tr>
+                    <?php $i++; ?>
                 <?php } ?>
-                <td>
-                <?php $id = $rfqItem['id']; ?>
-                <?= $form->field($winnerModels[$id], "[$id]supplier_id")->dropdownList(['' => '-'] + $suppliers[$id], ['onchange' => 'colorTheCell('.$rfqItem['id'].',this.value,'.json_encode($supplierIDs).')'])->label(false); ?>
-                </td>
-                <?php $abcTotal += $rfqItem['total'] * $rfqItem['cost'] ?>
-            </tr>
-            <?php $i++; ?>
+            <?php } ?>
         <?php } ?>
     <?php } ?>
     </tbody>

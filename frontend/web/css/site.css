@@ -6,6 +6,7 @@ html,
 body {
     height: 100%;
     font-family: "Inter" , sans-serif;
+    padding-right: 0 !important;
 }
 table.bordered-table{
   width: 100%;

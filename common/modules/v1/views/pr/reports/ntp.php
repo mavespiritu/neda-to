@@ -140,7 +140,7 @@ return $rettxt;
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to inform you to proceed with the implementation of <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>: <?= $model->purpose ?> with a Contract Price equivalent to <b><?= strtoupper(numberToWords($po->total)) ?> (Php <?= number_format($po->total, 2) ?>).</b>
+    <p>We are pleased to inform you to proceed with the implementation of the <b><?= $model->purpose ?> with <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?></b> with a Contract Price equivalent to <b><?= strtoupper(numberToWords($total['total'])) ?> PESOS (Php <?= number_format($total['total'], 2) ?>).</b>
     <br>
     <br>
     In this regard, please be directed to proceed on <?= date("F j, Y", strtotime($ntp->date_proceeded)) ?>. We will appreciate your immediate action. Thank you.

@@ -6611,7 +6611,7 @@ class PrController extends Controller
             ->asArray()
             ->all();
 
-            $prexcs = PrItemCost::find()
+            $prexcs = PrItem::find()
                 ->select([
                     'IF(ppmp_pap.short_code IS NULL,
                         concat(
@@ -6632,7 +6632,7 @@ class PrController extends Controller
                         )
                     ) as pap',
                     'ppmp_obj.code as objCode',
-                    'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total'
+                    'sum(ppmp_pr_item.quantity * ppmp_pr_item.cost) as total'
                 ])
                 ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
                 ->leftJoin('ppmp_obj', 'ppmp_obj.id = ppmp_ppmp_item.obj_id')
@@ -6666,7 +6666,7 @@ class PrController extends Controller
         }
 
         $rowspan = count($prexcs);
-        
+
         return $this->renderAjax('\reports\ors', [
             'model' => $model,
             'po' => $po,

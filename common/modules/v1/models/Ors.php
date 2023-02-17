@@ -104,6 +104,35 @@ class Ors extends \yii\db\ActiveRecord
 
     public function getTotal()
     {
+        $aprItemsWithValueIDs = PrItemCost::find()
+                            ->select(['pr_item_id'])
+                            ->andWhere(['pr_id' => $this->pr_id])
+                            ->andWhere(['supplier_id' => 1])
+                            ->andWhere(['>', 'cost', 0])
+                            ->asArray()
+                            ->all();
+        
+        $aprItemsWithValueIDs = ArrayHelper::map($aprItemsWithValueIDs, 'pr_item_id', 'pr_item_id');
+
+        $aprItemIDs = AprItem::find()
+                    ->select(['pr_item_id'])
+                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+                    ->andWhere(['pr_id' => $this->pr_id])
+                    ->asArray()
+                    ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $aprItemIDs = array_intersect($aprItemIDs, $aprItemsWithValueIDs);
+
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->pr_id])
+                ->asArray()
+                ->all();
+
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
+
         $orsItemIDs = OrsItem::find()
                     ->select(['pr_item_id'])
                     ->andWhere(['pr_id' => $this->pr_id])
@@ -121,7 +150,12 @@ class Ors extends \yii\db\ActiveRecord
                     'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total',
                 ])
                 ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+                ->andWhere(['ppmp_pr_item_cost.pr_id' => $this->pr_id])
+                ->andWhere(['ppmp_pr_item_cost.supplier_id' => 1])
+                ->andWhere(['is', 'ppmp_pr_item_cost.rfq_id', null])
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
+                ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
+                ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
                 ->asArray()
                 ->one();
 
@@ -132,6 +166,7 @@ class Ors extends \yii\db\ActiveRecord
                     'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total',
                 ])
                 ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
+                ->andWhere(['ppmp_pr_item_cost.pr_id' => $this->pr_id])
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['ppmp_pr_item_cost.supplier_id' => $this->po->supplier_id])
                 ->andWhere(['ppmp_pr_item_cost.rfq_id' => $this->po->bid->rfq_id])
@@ -144,7 +179,10 @@ class Ors extends \yii\db\ActiveRecord
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item.cost) as total',
             ])
+            ->andWhere(['ppmp_pr_item_cost.pr_id' => $this->pr_id])
             ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->asArray()
             ->one();
 

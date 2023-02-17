@@ -4292,6 +4292,23 @@ class PrController extends Controller
             ->asArray()
             ->all();
         
+        $rfqTotal = PrItem::find()
+            ->select([
+                'sum(ppmp_pr_item.cost * ppmp_pr_item.quantity) as total'
+            ])
+            ->leftJoin('ppmp_pr_item_cost', 'ppmp_pr_item_cost.pr_item_id = ppmp_pr_item.id')
+            ->leftJoin('ppmp_lot_item', 'ppmp_lot_item.pr_item_id = ppmp_pr_item.id')
+            ->leftJoin('ppmp_lot', 'ppmp_lot.id = ppmp_lot_item.lot_id')
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')
+            ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+            ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_id' => $rfq->id])
+            ->andWhere(['<>','ppmp_pr_item_cost.supplier_id', 1])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
+            ->asArray()
+            ->one();
+        
         $lotItems = [];
         //$rfqItems = $model->rfqItemsWithAprItems;
 
@@ -4363,6 +4380,7 @@ class PrController extends Controller
             'risNumbers' => $risNumbers,
             'supplierList' => $supplierList,
             'regionalDirector' => $regionalDirector,
+            'rfqTotal' => $rfqTotal
         ]);
     }
 
@@ -6641,7 +6659,7 @@ class PrController extends Controller
 
         }else if($ors->type == 'NP'){
              $supplier = null;
-             
+
             $awardedItems = $nonProcurableItemIDs;
 
             $items = PrItem::find()

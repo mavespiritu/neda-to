@@ -84,7 +84,7 @@ $letters = range('A', 'Z');
        <tr>
            <td><b>REQUISITION NO. </b> <u><?= $risNumbers ?></u></td>
            <td><b>OBLIGATION NO. </b> <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u></td>
-           <td><b>ABC: </b><u>P<?= number_format($model->total, 2) ?></u></td>
+           <td><b>ABC: </b><u>P<?= number_format($rfqTotal['total'], 2) ?></u></td>
        </tr>
     </table>
     <br>

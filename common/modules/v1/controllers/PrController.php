@@ -5995,8 +5995,9 @@ class PrController extends Controller
                                     'ppmp_item.id' => $item->ppmpItem->item_id,
                                     'ppmp_pr_item.cost' => $item->cost,
                                 ])
-                                ->andWhere(['in', 'ppmp_non_procurable_item.pr_item_id', $nonProcurableItemIDs])
-                                ->andWhere(['not in', 'ppmp_non_procurable_item.pr_item_id', $orsItemIDs])
+                                ->select(['ppmp_pr_item.id as id'])
+                                ->andWhere(['in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
+                                ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
                                 ->all();
 
                             }

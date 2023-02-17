@@ -64,7 +64,7 @@ use yii\bootstrap\ButtonDropdown;
     <?php } ?>
 <?php }else{ ?>
     <tr>
-        <td colspan=3>No bid conducted.</td>
+        <td colspan=3 align=center>No set non-procurable items or no bidding conducted. Include items <a href="javascript:void(0)" onclick="items(<?= $model->id ?>)">here</a>.</td>
     </tr>
 <?php } ?>
 </table>

@@ -9,6 +9,7 @@ use yii\web\View;
 <h3 class="panel-title">4.2 Retrieve RFQ</h3>
 <br>
 <p><i class="fa fa-exclamation-circle"></i> Input prices from retrieved RFQs.</p>
+<?php if($model->rfqs){ ?>
 <h3 class="panel-title">List of Suppliers <span class="pull-right"><?= Html::button('<i class="fa fa-envelope-open-o"></i> Input Prices', ['value' => Url::to(['/v1/pr/retrieve-rfq-quotation', 'id' => $model->id]), 'class' => 'btn btn-success btn-sm', 'id' => 'retrieve-rfq-button']) ?></span></h3>
 <br>
 <table class="table table-bordered table-responsive table-condensed table-striped table-hover">
@@ -53,6 +54,9 @@ use yii\web\View;
     <?php } ?>
     </tbody>
 </table>
+<?php }else{ ?>
+    <p class="text-center">No generated RFQ. Please generate <a href="javascript:void(0)" onclick="rfqQuotation(<?= $model->id ?>)">here</a>.</p>
+<?php } ?>
 <div id="retrieve-rfq-content"></div>
 <?php
   Modal::begin([

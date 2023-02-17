@@ -6286,6 +6286,7 @@ class PrController extends Controller
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item.cost as cost',
+                'ppmp_pr_item.cost as offer',
                 'sum(ppmp_pr_item.quantity) as total'
             ])
             ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_pr_item.ppmp_item_id')

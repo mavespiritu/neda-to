@@ -5786,11 +5786,32 @@ class PrController extends Controller
 
         $awardedItems = [];
 
-        $nonProcurableItemIDs = NonProcurableItem::find()
+        $aprItemsWithValueIDs = PrItemCost::find()
+                            ->select(['pr_item_id'])
+                            ->andWhere(['pr_id' => $model->id])
+                            ->andWhere(['supplier_id' => 1])
+                            ->andWhere(['>', 'cost', 0])
+                            ->asArray()
+                            ->all();
+        
+        $aprItemsWithValueIDs = ArrayHelper::map($aprItemsWithValueIDs, 'pr_item_id', 'pr_item_id');
+
+        $aprItemIDs = AprItem::find()
                     ->select(['pr_item_id'])
-                    ->where(['pr_id' => $model->id])
+                    ->leftJoin('ppmp_apr', 'ppmp_apr.id = ppmp_apr_item.apr_id')
+                    ->andWhere(['pr_id' => $model->id])
                     ->asArray()
                     ->all();
+
+        $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $aprItemIDs = array_intersect($aprItemIDs, $aprItemsWithValueIDs);
+
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $model->id])
+                ->asArray()
+                ->all();
 
         $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
 
@@ -5858,8 +5879,10 @@ class PrController extends Controller
             ])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => 1])
             ->andWhere(['is', 'ppmp_pr_item_cost.rfq_id', null])
+            ->andWhere(['in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
@@ -5890,6 +5913,8 @@ class PrController extends Controller
             ])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
+            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
@@ -5913,6 +5938,7 @@ class PrController extends Controller
             ])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
+            ->andWhere(['in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->groupBy(['ppmp_item.id', 'ppmp_pr_item.cost'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()

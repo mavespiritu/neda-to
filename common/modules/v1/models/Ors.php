@@ -182,7 +182,7 @@ class Ors extends \yii\db\ActiveRecord
             ->andWhere(['ppmp_pr_item.pr_id' => $this->pr_id])
             ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
-            ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
+            ->andWhere(['in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
             ->asArray()
             ->one();
 

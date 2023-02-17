@@ -179,7 +179,7 @@ class Ors extends \yii\db\ActiveRecord
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item.cost) as total',
             ])
-            ->andWhere(['ppmp_pr_item_cost.pr_id' => $this->pr_id])
+            ->andWhere(['ppmp_pr_item.pr_id' => $this->pr_id])
             ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])

@@ -982,14 +982,14 @@ class Pr extends \yii\db\ActiveRecord
 
             $items[$i]['label'] = '<span onclick="poMenu('.$this->id.','.$j.')">'.$j.'. Purchase Order (PO) / Contracts</span>';
             $items[$i]['content'] = '<div id="po-menu"></div>';
-            $items[$i]['options'] = ['class' => $this->poCount >= $this->winnerCount ? 'panel panel-success' : 'panel panel-default'];
+            $items[$i]['options'] = ['class' => $this->winnerCount > 0 ? $this->poCount >= $this->winnerCount ? 'panel panel-success' : 'panel panel-default' : 'panel panel-default'];
 
             $i++;
             $j++;
 
             $items[$i]['label'] = '<span onclick="ntpMenu('.$this->id.','.$j.')">'.$j.'. Notice to Proceed (NTP)</span>';
             $items[$i]['content'] = '<div id="ntp-menu"></div>';
-            $items[$i]['options'] = ['class' => $this->poCount == $this->ntpCount ? 'panel panel-success' : 'panel panel-default'];
+            $items[$i]['options'] = ['class' => $this->poCount > 0 ? $this->poCount == $this->ntpCount ? 'panel panel-success' : 'panel panel-default' : 'panel panel-default'];
 
             $i++;
             $j++;

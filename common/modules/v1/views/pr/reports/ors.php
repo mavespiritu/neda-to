@@ -61,15 +61,35 @@
     </tr>
     <tr>
         <td colspan=3 align=center>Payee</td>
-        <td colspan=10 style="background-color: #DAEEF3;"><b><?= !is_null($po) ? strtoupper($supplier->business_name.' by '.$po->represented_by) : strtoupper($ors->payee) ?></b></td>
+        <td colspan=10 style="background-color: #DAEEF3;"><b>
+            <?php if($ors->type == 'APR'){ ?>
+                <?= strtoupper($supplier->business_name) ?>
+            <?php }else if($ors->type == 'PO'){ ?>
+                <?= strtoupper($supplier->business_name.' by '.$po->represented_by) ?>
+            <?php }else if($ors->type == 'NP'){ ?>
+                <?= strtoupper($ors->payee) ?>
+            <?php } ?>
+        </b></td>
     </tr>
     <tr>
         <td colspan=3 align=center>Office</td>
-        <td colspan=10><b><?= !is_null($po) ? '' : $ors->office ?></b></td>
+        <td colspan=10><b>
+            <?php if($ors->type == 'NP'){ ?>
+                <?= strtoupper($ors->office) ?>
+            <?php } ?>
+            </b></td>
     </tr>
     <tr>
         <td colspan=3 align=center>Address</td>
-        <td colspan=10><b><?= !is_null($po) ? $supplier->business_address : $ors->address ?></b></td>
+        <td colspan=10><b>
+            <?php if($ors->type == 'APR'){ ?>
+                <?= strtoupper($supplier->business_address) ?>
+            <?php }else if($ors->type == 'PO'){ ?>
+                <?= strtoupper($supplier->business_address) ?>
+            <?php }else if($ors->type == 'NP'){ ?>
+                <?= strtoupper($ors->address) ?>
+            <?php } ?>
+        </b></td>
     </tr>
     <tr>
         <td colspan=3 align=center>Responsibility Center</td>

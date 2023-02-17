@@ -10,7 +10,7 @@ use yii\web\View;
 <br>
 <p><i class="fa fa-exclamation-circle"></i> Input prices from retrieved APR.</p>
 
-<?php if($model->apr){ ?>
+<?php if($model->apr && $model->apr->date_prepared != ''){ ?>
     <div id="agency-procurement-price"></div>
 <?php }else{ ?>
 <p class="text-center">No requested APR. Please request <a href="javascript:void(0)" onclick="aprQuotation(<?= $model->id ?>)">here</a>.</p>

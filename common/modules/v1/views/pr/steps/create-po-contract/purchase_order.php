@@ -182,6 +182,7 @@ return $rettxt;
             <td align=center><b>Stock/Property No.</b></td>
             <td align=center><b>Unit</b></td>
             <td align=center style="width: 50%" colspan=2><b>Description</b></td>
+            <td align=center><b>Brand/Model</b></td>
             <td align=center><b>Qty</b></td>
             <td align=center><b>Unit Cost</b></td>
             <td align=center><b>Amount</b></td>
@@ -193,6 +194,7 @@ return $rettxt;
                     <td align=center><?= $item['id'] ?></td>
                     <td><?= $item['unit'] ?></td>
                     <td colspan=2><?= $item['item'] ?></td>
+                    <td><?= $item['specification'] ?></td>
                     <td align=center><?= number_format($item['total'], 0) ?></td>
                     <td align=right><?= number_format($item['cost'], 2) ?></td>
                     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
@@ -203,23 +205,23 @@ return $rettxt;
         <tr>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
-            <td align=center colspan=2><i><?= !empty($specifications) ? '(Please see attached specifications for your reference.)' : '' ?></i></td>
+            <td align=center colspan=3><i><?= !empty($specifications) ? '(Please see attached specifications for your reference.)' : '' ?></i></td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td colspan=6>Total Amount in words: <b><?= ucwords(strtolower(numberTowords($total))) ?> Pesos</b></td>
+            <td colspan=7>Total Amount in words: <b><?= ucwords(strtoupper(numberTowords($total))) ?> PESOS</b></td>
             <td align=right><b><?= number_format($total, 2) ?></b></td>
         </tr>
         <tr>
-            <td colspan=7>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In case of failure to make the full delivery within the time specified above, a penalty of one-tenth(1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
+            <td colspan=8>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In case of failure to make the full delivery within the time specified above, a penalty of one-tenth(1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
             <br>
             <br>
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
+            <td colspan=2>&nbsp;</td>
             <td colspan=2>
                 <b>Conforme:</b>
                 <br>
@@ -256,7 +258,7 @@ return $rettxt;
                     <?= $model->requester->position ?>,&nbsp;<?= $model->officeName ?>
                 </p>
             </td>
-            <td>
+            <td colspan=2>
                 Fund Cluster:&nbsp;<?= $model->fundClusterName ?>
                 <br>
                 Fund Available:

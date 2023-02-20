@@ -4544,6 +4544,7 @@ class PrController extends Controller
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item_cost.cost as cost',
+                'ppmp_pr_item_cost.specification as specification',
                 'sum(ppmp_pr_item.quantity) as total',
             ])
             ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
@@ -4563,6 +4564,7 @@ class PrController extends Controller
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item_cost.cost as cost',
+                'ppmp_pr_item_cost.specification as specification',
                 'sum(ppmp_pr_item.quantity) as total',
             ])
             ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
@@ -4871,6 +4873,7 @@ class PrController extends Controller
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item_cost.cost as cost',
+                'ppmp_pr_item_cost.specification as specification',
                 'sum(ppmp_pr_item.quantity) as total',
             ])
             ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
@@ -4890,6 +4893,7 @@ class PrController extends Controller
                 'ppmp_item.title as item',
                 'ppmp_item.unit_of_measure as unit',
                 'ppmp_pr_item_cost.cost as cost',
+                'ppmp_pr_item_cost.specification as specification',
                 'sum(ppmp_pr_item.quantity) as total',
             ])
             ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')

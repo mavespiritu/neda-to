@@ -175,6 +175,7 @@ return $rettxt;
             <td align=center><b>Stock/Property No.</b></td>
             <td align=center><b>Unit</b></td>
             <td align=center style="width: 50%" colspan=2><b>Description</b></td>
+            <td align=center><b>Brand/Model</b></td>
             <td align=center><b>Qty</b></td>
             <td align=center><b>Unit Cost</b></td>
             <td align=center><b>Amount</b></td>
@@ -186,6 +187,7 @@ return $rettxt;
                     <td align=center><?= $item['id'] ?></td>
                     <td><?= $item['unit'] ?></td>
                     <td colspan=2><?= $item['item'] ?></td>
+                    <td><?= $item['specification'] ?></td>
                     <td align=center><?= number_format($item['total'], 0) ?></td>
                     <td align=right><?= number_format($item['cost'], 2) ?></td>
                     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
@@ -202,7 +204,7 @@ return $rettxt;
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td colspan=6>Total Amount in words: <b><?= ucwords(strtolower(numberTowords($total))) ?> Pesos</b></td>
+            <td colspan=6>Total Amount in words: <b><?= ucwords(strtoupper(numberTowords($total))) ?> PESOS</b></td>
             <td align=right><b><?= number_format($total, 2) ?></b></td>
         </tr>
         <tr>
@@ -212,7 +214,7 @@ return $rettxt;
             </td>
         </tr>
         <tr>
-            <td>&nbsp;</td>
+            <td colspan=2>&nbsp;</td>
             <td colspan=2>
                 <b>Conforme:</b>
                 <br>
@@ -249,7 +251,7 @@ return $rettxt;
                     <?= $model->requester->position ?>,&nbsp;<?= $model->officeName ?>
                 </p>
             </td>
-            <td>
+            <td colspan=2>
                 Fund Cluster:&nbsp;<?= $model->fundClusterName ?>
                 <br>
                 Fund Available:

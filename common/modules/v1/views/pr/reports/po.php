@@ -165,7 +165,7 @@ return $rettxt;
         </tr>
         <tr>
             <td>Date of Delivery:</td>
-            <td><?= date("F j, Y", strtotime($poModel->delivery_date)) ?></td>
+            <td><?= $poModel->delivery_date ?></td>
             <td>Payment Term:</td>
             <td><?= $poModel->paymentTerm ? $poModel->paymentTerm->title : '' ?></td>
         </tr>

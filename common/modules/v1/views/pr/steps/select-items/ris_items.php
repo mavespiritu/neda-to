@@ -179,7 +179,6 @@ use yii\web\View;
                 form.enableSubmitButtons();
                 alert("Items has been included in PR");
                 loadRisItems('.$model->id.','.$ris->id.');
-                manageItems('.$model->id.');
                 $("html").animate({ scrollTop: 0 }, "slow");
             },
             error: function (err) {

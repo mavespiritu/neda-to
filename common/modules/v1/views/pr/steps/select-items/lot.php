@@ -100,6 +100,7 @@ use yii\bootstrap\Collapse;
                         console.log(this.data);
                         alert("Lot has been deleted");
                         lot(id);
+                        $("html").animate({ scrollTop: 0 }, "slow");
                     },
                     error: function (err) {
                         console.log(err);

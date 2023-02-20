@@ -17,7 +17,7 @@ use yii\bootstrap\ButtonDropdown;
     <tr onclick="obligatePo('<?= $model->id ?>','<?= null ?>','<?= null ?>','<?= $j ?>','<?= $i ?>','<?= $k ?>','NP');">
         <td style="width: 10%;">&nbsp;</td>
         <td style="width: 85%;"><a href="javascript:void(0);">ORS for Non-procurable Items</a></td>
-        <td style="width: 5%;" align=right>&nbsp;</td>
+        <td style="width: 5%;" align=right><?= $model->getItemsHasOrs('null', 'null', 'NP') ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
     </tr>
     <?php $i++ ?>
 <?php } ?>
@@ -30,7 +30,7 @@ use yii\bootstrap\ButtonDropdown;
     <tr onclick="obligatePo('<?= $model->id ?>','<?= $model->apr->id ?>','<?= null ?>','<?= $j ?>','<?= $i ?>','<?= $k ?>','APR');">
         <td style="width: 10%;">&nbsp;</td>
         <td style="width: 85%;"><a href="javascript:void(0);">ORS for APR No. <?= $model->pr_no ?></a></td>
-        <td style="width: 5%;" align=right>&nbsp;</td>
+        <td style="width: 5%;" align=right><?= $model->getItemsHasOrs($model->apr->id, 'null', 'APR') ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
     </tr>
     <?php $i++ ?>
 <?php } ?>
@@ -53,7 +53,7 @@ use yii\bootstrap\ButtonDropdown;
                         <tr onclick="obligatePo('<?= $model->id ?>','<?= null ?>','<?= $po->id ?>','<?= $j ?>','<?= $i ?>','<?= $k ?>','PO');">
                             <td style="width: 10%;">&nbsp;</td>
                             <td style="width: 85%;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);">ORS for <?= $po->type == 'PO' ? 'PO No.' : 'Contract No.' ?> <?= $po->pocnNo ?></a></td>
-                            <td style="width: 5%;" align=right>&nbsp;</td>
+                            <td style="width: 5%;" align=right><?= $model->getItemsHasOrs('null', $po->id, 'PO') ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
                         </tr>
                         <?php $k++ ?>
                     <?php } ?>

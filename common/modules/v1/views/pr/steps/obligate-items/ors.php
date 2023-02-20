@@ -197,7 +197,7 @@
         <?php foreach($items as $item){ ?>
             <?php if($j == 0){ ?>
                 <tr>
-                    <td align=center style="border-top: none; border-bottom: none;"><?= date("m/d/Y") ?></td>
+                    <td align=center style="border-top: none; border-bottom: none;"><?= date("F j, Y", strtotime($ors->ors_date)) ?></td>
                     <td colspan=3 style="border-top: none; border-bottom: none;"><?= $item['item'] ?></td>
                     <td colspan=3 align=center style="border-top: none; border-bottom: none;"><?= $ors->ors_no ?></td>
                     <td align=right style="border-top: none; border-bottom: none;"><b><?= number_format($item['total'] * $item['offer'], 2 ) ?></b></td>
@@ -208,7 +208,7 @@
                 </tr>
             <?php }else{ ?>
                 <tr>
-                    <td align=center style="border-top: none; border-bottom: none;"><?= date("m/d/Y") ?></td>
+                    <td align=center style="border-top: none; border-bottom: none;">&nbsp;</td>
                     <td colspan=3 style="border-top: none; border-bottom: none;"><?= $item['item'] ?></td>
                     <td colspan=3 align=center style="border-top: none; border-bottom: none;"><?= $ors->ors_no ?></td>
                     <td align=right style="border-top: none; border-bottom: none;"><b><?= number_format($item['total'] * $item['offer'], 2 ) ?></b></td>

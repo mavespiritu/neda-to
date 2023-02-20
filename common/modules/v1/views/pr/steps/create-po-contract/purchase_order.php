@@ -157,13 +157,7 @@ return $rettxt;
         <tr>
             <td>Date of Delivery:</td>
             <td>
-                <?= $form->field($poModel, 'delivery_date')->widget(DatePicker::classname(), [
-                        'options' => ['placeholder' => 'Enter date', 'autocomplete' => 'off'],
-                        'clientOptions' => [
-                            'autoclose' => true,
-                            'format' => 'yyyy-mm-dd',
-                        ],
-                    ])->label(false); ?>
+            <?= $form->field($poModel, 'delivery_date')->textInput(['maxlength' => true])->label(false) ?>
             </td>
             <td>Payment Term:</td>
             <td>

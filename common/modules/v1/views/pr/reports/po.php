@@ -198,17 +198,17 @@ return $rettxt;
         <tr>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
-            <td align=center colspan=2><i><?= !empty($specifications) ? '(Please see attached specifications for your reference.)' : '' ?></i></td>
+            <td align=center colspan=3><i><?= !empty($specifications) ? '(Please see attached specifications for your reference.)' : '' ?></i></td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <td colspan=6>Total Amount in words: <b><?= ucwords(strtoupper(numberTowords($total))) ?> PESOS</b></td>
+            <td colspan=7>Total Amount in words: <b><?= ucwords(strtoupper(numberTowords($total))) ?> PESOS</b></td>
             <td align=right><b><?= number_format($total, 2) ?></b></td>
         </tr>
         <tr>
-            <td colspan=7>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In case of failure to make the full delivery within the time specified above, a penalty of one-tenth(1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
+            <td colspan=8>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;In case of failure to make the full delivery within the time specified above, a penalty of one-tenth(1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
             <br>
             <br>
             </td>

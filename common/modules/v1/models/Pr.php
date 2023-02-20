@@ -251,7 +251,7 @@ class Pr extends \yii\db\ActiveRecord
 
         $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
 
-        return $awardedItemIDs > 0 ? empty(array_diff($forOrsIDs, $orsItemIDs)) ? true : false : false;
+        return $orsItemIDs > 0 ? empty(array_diff($forOrsIDs, $orsItemIDs)) ? true : false : false;
     }
     
     public function getLots()

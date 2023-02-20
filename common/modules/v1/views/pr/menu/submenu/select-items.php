@@ -48,7 +48,7 @@ use yii\web\View;
             });
         }
 
-        function items(id, ctr)
+        function items(id)
         {
             $.ajax({
                 url: "'.Url::to(['/v1/pr/items']).'?id=" + id,
@@ -68,7 +68,7 @@ use yii\web\View;
             });
         } 
 
-        function previewPr(id, ctr)
+        function previewPr(id)
         {
             $.ajax({
                 url: "'.Url::to(['/v1/pr/pr']).'?id=" + id,

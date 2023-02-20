@@ -17,7 +17,15 @@ $asset = AppAsset::register($this);
     'id' => 'ors-form',
     'options' => ['class' => 'disable-submit-buttons'],
 ]); ?>
-<h5><?= !is_null($po) ? $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'CN No. '.$po->pocnNo : 'Non-procurable Items' ?></h5><br>
+<h5>Obligate items for 
+<?php if($type == 'APR'){ ?>
+    <?= 'APR No. '.$model->pr_no ?>
+<?php }else if($type == 'PO'){ ?>
+    <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>
+<?php }else if($type == 'NP'){ ?>
+    Non-procurable Items
+<?php } ?>
+</h5><br>
 <div class="ors-content">
     <div class="row">
         <div class="col-md-6 col-xs-12">
@@ -33,7 +41,7 @@ $asset = AppAsset::register($this);
             ]); ?>
         </div>
     </div>
-    <?php if(is_null($po)){ ?>
+    <?php if($type == 'NP'){ ?>
         <div class="row">
             <div class="col-md-12 col-xs-12"><?= $form->field($orsModel, 'payee')->textInput(['maxlength' => true]) ?></div>
             <div class="col-md-12 col-xs-12"><?= $form->field($orsModel, 'office')->textInput(['maxlength' => true]) ?></div>
@@ -41,7 +49,7 @@ $asset = AppAsset::register($this);
         </div>
     <?php } ?>
     <p><i class="fa fa-exclamation-circle"></i> Select items to obligate.</p>
-    <table class="table table-bordered table-striped table-hover table-condensed table-responsive">
+    <table class="table table-bordered table-hover table-condensed table-responsive" id="ors-items-table">
         <thead>
             <tr>
                 <td align=center><b>Stock/Property No.</b></td>
@@ -54,6 +62,7 @@ $asset = AppAsset::register($this);
             </tr>
         </thead>
         <tbody>
+        <?php $total = 0; ?>
         <?php if(!empty($items)){ ?>
             <?php foreach($items as $item){ ?>
                 <?php $id = $item['id']; ?>
@@ -68,14 +77,20 @@ $asset = AppAsset::register($this);
                         <?= in_array($item['id'], $existingOrsItemIDs) ? $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id'], 'checked' => 'checked']) : $form->field($itemModels[$item['id']], "[$id]pr_item_id")->checkbox(['value' => $item['id'], 'class' => 'check-ors-item', 'label' => '', 'id' => 'check-ors-item-'.$item['id']]) ?>
                     </td>
                 </tr>
+                <?php $total += $item['total'] * $item['cost']; ?>
             <?php } ?>
         <?php } ?>
+        <tr>
+            <td colspan=5 align=right><b>Total</b></td>
+            <td align=right><b><?= number_format($total, 2) ?></b></td>
+            <td>&nbsp;</td>
+        </tr>
         </tbody>
     </table>
     <?= $form->field($orsModel, 'responsibility_center')->textInput(['maxlength' => true]) ?>
     <br>
     <div class="pull-right">
-    <?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success', 'id' => 'save-ors-button']) ?>
+    <?= !empty($items) ? Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success', 'id' => 'save-ors-button']) : '' ?>
     </div>
     <div class="clearfix"></div>
 </div>
@@ -83,79 +98,140 @@ $asset = AppAsset::register($this);
 <?php ActiveForm::end(); ?>
 <?php
     $script = '
-        function enableOrsButtons()
-        {
-            $("#ors-form input:checkbox:checked").length > 0 ? $("#save-ors-button").attr("disabled", false) : $("#save-ors-button").attr("disabled", true);
-        }
-
         $(".check-ors-items").click(function(){
             $(".check-ors-item").not(this).prop("checked", this.checked);
-            enableOrsButtons();
-        });
-    
-        $(".check-ors-item").click(function(){
+            $("#ors-items-table tr").toggleClass("isChecked", $(".check-ors-item").is(":checked"));
             enableOrsButtons();
         });
 
         $(document).ready(function(){
-            //$(".check-ors-item").removeAttr("checked");
+            $(".check-ors-item").removeAttr("checked");
             enableOrsButtons();
-        });
-    ';
-    !is_null($po) ? $script .= '
-        $("#ors-form").on("beforeSubmit", function(e) {
-            e.preventDefault();
-            var form = $("#ors-form");
-            var formData = form.serialize();
 
-            $.ajax({
-                url: form.attr("action"),
-                type: form.attr("method"),
-                data: formData,
-                success: function (data) {
-                    form.enableSubmitButtons();
-                    alert("Obligation has been saved successfully");
-                    $(".modal").remove();
-                    $(".modal-backdrop").remove();
-                    $("body").removeClass("modal-open");
-                    menu('.$model->id.');
-                    obligatePo('.$model->id.','.$po->id.','.$i.');
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            }); 
+            $("tr").click(function() {
+                var inp = $(this).find(".check-ors-item");
+                var tr = $(this).closest("tr");
+                inp.prop("checked", !inp.is(":checked"));
             
-            return false;
-        });
-    ' : 
-    $script .= '
-        $("#ors-form").on("beforeSubmit", function(e) {
-            e.preventDefault();
-            var form = $("#ors-form");
-            var formData = form.serialize();
-
-            $.ajax({
-                url: form.attr("action"),
-                type: form.attr("method"),
-                data: formData,
-                success: function (data) {
-                    form.enableSubmitButtons();
-                    alert("Obligation has been saved successfully");
-                    $(".modal").remove();
-                    $(".modal-backdrop").remove();
-                    $("body").removeClass("modal-open");
-                    menu('.$model->id.');
-                    obligatePo('.$model->id.',"null",'.$i.');
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            }); 
+                tr.toggleClass("isChecked", inp.is(":checked"));
+                enableOrsButtons();
+            });
             
-            return false;
+            // do nothing when clicking on checkbox, but bubble up to tr
+            $(".check-ors-item").click(function(e){
+                e.preventDefault();
+                enableOrsButtons();
+            });
         });
+        function enableOrsButtons()
+        {
+            $("#ors-form input:checkbox:checked").length > 0 ? $("#save-ors-button").attr("disabled", false) : $("#save-ors-button").attr("disabled", true);
+        }
     ';
+
+    if($type == 'APR'){
+
+        $script .= '
+            $("#ors-form").on("beforeSubmit", function(e) {
+                e.preventDefault();
+                var form = $("#ors-form");
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: form.attr("method"),
+                    data: formData,
+                    success: function (data) {
+                        form.enableSubmitButtons();
+                        alert("ORS has been saved");
+                        $(".modal").remove();
+                        $(".modal-backdrop").remove();
+                        $("body").removeClass("modal-open");
+                        obligatePo('.$model->id.','.$apr->id.',"null",'.$j.','.$i.','.$k.',"'.$type.'");
+                        $("html").animate({ scrollTop: 0 }, "slow");
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                }); 
+                
+                return false;
+            });
+        ';
+
+    }else if($type == 'PO'){
+
+        $script .= '
+            $("#ors-form").on("beforeSubmit", function(e) {
+                e.preventDefault();
+                var form = $("#ors-form");
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: form.attr("method"),
+                    data: formData,
+                    success: function (data) {
+                        form.enableSubmitButtons();
+                        alert("ORS has been saved");
+                        $(".modal").remove();
+                        $(".modal-backdrop").remove();
+                        $("body").removeClass("modal-open");
+                        obligatePo('.$model->id.',"null",'.$po->id.','.$j.','.$i.','.$k.',"'.$type.'");
+                        $("html").animate({ scrollTop: 0 }, "slow");
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                }); 
+                
+                return false;
+            });
+        ';
+
+    }else if($type == 'NP'){
+
+        $script .= '
+            $("#ors-form").on("beforeSubmit", function(e) {
+                e.preventDefault();
+                var form = $("#ors-form");
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: form.attr("method"),
+                    data: formData,
+                    success: function (data) {
+                        form.enableSubmitButtons();
+                        alert("ORS has been saved");
+                        $(".modal").remove();
+                        $(".modal-backdrop").remove();
+                        $("body").removeClass("modal-open");
+                        obligatePo('.$model->id.',"null","null",'.$j.','.$i.','.$k.',"'.$type.'");
+                        $("html").animate({ scrollTop: 0 }, "slow");
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                }); 
+                
+                return false;
+            });
+        ';
+
+    }
 
     $this->registerJs($script, View::POS_END);
 ?>
+<style>
+.isChecked {
+  background-color: #F5F5F5;
+}
+tr{
+  background-color: white;
+}
+/* click-through element */
+.check-ors-item {
+  pointer-events: none;
+}
+</style>

@@ -97,7 +97,11 @@ return $rettxt;
 }
 ?>
 
-<h3 class="panel-title">NTP No. <?= $po->pocnNo ?></h3>
+<h3 class="panel-title"><?= $j ?>.<?= $i ?>.<?= $k ?> NTP for <?= $po->type == 'PO' ? 'PO No.' : 'Contract No.' ?> <?= $po->pocnNo ?>
+<span class="pull-right">
+<?= !$ntpModel->isNewRecord ? Html::a('<i class="fa fa-print"></i> Print', null, ['href' => 'javascript:void(0)', 'onClick' => 'printNtp('.$ntpModel->id.')', 'class' => 'btn btn-info']) : '' ?>
+</span>
+</h3>
 <br>
 <?php $form = ActiveForm::begin([
     'id' => 'ntp-form',
@@ -127,7 +131,7 @@ return $rettxt;
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to inform you to proceed with the implementation of <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?>: <?= $model->purpose ?> with a Contract Price equivalent to <b><?= strtoupper(numberToWords($po->total)) ?> (Php <?= number_format($po->total, 2) ?>).</b>
+    <p>We are pleased to inform you to proceed with the implementation of the <b><?= $model->purpose ?> with <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?></b> with a Contract Price equivalent to <b><?= strtoupper(numberToWords($total['total'])) ?> PESOS (Php <?= number_format($total['total'], 2) ?>).</b>
     <br>
     <br>
     In this regard, please be directed to proceed on 
@@ -180,7 +184,7 @@ return $rettxt;
 <br>
 <br>
 <div class="pull-right">
-<?= Html::submitButton('<i class="fa fa-print"></i> Save and Print', ['class' => 'btn btn-success']) ?>
+<?= Html::submitButton('<i class="fa fa-save"></i> Save', ['class' => 'btn btn-success']) ?>
 </div>
 <div class="clearfix"></div>
 
@@ -197,9 +201,9 @@ return $rettxt;
                 type: form.attr("method"),
                 data: formData,
                 success: function (data) {
-                    form.enableSubmitButtons();
-                    printNtp('.$model->id.','.$po->id.');
-                    menu('.$model->id.');
+                    alert("NTP has been saved");
+                    createNtp('.$model->id.','.$po->id.','.$j.','.$i.','.$k.');
+                    $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {
                     console.log(err);
@@ -209,10 +213,10 @@ return $rettxt;
             return false;
         });
 
-        function printNtp(id, po_id)
+        function printNtp(id)
         {
             var printWindow = window.open(
-            "'.Url::to(['/v1/pr/print-ntp']).'?id="+ id +"&po_id=" + po_id,
+            "'.Url::to(['/v1/pr/print-ntp']).'?id="+ id,
             "Print",
             "left=200", 
             "top=200", 

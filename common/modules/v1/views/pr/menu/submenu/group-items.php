@@ -7,21 +7,27 @@ use yii\bootstrap\ButtonDropdown;
 ?>
 
 <table style="width: 100%; line-height: 30px;" class="table-hover table-responsive">
-    <tr onclick="groupAprItems(<?= $model->id ?>)">
-        <td style="width: 10%;"><a href="javascript:void(0);"><?= $j ?>.1</a></td>
-        <td style="width: 85%;"><a href="javascript:void(0);">Group APR Items (<?= count($model->aprItems) ?>)</a></td>
-        <td style="width: 5%;" align=right><?= $model->aprItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
-    </tr>
-    <tr onclick="groupRfqItems(<?= $model->id ?>)">
-        <td><a href="javascript:void(0);"><?= $j ?>.2</a></td>
-        <td><a href="javascript:void(0);">Group RFQ Items (<?= count($model->rfqItems) ?>)</a></td>
-        <td align=right><?= $model->rfqItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
-    </tr>
-    <tr onclick="groupNonProcurableItems(<?= $model->id ?>)">
-        <td><a href="javascript:void(0);"><?= $j ?>.3</a></td>
-        <td><a href="javascript:void(0);">Group Non-Procurable Items (<?= count($model->nonProcurableItems) ?>)</a</td>
-        <td align=right><?= $model->nonProcurableItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
-    </tr>
+    <?php if($model->prItems){ ?>
+        <tr onclick="groupAprItems(<?= $model->id ?>)">
+            <td style="width: 10%;"><a href="javascript:void(0);"><?= $j ?>.1</a></td>
+            <td style="width: 85%;"><a href="javascript:void(0);">Group APR Items (<?= count($model->aprItems) ?>)</a></td>
+            <td style="width: 5%;" align=right><?= $model->aprItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+        </tr>
+        <tr onclick="groupRfqItems(<?= $model->id ?>)">
+            <td><a href="javascript:void(0);"><?= $j ?>.2</a></td>
+            <td><a href="javascript:void(0);">Group RFQ Items (<?= count($model->rfqItems) ?>)</a></td>
+            <td align=right><?= $model->rfqItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+        </tr>
+        <tr onclick="groupNonProcurableItems(<?= $model->id ?>)">
+            <td><a href="javascript:void(0);"><?= $j ?>.3</a></td>
+            <td><a href="javascript:void(0);">Group Non-Procurable Items (<?= count($model->nonProcurableItems) ?>)</a</td>
+            <td align=right><?= $model->nonProcurableItems ? '<i class="fa fa-check text-green"></i>' : '' ?></td>
+        </tr>
+    <?php }else{ ?>
+        <tr>
+            <td colspan=3 align=center>No items included. Include items <a href="javascript:void(0)" onclick="items(<?= $model->id ?>)">here</a>.</td>
+        </tr>
+    <?php } ?>
 </table>
 
 <!-- <h3 class="panel-title">2. Group Items</h3>

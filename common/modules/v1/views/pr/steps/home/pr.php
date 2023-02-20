@@ -198,7 +198,6 @@ use yii\web\View;
                     form.enableSubmitButtons();
                     alert("PR details has been saved.");
                     previewPr('.$model->id.');
-                    manageItems('.$model->id.');
                     $("html").animate({ scrollTop: 0 }, "slow");
                 },
                 error: function (err) {

@@ -123,61 +123,35 @@ $asset = AppAsset::register($this);
         </thead>
         <tbody>
             <?php $i = 1; ?>
-            <?php if($model->lots){ ?>
-                <?php if(!empty($lotItems)){ ?>
-                    <?php foreach($lotItems as $lot => $items){ ?>
-                        <?php if($lot != 0){ ?>
-                        <tr>
-                            <td colspan=8 style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
-                        </tr>
-                        <?php } ?>
-                        <?php if(!empty($items)){ ?>
-                            <?php foreach($items as $item){ ?>
-                                <tr>
-                                    <td align=center><?= $i ?></td>
-                                    <td align=center><?= number_format($item['total'], 0) ?></td>
-                                    <td align=center><?= $item['unit'] ?></td>
-                                    <td><?= $item['item'] ?>
-                                    <br>
-                                    <?php if(isset($specifications[$item['id']])){ ?>
-                                        <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                                            <i>(Please see attached Specifications for your reference.)</i>
-                                            <br>
-                                        <?php } ?>
-                                        <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                                    <?php } ?>
-                                    </td>
-                                    <td>&nbsp;</td>
-                                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                                    <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                                </tr>
-                                <?php $i++; ?>
-                            <?php } ?>
-                        <?php } ?>
-                    <?php } ?>
-                <?php } ?>
-            <?php }else{ ?>
-                <?php if(!empty($rfqItems)){ ?>
-                    <?php foreach($rfqItems as $item){ ?>
+            <?php if(!empty($lotItems)){ ?>
+                <?php foreach($lotItems as $lot => $items){ ?>
+                    <?php if($lot != 0){ ?>
                     <tr>
-                        <td align=center><?= $i ?></td>
-                        <td align=center><?= number_format($item['total'], 0) ?></td>
-                        <td align=center><?= $item['unit'] ?></td>
-                        <td><?= $item['item'] ?>
-                        <br>
-                        <?php if(isset($specifications[$item['id']])){ ?>
-                            <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
-                                <i>(Please see attached Specifications for your reference.)</i>
-                                <br>
-                            <?php } ?>
-                            <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
-                        <?php } ?>
-                        </td>
-                        <td>&nbsp;</td>
-                        <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                        <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                        <td colspan=8 style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
                     </tr>
-                    <?php $i++; ?>
+                    <?php } ?>
+                    <?php if(!empty($items)){ ?>
+                        <?php foreach($items as $item){ ?>
+                            <tr>
+                                <td align=center><?= $i ?></td>
+                                <td align=center><?= number_format($item['total'], 0) ?></td>
+                                <td align=center><?= $item['unit'] ?></td>
+                                <td><?= $item['item'] ?>
+                                <br>
+                                <?php if(isset($specifications[$item['id']])){ ?>
+                                    <?php if(!empty($specifications[$item['id']]->risItemSpecFiles)){ ?>
+                                        <i>(Please see attached Specifications for your reference.)</i>
+                                        <br>
+                                    <?php } ?>
+                                    <i><?= $specifications[$item['id']]->risItemSpecValueString ?></i>
+                                <?php } ?>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
+                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
+                            </tr>
+                            <?php $i++; ?>
+                        <?php } ?>
                     <?php } ?>
                 <?php } ?>
             <?php } ?>
@@ -189,6 +163,10 @@ $asset = AppAsset::register($this);
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan=6 align=right><b>GRAND TOTAL</b></td>
+                <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
             </tr>
         </tbody>
     </table>

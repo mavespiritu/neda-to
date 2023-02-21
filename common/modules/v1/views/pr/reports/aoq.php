@@ -84,7 +84,7 @@ $letters = range('A', 'Z');
        <tr>
            <td><b>REQUISITION NO. </b> <u><?= $risNumbers ?></u></td>
            <td><b>OBLIGATION NO. </b> <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u></td>
-           <td><b>ABC: </b><u>P<?= number_format($rfqTotal['total'], 2) ?></u></td>
+           <td><b>ABC: </b><u>P<?= number_format($model->rfqTotal, 2) ?></u></td>
        </tr>
     </table>
     <br>
@@ -129,8 +129,8 @@ $letters = range('A', 'Z');
                 <?php foreach($lotItems as $lot => $items){ ?>
                     <?php if($lot != 0){ ?>
                         <tr>
-                            <td colspan="<?= !empty($supplierList) ? 4 + (count($supplierList) * 3) : 4 ?>" style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
-                            <td>&nbsp;</td>
+                            <td colspan=<?= !empty($supplierList) ? 4 + (count($supplierList) * 3) : 4 ?> style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
+                           
                         </tr>
                     <?php } ?>
                     <?php if(!empty($items)){ ?>
@@ -145,8 +145,8 @@ $letters = range('A', 'Z');
                                         <?php foreach($supplierList as $sup){ ?>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
-                                        <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
-                                        <?php $total[$sup->id] += $prices[$item['id']][$sup->id]->cost * $item['total'] ?>
+                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification : '' ?></td>
+                                        <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>
                                     <?php } ?>
                                     <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?>><?= $bid->justification ?></td>
@@ -163,8 +163,8 @@ $letters = range('A', 'Z');
                                         <?php foreach($supplierList as $sup){ ?>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
-                                        <td><?= $prices[$item['id']][$sup->id]->specification ?></td>
-                                        <?php $total[$sup->id] += $prices[$item['id']][$sup->id]->cost * $item['total'] ?>
+                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification : '' ?></td>
+                                        <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>
                                     <?php } ?>
                                     <td align=center>&nbsp;</td>

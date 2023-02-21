@@ -53,12 +53,14 @@ class PrSearch extends Pr
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
+            ->joinWith('procurementMode')
              ->orderBy(['pr_no' => SORT_DESC]) :
             Pr::find()
             ->joinWith('creator c')
             ->joinWith('requester r')
             ->joinWith('office')
             ->joinWith('fundSource')
+            ->joinWith('procurementMode')
             ->andWhere(['ppmp_pr.office_id' => Yii::$app->user->identity->userinfo->office->abbreviation])
             ->orderBy(['pr_no' => SORT_DESC]);
 
@@ -120,6 +122,7 @@ class PrSearch extends Pr
             'approved_by' => $this->approved_by,
             'type' => $this->type,
             'ppmp_pr.year' => $this->year,
+            'ppmp_procurement_mode.title' => $this->procurementModeName,
         ]);
 
         $query->andFilterWhere(['like', 'pr_no', $this->pr_no])

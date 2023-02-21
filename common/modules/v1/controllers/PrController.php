@@ -1212,6 +1212,14 @@ class PrController extends Controller
             }
         }
 
+        $onQueueItems = PrItemCost::find()
+                        ->select(['pr_item_id'])
+                        ->andWhere(['pr_id' => $model->id])
+                        ->asArray()
+                        ->all();
+        
+        $onQueueItems = ArrayHelper::map($onQueueItems, 'pr_item_id', 'pr_item_id');
+
         if(MultipleModel::loadMultiple($prItems, Yii::$app->request->post()))
         {
             $prExistingItems = Yii::$app->request->post('PrItem');
@@ -1263,6 +1271,7 @@ class PrController extends Controller
             'model' => $model,
             'risItems' => $risItems,
             'prItems' => $prItems,
+            'onQueueItems' => $onQueueItems,
             'specifications' => $specifications,
         ]);
     }

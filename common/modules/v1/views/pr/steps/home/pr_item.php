@@ -36,7 +36,7 @@ use yii\web\View;
     <td align=right><?= number_format($item['cost'], 2) ?></td>
     <td align=right><?= number_format($item['total'] * $item['cost'], 2) ?></td>
     <td align=center>
-        <?= $form->field($prItems[$item['id']], "[$id]id")->checkbox(['value' => $item['id'], 'class' => 'check-pr-item', 'label' => '', 'id' => 'check-pr-item-'.$item['id'], 'checked' => 'checked']) ?>
+        <?= !in_array($item['id'], $onQueueItems) ? $form->field($prItems[$item['id']], "[$id]id")->checkbox(['value' => $item['id'], 'class' => 'check-pr-item', 'label' => '', 'id' => 'check-pr-item-'.$item['id'], 'checked' => 'checked']) : '' ?>
     </td>
 </tr>
 <?php

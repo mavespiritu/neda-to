@@ -39,19 +39,19 @@ $letters = range('A', 'Z');
         width: 100%;
     }
     thead{
-        font-size: 14px;
+        font-size: 12px;
     }
 
     table.table-bordered td{
-        font-size: 14px;
-        border: 1px solid black;
+        font-size: 12px;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 
     table.table-bordered th{
-        font-size: 14px;
+        font-size: 12px;
         text-align: center;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 </style>
@@ -96,7 +96,7 @@ $letters = range('A', 'Z');
                 <td align=center rowspan=3><b>Qty</b></td>
                 <td align=center rowspan=3><b>Unit of Measurement</b></td>
                 <td align=center colspan="<?= count($supplierList) * 3 ?>"><b>For identification of participating establishments, please see below</b></td>
-                <td align=center rowspan=3 style="width: 10%;"><b>JUSTIFICATION</b></td>
+                <td align=center rowspan=3 style="width: 10%;"><b>Justification</b></td>
                 <td align=center rowspan=3 style="width: 10%;"><b>Award Recommended to</b></td>
                 <td align=center rowspan=3><b>Price and Date <br> of Last <br>Purchase</b></td>
             </tr>
@@ -143,14 +143,14 @@ $letters = range('A', 'Z');
                                     <td align=center><?= $item['unit'] ?></td>
                                     <?php if($supplierList){ ?>
                                         <?php foreach($supplierList as $sup){ ?>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].'"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right>'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
                                         <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification : '' ?></td>
                                         <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>
                                     <?php } ?>
-                                    <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?>><?= $bid->justification ?></td>
-                                    <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?>><?= $bid->recommendation ?></td>
+                                    <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?> style="vertical-align: top;"><?= $bid->justification ?></td>
+                                    <td rowspan=<?= count($lotItems) + count($rfqItems) - 1 ?> style="vertical-align: top;"><?= $bid->recommendation ?></td>
                                     <td align=center>&nbsp;</td>
                                 </tr>
                             <?php }else{ ?>
@@ -161,8 +161,8 @@ $letters = range('A', 'Z');
                                     <td align=center><?= $item['unit'] ?></td>
                                     <?php if($supplierList){ ?>
                                         <?php foreach($supplierList as $sup){ ?>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;">'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right>'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
                                         <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification : '' ?></td>
                                         <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>

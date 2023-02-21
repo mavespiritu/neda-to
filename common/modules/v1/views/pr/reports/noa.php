@@ -133,8 +133,7 @@ return $rettxt;
     <br>
     <br>
     <br>
-    <b><?= $supplier->owner_name ?></b><br>
-    <?= $supplier->business_name ?><br>
+    <b><?= $supplier->business_name ?></b><br>
     <?= $supplier->business_address ?>
     <br>
     <br>

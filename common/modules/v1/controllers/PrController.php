@@ -3643,30 +3643,28 @@ class PrController extends Controller
         $suppliers = [];
         $winners = [];
 
-        if($rfq)
+        $supplierIDs = PrItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
+
+        $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+
+        // if supplier is selected
+        $bidWinners = $bid ? BidWinner::find()->andWhere(['bid_id' => $bid->id])->asArray()->all() : [];
+
+        if(!empty($bidWinners))
         {
-            $supplierIDs = PrItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
-
-            $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
-
-            $suppliers = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
-
-            $bidWinners = $bid ? BidWinner::find()->andWhere(['bid_id' => $bid->id])->asArray()->all() : [];
-
-            if(!empty($bidWinners))
+            foreach($bidWinners as $bidWinner)
             {
-                foreach($bidWinners as $bidWinner)
-                {
-                    if(!empty($bidWinner)){
-                        $winners[$bidWinner['pr_item_id']][$bidWinner['supplier_id']] = $bidWinner; 
-                        $winners[$bidWinner['pr_item_id']]['justification'] = $bidWinner['justification']; 
-                    }
-                    
-                    $winners[$bidWinner['pr_item_id']]['winner'] = Supplier::findOne($bidWinner['supplier_id']) ? Supplier::findOne($bidWinner['supplier_id']) : []; 
+                if(!empty($bidWinner)){
+                    $winners[$bidWinner['pr_item_id']][$bidWinner['supplier_id']] = $bidWinner; 
+                    $winners[$bidWinner['pr_item_id']]['justification'] = $bidWinner['justification']; 
                 }
+                
+                $winners[$bidWinner['pr_item_id']]['winner'] = Supplier::findOne($bidWinner['supplier_id']) ? Supplier::findOne($bidWinner['supplier_id']) : []; 
             }
-        }
-
+            }
+        
         $rfqItems = $model->rfqItemsWithAprItems;
 
         $prItemIDs = ArrayHelper::map($rfqItems, 'id', 'id');

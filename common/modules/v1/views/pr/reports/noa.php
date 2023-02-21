@@ -112,38 +112,38 @@ return $rettxt;
 
     table.table-bordered td{
         font-size: 14px;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 
     table.table-bordered th{
         font-size: 14px;
         text-align: center;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 </style>
 
 <div class="noa-content">
+<br>
 <h5 class="text-center"><b>NOTICE OF AWARD</b></h5>
-    <br>
     <br>
     <br>
     <?= date("F j, Y", strtotime($noa->date_created)) ?>
     <br>
     <br>
-    <b><?= $supplier->business_name ?></b>
     <br>
+    <b><?= $supplier->owner_name ?></b><br>
+    <?= $supplier->business_name ?><br>
     <?= $supplier->business_address ?>
+    <br>
     <br>
     <br>
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
     <p>We are pleased to notify you that the <b>"<?= $model->purpose ?>"</b> is hereby awarded to you as the bidder with the Lowest Responsive Bid at a Contract Price equivalent to <b><?= strtoupper(numberToWords($bid->getBidTotal($supplier->id))) ?> PESOS (Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?>).</b></p>
-    <br>
-    <br>
-    <table class="table table-bordered table-striped table-responsive table-condensed">
+    <!-- <table class="table table-bordered table-striped table-responsive table-condensed">
         <thead>
             <tr>
                 <td align=center><b>Unit</b></td>
@@ -170,9 +170,7 @@ return $rettxt;
                 <td align=right><b>Php <?= number_format($bid->getBidTotal($supplier->id), 2) ?></b></td>
             </tr>
         </tbody>
-    </table>
-    <br>
-    <br>
+    </table> -->
     You are, therefore, requested to enter into a contract with us upon receipt of this notice.
     <br>
     <br>
@@ -187,7 +185,7 @@ return $rettxt;
     <br>
     <br>
     <br>
-    Conforme:
+    <i>Conforme:</i>
     <br>
     <br>
     <br>

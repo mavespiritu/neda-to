@@ -133,7 +133,6 @@ $totals = [];
         <?php } ?>
         <tr>
             <td colspan=4 align=right><b>Total Cost</b></td>
-            <td align=right><b><?= number_format($costTotal, 2) ?></b></td>
             <?php if($suppliers){ ?>
                 <?php foreach($suppliers as $supplier){ ?>
                     <td align=right><b><?= number_format($totals[$supplier->id], 2) ?></b></td>

@@ -3676,8 +3676,7 @@ class PrController extends Controller
                 'ppmp_pr_item_cost.rfq_info_id', 
                 'ppmp_pr_item_cost.supplier_id', 
                 'ppmp_pr_item_cost.specification', 
-                'ppmp_pr_item_cost.cost',
-                'sum(ppmp_pr_item.quantity) as total'
+                'ppmp_pr_item_cost.cost'
                 ])
             ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_pr_item_cost.pr_item_id')
             ->leftJoin('ppmp_lot_item', 'ppmp_lot_item.pr_item_id = ppmp_pr_item.id')
@@ -3688,8 +3687,9 @@ class PrController extends Controller
                 'ppmp_pr_item_cost.pr_id' => $model->id, 
                 'ppmp_pr_item_cost.rfq_id' => $rfq->id,
             ])
+            ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplierIDs])
             ->andWhere(['ppmp_pr_item_cost.pr_item_id' => $prItemIDs])
-            ->groupBy(['ppmp_pr_item_cost.supplier_id', 'ppmp_pr_item_cost.cost', 'ppmp_lot.id'])
+            ->groupBy(['ppmp_pr_item_cost.supplier_id', 'ppmp_pr_item_cost.pr_item_id', 'ppmp_lot.id'])
             ->asArray()
             ->all();
         
@@ -4013,7 +4013,7 @@ class PrController extends Controller
                 'ppmp_pr_item_cost.rfq_id' => $rfq->id,
             ])
             ->andWhere(['ppmp_pr_item_cost.pr_item_id' => $rfqItemIDs])
-            ->groupBy(['ppmp_pr_item_cost.supplier_id', 'ppmp_pr_item_cost.cost', 'ppmp_lot.id'])
+            ->groupBy(['ppmp_pr_item_cost.supplier_id', 'ppmp_pr_item_cost.pr_item_id', 'ppmp_lot.id'])
             ->asArray()
             ->all();
         

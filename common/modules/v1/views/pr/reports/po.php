@@ -234,7 +234,7 @@ return $rettxt;
                 <br>
                 <br>
                 <br>
-                <?= $rd->value ?>
+                <b><?= $rd->value ?></b>
                 <br>
                 <i>Regional Director</i>
             </td>

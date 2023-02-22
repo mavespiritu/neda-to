@@ -16,21 +16,21 @@
 
     td{
         font-size: 10px;
-        border: 1px solid #555555 !important;
+        border: 1px solid black;
         padding: 3px 3px;
     }
 
     th{
         font-size: 10px;
         text-align: center;
-        border: 1px solid #555555 !important;
+        border: 1px solid black;
         padding: 3px 3px;
     }
 </style>
 
 <table class="table table-bordered table-responsive table-condensed">
     <tr>
-        <td colspan=10 align=center><h4><b>OBLIGATION REQUEST AND STATUS</b></h4></td>
+        <td colspan=10 align=center><h2><b>OBLIGATION REQUEST AND STATUS</b></h2></td>
         <td><?= is_null($po) ? 'ORS ' : 'Serial ' ?>No.</td>
         <td colspan=2 style="color: <?= $model->fundSource->code == 'NRO' ? '#0070c0' : 'red' ?>"><b><?= $ors->ors_no ?></b></td>
     </tr>
@@ -93,7 +93,7 @@
     </tr>
     <tr>
         <td colspan=3 align=center>Responsibility Center</td>
-        <td colspan=5 align=center>Particulars</td>
+        <td colspan=5 align=center style="width: 10% !important;">Particulars</td>
         <td colspan=2 align=center>MFO/PAP</td>
         <td align=center>UACS Object <br> Code</td>
         <td colspan=2 align=center>Amount</td>
@@ -125,7 +125,7 @@
         <td colspan=5 style="border-top: none;" align=right>Total</td>
         <td colspan=2 style="border-top: none;">&nbsp;</td>
         <td style="border-top: none;">&nbsp;</td>
-        <td colspan=2 align=right><h4 style="text-align: right;"><b><?= number_format($ors->total, 2) ?></b></h4></td>
+        <td colspan=2 align=right><h3 style="text-align: right;"><b><?= number_format($ors->total, 2) ?></b></h3></td>
     </tr>
     <tr>
         <td><b>A.</b></td>
@@ -172,9 +172,9 @@
     </tr>
     <tr>
         <td colspan=2 style="border-right: none; border-bottom: none; border-top: none;">Printed Name&nbsp;&nbsp;&nbsp;:</td>
-        <td colspan=6 style="background-color: #DAEEF3; border-left: none; border-top: none;" align=center><h4><?= $model->requesterName ?></h4></td>
+        <td colspan=6 style="background-color: #DAEEF3; border-left: none; border-top: none;" align=center><h3><?= strtoupper($model->requesterName) ?></h3></td>
         <td colspan=2 style="border: none;">Printed Name&nbsp;&nbsp;&nbsp;:</td>
-        <td colspan=3 style="border-left: none; border-top: none;" align=center><h4><?= $ors->reviewerName ?></h4></td>
+        <td colspan=3 style="border-left: none; border-top: none;" align=center><h3><?= strtoupper($ors->reviewerName) ?></h3></td>
     </tr>
     <tr>
         <td colspan=2 style="border-right: none; border-bottom: none; border-top: none;">Position&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
@@ -187,12 +187,6 @@
         <td colspan=6 style="border-left: none; border-top: none;">&nbsp;</td>
         <td colspan=2 style="border: none;">Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</td>
         <td colspan=3 style="border-left: none; border-top: none;">&nbsp;</td>
-    </tr>
-    <tr>
-        <td style="border-right: none; border-bottom: none; border-top: none;"></td>
-        <td colspan=7 style="border-left: none; border-bottom: none; border-top: none;">&nbsp;</td>
-        <td style="border: none;">&nbsp;</td>
-        <td colspan=4 style="border-left: none; border-top: none;">&nbsp;</td>
     </tr>
     <tr>
         <td style="border-right: none; border-bottom: none; border-top: none;"></td>
@@ -230,7 +224,7 @@
                     <td colspan=3 align=center style="border-top: none; border-bottom: none;"><?= $ors->ors_no ?></td>
                     <td align=right style="border-top: none; border-bottom: none;"><b><?= number_format($item['total'] * $item['offer'], 2 ) ?></b></td>
                     <td colspan=2 align=center style="border-top: none; border-bottom: none;">&nbsp;</td>
-                    <td rowspan=<?= count($items) ?> align=right style="border-top: none; border-bottom: none;"><b><?= number_format($ors->total, 2 ) ?></b></td>
+                    <td rowspan=<?= count($items) ?> align=right style="border-top: none; border-bottom: none; vertical-align: top;"><b><?= number_format($ors->total, 2 ) ?></b></td>
                     <td style="border-top: none; border-bottom: none;">&nbsp;</td>
                     <td style="border-top: none; border-bottom: none;">&nbsp;</td>
                 </tr>

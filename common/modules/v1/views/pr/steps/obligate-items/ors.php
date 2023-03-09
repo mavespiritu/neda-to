@@ -72,7 +72,7 @@
     </tr>
     <tr>
         <td colspan=3 rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" align=center valign=top><?= $ors->responsibility_center ?></td>
-        <td colspan=5 style="background-color: #DAEEF3;" rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" valign=top><?= $model->purpose ?></td>
+        <td colspan=5 style="background-color: #DAEEF3;" rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" valign=top><?= $model->purpose ?> <?= !is_null($po) ? $po->type == 'PO' ? 'with PO No. '.$po->pocnNo : 'with Contract No. '.$po->pocnNo : '' ?></td>
         <?php if(!empty($prexcData)){ ?>
             <?php foreach($prexcData as $pap => $data){ ?>
                 <td colspan=2 rowspan=<?= count($data) ?> align=center style="background-color: #DAEEF3; border-top: none; border-bottom: none;" valign=top><?= $pap ?></td>

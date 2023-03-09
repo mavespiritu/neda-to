@@ -153,6 +153,10 @@ $asset = AppAsset::register($this);
                             <?php $i++; ?>
                         <?php } ?>
                     <?php } ?>
+                    <tr>
+                        <td colspan=6 align=right><b>TOTAL AMOUNT</b></td>
+                        <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
+                    </tr>
                 <?php } ?>
             <?php } ?>
             <tr>

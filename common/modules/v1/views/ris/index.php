@@ -6,6 +6,7 @@ use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use yii\web\View;
+use yii\bootstrap\ButtonDropdown;
 use common\modules\v1\models\Ris;
 /* @var $this yii\web\View */
 /* @var $searchModel common\modules\v1\models\RisSearch */
@@ -40,7 +41,22 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <div class="col-md-12 col-xs-12">
             <div class="box box-primary">
-                <div class="box-header panel-title"><i class="fa fa-list"></i> RIS List</div>
+                <div class="box-header panel-title"><i class="fa fa-list"></i> RIS List
+                    <span class="pull-right">
+                        <?= ButtonDropdown::widget([
+                            'label' => '<i class="fa fa-download"></i> Export',
+                            'encodeLabel' => false,
+                            'options' => ['class' => 'btn btn-success'],
+                            'dropdown' => [
+                                'items' => [
+                                    ['label' => 'Excel', 'url' => Url::to(['/v1/ris/download-list', 'type' => 'excel'])],
+                                    ['label' => 'PDF', 'url' => Url::to(['/v1/ris/download-list', 'type' => 'pdf'])],
+                                ],
+                            ],
+                            ]) ?>
+                        <?= Html::button('<i class="fa fa-print"></i> Print', ['class' => 'btn btn-danger', 'onclick' => 'printRisList()']) ?>
+                    </span>
+                </div>
                 <div class="box-body">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
@@ -162,6 +178,26 @@ $this->params['breadcrumbs'][] = $this->title;
               $("#create-modal").modal("show").find("#create-modal-content").load($(this).attr("value"));
             });
         });     
+
+        function printRisList()
+        {
+          var printWindow = window.open(
+            "'.Url::to(['/v1/ris/print-list']).'", 
+            "Print",
+            "left=200", 
+            "top=200", 
+            "width=950", 
+            "height=500", 
+            "toolbar=0", 
+            "resizable=0"
+          );
+          printWindow.addEventListener("load", function() {
+              printWindow.print();
+              setTimeout(function() {
+                printWindow.close();
+            }, 1);
+          }, true);
+        }
     ';
 
     $this->registerJs($script, View::POS_END);

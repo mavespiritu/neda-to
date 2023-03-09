@@ -19,6 +19,7 @@ use common\modules\v1\models\PpmpItemSearch;
 use common\modules\v1\models\FundCluster;
 use common\modules\v1\models\Signatory;
 use common\modules\v1\models\RisItem;
+use common\modules\v1\models\PrItem;
 use common\modules\v1\models\RisItemSpec;
 use common\modules\v1\models\RisItemSpecValue;
 use common\modules\v1\models\RisSource;
@@ -1241,6 +1242,337 @@ class RisController extends Controller
             'specifications' => $specifications,
         ]);
 
+    }
+
+    public function actionDownloadList($type)
+    {
+        $includedPrexcs = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                    )
+                SEPARATOR ", ") as prexc'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+        
+        $realignedPrexcs = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                    )
+                SEPARATOR ", ") as prexc'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Realigned']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $prNumbers = PrItem::find()
+            ->select([
+                'ppmp_ris.id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    ppmp_pr.pr_no
+                SEPARATOR ", ") as prNos'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_pr', 'ppmp_pr.id = ppmp_pr_item.pr_id')
+            ->groupBy(['ppmp_ris.id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $totals = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'COALESCE(sum(ppmp_ris_item.cost * quantity), 0) as total'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $items = Ris::find()
+        ->select([
+            'ppmp_ris.ris_no',
+            'ppmp_ris.type',
+            'ppmp_ris.office_id as office',
+            'ppmp_ris.purpose',
+            'ppmp_fund_source.code as fundSource',
+            'ppmp_fund_cluster.title as fundCluster',
+            'concat(creator.FIRST_M," ",creator.LAST_M) as creatorName',
+            'ppmp_ris.date_created',
+            'requester.name as requesterName',
+            'ppmp_ris.date_requested',
+            'ppmp_ris.date_required',
+            'prNumbers.prNos as pr_no',
+            'includedPrexcs.prexc as includedPrexc',
+            'realignedPrexcs.prexc as realignedPrexc',
+            'COALESCE(totals.total, 0) as total'
+        ])
+        ->leftJoin('ppmp_fund_source', 'ppmp_fund_source.id = ppmp_ris.fund_source_id')
+        ->leftJoin('ppmp_fund_cluster', 'ppmp_fund_cluster.id = ppmp_ris.fund_cluster_id')
+        ->leftJoin('user_info creator', 'creator.EMP_N = ppmp_ris.created_by')
+        ->leftJoin('ppmp_signatory requester', 'requester.emp_id = ppmp_ris.requested_by')
+        ->leftJoin(['includedPrexcs' => '('.$includedPrexcs.')'], 'includedPrexcs.id = ppmp_ris.id')
+        ->leftJoin(['realignedPrexcs' => '('.$realignedPrexcs.')'], 'realignedPrexcs.id = ppmp_ris.id')
+        ->leftJoin(['prNumbers' => '('.$prNumbers.')'], 'prNumbers.id = ppmp_ris.id')
+        ->leftJoin(['totals' => '('.$totals.')'], 'totals.id = ppmp_ris.id')
+        ->orderBy(['ppmp_ris.id' => SORT_DESC])
+        ->asArray()
+        ->all();
+
+        $filename = 'RIS List';
+
+        if($type == 'excel')
+        {
+            header("Content-type: application/vnd.ms-excel");
+            header("Content-Disposition: attachment; filename=".$filename.".xls");
+            return $this->renderPartial('file-list', [
+                'action' => 'excel',
+                'items' => $items,
+            ]);
+        }
+        else if($type == 'pdf')
+        {
+            $content = $this->renderPartial('file-list', [
+                'action' => 'pdf',
+                'items' => $items,
+            ]);
+
+            $pdf = new Pdf([
+                'mode' => Pdf::MODE_CORE,
+                'format' => Pdf::FORMAT_LEGAL, 
+                'orientation' => Pdf::ORIENT_LANDSCAPE, 
+                'destination' => Pdf::DEST_DOWNLOAD, 
+                'filename' => $filename.'.pdf', 
+                'content' => $content,  
+                'marginLeft' => 11.4,
+                'marginRight' => 11.4,
+                'cssInline' => '*{ font-family: "Tahoma"; }
+                                p{ font-size: 10px; }
+                                table{
+                                    font-family: "Tahoma";
+                                    border-collapse: collapse;
+                                }
+                                thead{
+                                    font-size: 12px;
+                                    text-align: center;
+                                }
+                            
+                                td{
+                                    font-size: 10px;
+                                    border: 1px solid black;
+                                    padding: 3px 3px;
+                                }
+                            
+                                th{
+                                    font-size: 10px;
+                                    text-align: center;
+                                    border: 1px solid black;
+                                    padding: 3px 3px;
+                                }
+                                ', 
+                ]);
+        
+                $response = Yii::$app->response;
+                $response->format = \yii\web\Response::FORMAT_RAW;
+                $headers = Yii::$app->response->headers;
+                $headers->add('Content-Type', 'application/pdf');
+                return $pdf->render();
+        }
+    }
+
+    public function actionPrintList()
+    {
+        $includedPrexcs = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                    )
+                SEPARATOR ", ") as prexc'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+        
+        $realignedPrexcs = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code
+                        )
+                    )
+                SEPARATOR ", ") as prexc'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+            ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+            ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+            ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+            ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+            ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+            ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+            ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Realigned']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $prNumbers = PrItem::find()
+            ->select([
+                'ppmp_ris.id as id',
+                'GROUP_CONCAT(DISTINCT 
+                    ppmp_pr.pr_no
+                SEPARATOR ", ") as prNos'
+            ])
+            ->leftJoin('ppmp_ris', 'ppmp_ris.id = ppmp_pr_item.ris_id')
+            ->leftJoin('ppmp_pr', 'ppmp_pr.id = ppmp_pr_item.pr_id')
+            ->groupBy(['ppmp_ris.id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $totals = RisItem::find()
+            ->select([
+                'ppmp_ris_item.ris_id as id',
+                'COALESCE(sum(ppmp_ris_item.cost * quantity), 0) as total'
+            ])
+            ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+            ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+            ->groupBy(['ppmp_ris_item.ris_id'])
+            ->createCommand()
+            ->getRawSql();
+
+        $items = Ris::find()
+        ->select([
+            'ppmp_ris.ris_no',
+            'ppmp_ris.type',
+            'ppmp_ris.office_id as office',
+            'ppmp_ris.purpose',
+            'ppmp_fund_source.code as fundSource',
+            'ppmp_fund_cluster.title as fundCluster',
+            'concat(creator.FIRST_M," ",creator.LAST_M) as creatorName',
+            'ppmp_ris.date_created',
+            'requester.name as requesterName',
+            'ppmp_ris.date_requested',
+            'ppmp_ris.date_required',
+            'prNumbers.prNos as pr_no',
+            'includedPrexcs.prexc as includedPrexc',
+            'realignedPrexcs.prexc as realignedPrexc',
+            'COALESCE(totals.total, 0) as total'
+        ])
+        ->leftJoin('ppmp_fund_source', 'ppmp_fund_source.id = ppmp_ris.fund_source_id')
+        ->leftJoin('ppmp_fund_cluster', 'ppmp_fund_cluster.id = ppmp_ris.fund_cluster_id')
+        ->leftJoin('user_info creator', 'creator.EMP_N = ppmp_ris.created_by')
+        ->leftJoin('ppmp_signatory requester', 'requester.emp_id = ppmp_ris.requested_by')
+        ->leftJoin(['includedPrexcs' => '('.$includedPrexcs.')'], 'includedPrexcs.id = ppmp_ris.id')
+        ->leftJoin(['realignedPrexcs' => '('.$realignedPrexcs.')'], 'realignedPrexcs.id = ppmp_ris.id')
+        ->leftJoin(['prNumbers' => '('.$prNumbers.')'], 'prNumbers.id = ppmp_ris.id')
+        ->leftJoin(['totals' => '('.$totals.')'], 'totals.id = ppmp_ris.id')
+        ->orderBy(['ppmp_ris.id' => SORT_DESC])
+        ->asArray()
+        ->all();
+        
+        return $this->renderAjax('file-list', [
+            'action' => 'print',
+            'items' => $items,
+        ]);
     }
 
     public function actionLoadRisItemsTotal($id)

@@ -115,9 +115,9 @@ $asset = AppAsset::register($this);
                 <td align=center><b>ITEM NO.</b></td>
                 <td align=center><b>QTY.</b></td>
                 <td align=center><b>UNIT</b></td>
-                <td align=center><b>ITEM DESCRIPTION</b></td>
+                <td align=center style="width: 25%;"><b>ITEM DESCRIPTION</b></td>
                 <td align=center><b>BRAND & MODEL</b></td>
-                <td align=center><b>UNIT PRICE</b></td>
+                <td align=center style="width: 15%;"><b>UNIT PRICE</b></td>
                 <td align=center><b>TOTAL AMOUNT</b></td>
             </tr>
         </thead>
@@ -147,30 +147,20 @@ $asset = AppAsset::register($this);
                                 <?php } ?>
                                 </td>
                                 <td>&nbsp;</td>
-                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
-                                <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
+                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
+                                <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
                             </tr>
                             <?php $i++; ?>
                         <?php } ?>
                     <?php } ?>
                     <tr>
                         <td colspan=6 align=right><b>TOTAL AMOUNT</b></td>
-                        <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
+                        <td align=center><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
                     </tr>
                 <?php } ?>
             <?php } ?>
             <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td align=center><i><b>xxxx NOTHING FOLLOWS xxxxx</b></i></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan=6 align=right><b>GRAND TOTAL</b></td>
-                <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
+                <td colspan=7 align=center><i><b>xxxx NOTHING FOLLOWS xxxxx</b></i></td>
             </tr>
         </tbody>
     </table>

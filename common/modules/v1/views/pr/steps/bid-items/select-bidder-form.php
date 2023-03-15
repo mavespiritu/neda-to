@@ -86,7 +86,7 @@ $totals = [];
                             <?php foreach($supplierList as $supplier){ ?>
                                 <td align=right><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > $rfqItem['cost'] ? '<span class="text-red">'.number_format($costs[$rfqItem['id']][$supplier->id]['cost'], 2).'</span>' : '<span class="text-green">'.number_format($costs[$rfqItem['id']][$supplier->id]['cost'], 2).'</span>' : '' ?></td>
                                 <td align=right style="width: 15%;" id="cell-<?= $rfqItem['id'] ?>-<?= $supplier->id ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] != '' ? $costs[$rfqItem['id']][$supplier->id]['specification'] : 'No quotation received' : 'No quotation received' ?></td>
+                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? $costs[$rfqItem['id']][$supplier->id]['specification'] : 'No quotation received' : 'No quotation received' ?></td>
                                 <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
                             <?php } ?>
                         <?php } ?>

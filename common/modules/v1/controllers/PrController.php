@@ -2029,6 +2029,12 @@ class PrController extends Controller
 
         $aprItemIDs = ArrayHelper::map($aprItemIDs, 'pr_item_id', 'pr_item_id');
 
+        $aprSupplyOfficer = Settings::findOne(['title' => 'APR Supply Officer']);
+
+        $aprFundCertifier = Settings::findOne(['title' => 'APR Funds Certifier']);
+
+        $aprApprover = Settings::findOne(['title' => 'APR Approver']);
+
         $unmergedItems = PrItem::find()
             ->select([
                 'ppmp_pr_item.id as id',
@@ -2141,6 +2147,9 @@ class PrController extends Controller
 
         if($aprModel->load(Yii::$app->request->post()))
         {
+            $aprModel->stock_certified_by = $aprSupplyOfficer ? $aprSupplyOfficer->value : null;
+            $aprModel->fund_certified_by = $aprFundCertifier ? $aprFundCertifier->value : null;
+            $aprModel->approved_by = $aprApprover ? $aprApprover->value : null;
             $aprModel->save(false);
         }
 

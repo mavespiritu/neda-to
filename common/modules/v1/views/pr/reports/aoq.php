@@ -144,8 +144,8 @@ $letters = range('A', 'Z');
                                     <?php if($supplierList){ ?>
                                         <?php foreach($supplierList as $sup){ ?>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right>'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?></td>
-                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification != '' ? $prices[$item['id']][$sup->id]->specification : 'No quotation received' : 'No quotation received' ?></td>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td align=right>-</td>' : '<td align=right>-</td>' ?></td>
+                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? $prices[$item['id']][$sup->id]->specification : 'No quotation received' : 'No quotation received' ?></td>
                                         <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>
                                     <?php } ?>
@@ -162,8 +162,8 @@ $letters = range('A', 'Z');
                                     <?php if($supplierList){ ?>
                                         <?php foreach($supplierList as $sup){ ?>
                                         <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right>'.number_format($prices[$item['id']][$sup->id]->cost, 2).'</td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
-                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td>&nbsp</td>' : '<td>&nbsp</td>' ?>
-                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->specification != '' ? $prices[$item['id']][$sup->id]->specification : 'No quotation received' : 'No quotation received' ?></td>
+                                        <?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? '<td align=right style="background-color: '.$colors[$item['id']][$sup->id].' !important;"><b>'.number_format($prices[$item['id']][$sup->id]->cost * $item['total'], 2).'</b></td>' : '<td align=right>-</td>' : '<td align=right>-</td>' ?>
+                                        <td><?= !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost > 0 ? $prices[$item['id']][$sup->id]->specification : 'No quotation received' : 'No quotation received' ?></td>
                                         <?php $total[$sup->id] += !empty($prices[$item['id']][$sup->id]) ? $prices[$item['id']][$sup->id]->cost * $item['total'] : 0; ?>
                                         <?php } ?>
                                     <?php } ?>

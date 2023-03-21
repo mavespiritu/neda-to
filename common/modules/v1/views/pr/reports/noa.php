@@ -3,89 +3,111 @@ use frontend\assets\AppAsset;
 use yii\helpers\Html;
 
 $asset = AppAsset::register($this);
-function numberTowords($num)
-{
-    $ones = array(
-        0 =>"ZERO",
-        1 => "ONE",
-        2 => "TWO",
-        3 => "THREE",
-        4 => "FOUR",
-        5 => "FIVE",
-        6 => "SIX",
-        7 => "SEVEN",
-        8 => "EIGHT",
-        9 => "NINE",
-        10 => "TEN",
-        11 => "ELEVEN",
-        12 => "TWELVE",
-        13 => "THIRTEEN",
-        14 => "FOURTEEN",
-        15 => "FIFTEEN",
-        16 => "SIXTEEN",
-        17 => "SEVENTEEN",
-        18 => "EIGHTEEN",
-        19 => "NINETEEN",
-        "014" => "FOURTEEN"
+function numberToWords($number) {
+
+    $hyphen      = ' ';
+    $conjunction = ' and ';
+    $separator   = ' ';
+    $negative    = 'negative ';
+    $decimal     = ' point ';
+    $dictionary  = array(
+        0                   => 'zero',
+        1                   => 'one',
+        2                   => 'two',
+        3                   => 'three',
+        4                   => 'four',
+        5                   => 'five',
+        6                   => 'six',
+        7                   => 'seven',
+        8                   => 'eight',
+        9                   => 'nine',
+        10                  => 'ten',
+        11                  => 'eleven',
+        12                  => 'twelve',
+        13                  => 'thirteen',
+        14                  => 'fourteen',
+        15                  => 'fifteen',
+        16                  => 'sixteen',
+        17                  => 'seventeen',
+        18                  => 'eighteen',
+        19                  => 'nineteen',
+        20                  => 'twenty',
+        30                  => 'thirty',
+        40                  => 'fourty',
+        50                  => 'fifty',
+        60                  => 'sixty',
+        70                  => 'seventy',
+        80                  => 'eighty',
+        90                  => 'ninety',
+        100                 => 'hundred',
+        1000                => 'thousand',
+        1000000             => 'million',
+        1000000000          => 'billion',
+        1000000000000       => 'trillion',
+        1000000000000000    => 'quadrillion',
+        1000000000000000000 => 'quintillion'
     );
-    
-    $tens = array( 
-        0 => "ZERO",
-        1 => "TEN",
-        2 => "TWENTY",
-        3 => "THIRTY", 
-        4 => "FORTY", 
-        5 => "FIFTY", 
-        6 => "SIXTY", 
-        7 => "SEVENTY", 
-        8 => "EIGHTY", 
-        9 => "NINETY" 
-    );
 
-    $hundreds = array( 
-    "HUNDRED", 
-    "THOUSAND", 
-    "MILLION", 
-    "BILLION", 
-    "TRILLION", 
-    "QUARDRILLION" 
-    ); /*limit t quadrillion */
-
-    $num = number_format($num,2,".",","); 
-    $num_arr = explode(".",$num); 
-    $wholenum = $num_arr[0]; 
-    $decnum = $num_arr[1]; 
-    $whole_arr = array_reverse(explode(",",$wholenum)); 
-    krsort($whole_arr,1); 
-    $rettxt = ""; 
-    foreach($whole_arr as $key => $i){
-        while(substr($i,0,1)=="0"){ $i=substr($i,1,5); }
-        if($i < 20){ 
-        /* echo "getting:".$i; */
-        $rettxt .= $i == "" ? "" : $ones[$i]; 
-        }elseif($i < 100){ 
-            if(substr($i,0,1)!="0")  $rettxt .= $tens[substr($i,0,1)]; 
-            if(substr($i,1,1)!="0") $rettxt .= " ".$ones[substr($i,1,1)]; 
-        }else{ 
-            if(substr($i,0,1)!="0") $rettxt .= $ones[substr($i,0,1)]." ".$hundreds[0]; 
-            if(substr($i,1,1)!="0")$rettxt .= " ".$tens[substr($i,1,1)]; 
-            if(substr($i,2,1)!="0")$rettxt .= " ".$ones[substr($i,2,1)]; 
-        } 
-        if($key > 0){ 
-            $rettxt .= " ".$hundreds[$key]." "; 
-        }
-    } 
-
-    if($decnum > 0){
-        $rettxt .= " and ";
-        if($decnum < 20){
-            $rettxt .= $ones[intval($decnum)];
-        }elseif($decnum < 100){
-            $rettxt .= $tens[substr($decnum,0,1)];
-            $rettxt .= " ".$ones[substr($decnum,1,1)]."/100";
-        }
+    if (!is_numeric($number)) {
+        return false;
     }
-return $rettxt;
+
+    if (($number >= 0 && (int) $number < 0) || (int) $number < 0 - PHP_INT_MAX) {
+        // overflow
+        trigger_error(
+            'convert_number_to_words only accepts numbers between -' . PHP_INT_MAX . ' and ' . PHP_INT_MAX,
+            E_USER_WARNING
+        );
+        return false;
+    }
+
+    if ($number < 0) {
+        return $negative . numberToWords(abs($number));
+    }
+
+    $string = $fraction = null;
+
+    if (strpos($number, '.') !== false) {
+        list($number, $fraction) = explode('.', $number);
+    }
+
+    switch (true) {
+        case $number < 21:
+            $string = $dictionary[$number];
+            break;
+        case $number < 100:
+            $tens   = ((int) ($number / 10)) * 10;
+            $units  = $number % 10;
+            $string = $dictionary[$tens];
+            if ($units) {
+                $string .= $hyphen . $dictionary[$units];
+            }
+            break;
+        case $number < 1000:
+            $hundreds  = $number / 100;
+            $remainder = $number % 100;
+            $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+            if ($remainder) {
+                $string .=  ' '. numberToWords($remainder);
+            }
+            break;
+        default:
+            $baseUnit = pow(1000, floor(log($number, 1000)));
+            $numBaseUnits = (int) ($number / $baseUnit);
+            $remainder = $number % $baseUnit;
+            $string = numberToWords($numBaseUnits) . ' ' . $dictionary[$baseUnit];
+            if ($remainder) {
+                $string .= $remainder < 100 ? $separator : $separator;
+                $string .= numberToWords($remainder);
+            }
+            break;
+    }
+
+    if (null !== $fraction && is_numeric($fraction)) {
+        $string .= $fraction > 0 ? ' '.$conjunction.' '.$fraction.'/100 ' : $separator;
+    }
+
+    return $string;
 }
 ?>
 <link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>" />

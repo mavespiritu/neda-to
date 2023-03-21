@@ -153,7 +153,7 @@ function numberToWords($number) {
     <b>Dear Ma'am/Sir:</b>
     <br>
     <br>
-    <p>We are pleased to inform you to proceed with the implementation of the <b><?= $model->purpose ?> with <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?></b> with a Contract Price equivalent to <b><?= strtoupper(numberToWords($total['total'])) ?> PESOS (Php <?= number_format($total['total'], 2) ?>).</b>
+    <p>We are pleased to inform you to proceed with the implementation of the <b><?= $model->purpose ?> with <?= $po->type == 'PO' ? 'PO No. '.$po->pocnNo : 'Contract No. '.$po->pocnNo ?></b> with a Contract Price equivalent to <b><?= strtoupper(Yii::$app->controller->module->getNumberToWords(sprintf('%0.2f',$total['total']))) ?> (Php <?= number_format($total['total'], 2) ?>).</b>
     <br>
     <br>
     In this regard, please be directed to proceed on 

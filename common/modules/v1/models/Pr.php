@@ -199,6 +199,60 @@ class Pr extends \yii\db\ActiveRecord
 
         return $ntp ? true : false;
     }
+
+    public function getItemsHasOrs($apr_id, $po_id, $type)
+    {
+        $ors = null;
+        if($type == 'APR')
+        {
+            $ors = $apr_id != 'null' ? Ors::find()->andWhere(['pr_id' => $this->id, 'apr_id' => $apr_id])->andWhere(['is', 'po_id', null])->all() : null;
+
+        }else if($type == 'PO')
+        {
+            $ors = $po_id != 'null' ? Ors::find()->andWhere(['pr_id' => $this->id, 'po_id' => $po_id])->andWhere(['is', 'apr_id', null])->all() : null;
+
+        }else if($type == 'NP')
+        {
+            $ors = $po_id != 'null' ? Ors::find()->andWhere(['pr_id' => $this->id])->andWhere(['is', 'apr_id', null])->andWhere(['is', 'po_id', null])->all() : null;
+        }
+
+        return !is_null($ors) ? true : false;
+    }
+
+    public function getHasOrs()
+    {
+        $nonProcurableItemIDs = NonProcurableItem::find()
+                    ->where(['pr_id' => $this->id])
+                    ->asArray()
+                    ->all();
+
+        $nonProcurableItemIDs = ArrayHelper::map($nonProcurableItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $bidIDs = Bid::find()
+        ->select(['ppmp_bid.id as id'])
+        ->leftJoin('ppmp_rfq', 'ppmp_rfq.id = ppmp_bid.rfq_id')
+        ->where(['ppmp_bid.pr_id' => $this->id])
+        ->asArray()
+        ->all();
+
+        $bidIDs = ArrayHelper::map($bidIDs, 'id', 'id');
+
+        $awardedItemIDs = BidWinner::find()->select(['pr_item_id'])->andWhere(['bid_id' => $bidIDs])->andWhere(['status' => 'Awarded'])->asArray()->all();
+
+        $awardedItemIDs = ArrayHelper::map($awardedItemIDs, 'pr_item_id', 'pr_item_id');
+
+        $forOrsIDs = array_merge($nonProcurableItemIDs, $awardedItemIDs);
+
+        $orsItemIDs = OrsItem::find()
+                ->select(['pr_item_id'])
+                ->where(['pr_id' => $this->id])
+                ->asArray()
+                ->all();
+
+        $orsItemIDs = ArrayHelper::map($orsItemIDs, 'pr_item_id', 'pr_item_id');
+
+        return count($orsItemIDs) > 0 ? empty(array_diff($forOrsIDs, $orsItemIDs)) ? true : false : false;
+    }
     
     public function getLots()
     {
@@ -997,7 +1051,7 @@ class Pr extends \yii\db\ActiveRecord
 
         $items[$i]['label'] = '<span onclick="orsMenu('.$this->id.','.$j.')">'.$j.'. Obligation Request Status (ORS)</span>';
         $items[$i]['content'] = '<div id="ors-menu"></div>';
-        $items[$i]['options'] = ['class' => 'panel panel-default'];
+        $items[$i]['options'] = ['class' => $this->hasOrs ? 'panel panel-success' : 'panel panel-default'];
 
         $i++;
         $j++;

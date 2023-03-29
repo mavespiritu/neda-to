@@ -34,14 +34,14 @@ $asset = AppAsset::register($this);
 
     table.table-bordered td{
         font-size: 14px;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 
     table.table-bordered th{
         font-size: 14px;
         text-align: center;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 </style>

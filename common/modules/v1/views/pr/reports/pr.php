@@ -16,14 +16,14 @@
 
     td{
         font-size: 10px;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 
     th{
         font-size: 10px;
         text-align: center;
-        border: 1px solid black;
+        border: 1px solid #555555 !important;
         padding: 3px 3px;
     }
 </style>

@@ -48,11 +48,10 @@ $totals = [];
         <tr>
             <td rowspan=3 align=center><b>Item No.</b></td>
             <td rowspan=3 align=center style="width: 30%;"><b>Nomenclature</b></td>
+            <td rowspan=3 align=center><b>ABC per Item</b></td>
             <td rowspan=3 align=center><b>Qty</b></td>
-            <td rowspan=3 align=center><b>Unit Cost</b></td>
-            <td rowspan=3 align=center><b>ABC</b></td>
             <?php if($supplierList){ ?>
-                <td colspan=<?= count($supplierList) * 2 ?> align=center><b>Participating<br>Establishments</b></td>
+                <td colspan=<?= count($supplierList) * 3 ?> align=center><b>Participating<br>Establishments</b></td>
             <?php } ?>
             <td rowspan=3 align=center style="width: 10%;"><b>Awarded to</b></td>
         </tr>
@@ -60,6 +59,7 @@ $totals = [];
             <?php if($supplierList){ ?>
                 <?php foreach($supplierList as $idx => $supplier){ ?>
                     <?php $totals[$supplier->id] = 0; ?>
+                    <td align=center><b>Unit Cost</b></td>
                     <td align=center><b><?= $letters[$idx].'<br>'.$supplier->business_name ?></b></td>
                     <td align=center><b>Specifications</b></td>
                 <?php } ?>
@@ -71,7 +71,7 @@ $totals = [];
         <?php foreach($lotItems as $lot => $items){ ?>
             <?php if($lot != 0){ ?>
                 <tr>
-                    <td colspan="<?= !empty($supplierList) ? 6 + (count($supplierList) * 2) : 6 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                    <td colspan="<?= !empty($supplierList) ? 4 + (count($supplierList) * 3) : 4 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
                 </tr>
             <?php } ?>
             <?php if(!empty($items)){ ?>
@@ -80,13 +80,13 @@ $totals = [];
                     <tr>
                         <td align=center><?= $i ?></td>
                         <td><?= $rfqItem['item'] ?></td>
+                        <td align=right><b><?= number_format($rfqItem['cost'], 2) ?></b></td>
                         <td align=center><?= number_format($rfqItem['total'], 0) ?></td>
-                        <td align=right><?= number_format($rfqItem['cost'], 2) ?></td>
-                        <td align=right><b><?= number_format($rfqItem['total'] * $rfqItem['cost'], 2) ?></b></td>
                         <?php if($supplierList){ ?>
                             <?php foreach($supplierList as $supplier){ ?>
+                                <td align=right><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > $rfqItem['cost'] ? '<span class="text-red">'.number_format($costs[$rfqItem['id']][$supplier->id]['cost'], 2).'</span>' : '<span class="text-green">'.number_format($costs[$rfqItem['id']][$supplier->id]['cost'], 2).'</span>' : '' ?></td>
                                 <td align=right style="width: 15%;" id="cell-<?= $rfqItem['id'] ?>-<?= $supplier->id ?>"><b><?= isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? number_format($rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'], 2) : '-' : '-' ?></b></td>
-                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['specification'] : '' ?></td>
+                                <td><?= isset($costs[$rfqItem['id']][$supplier->id]['specification']) ? $costs[$rfqItem['id']][$supplier->id]['cost'] > 0 ? $costs[$rfqItem['id']][$supplier->id]['specification'] : 'No quotation received' : 'No quotation received' ?></td>
                                 <?php $totals[$supplier->id] += isset($costs[$rfqItem['id']][$supplier->id]['cost']) ? $rfqItem['total'] * $costs[$rfqItem['id']][$supplier->id]['cost'] : 0; ?>
                             <?php } ?>
                         <?php } ?>
@@ -101,6 +101,18 @@ $totals = [];
             <?php } ?>
         <?php } ?>
     <?php } ?>
+    <tr>
+        <td colspan=4 align=right><b>Total Cost</b></td>
+        <?php if($supplierList){ ?>
+            <?php foreach($supplierList as $supplier){ ?>
+                <td>&nbsp;</td>
+                <td align=right><b><?= number_format($totals[$supplier->id], 2) ?></b></td>
+                <td>&nbsp;</td>
+            <?php } ?>
+        <?php } ?>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
     </tbody>
 </table>
 

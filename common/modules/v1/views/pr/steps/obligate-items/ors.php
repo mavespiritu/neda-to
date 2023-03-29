@@ -72,7 +72,7 @@
     </tr>
     <tr>
         <td colspan=3 rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" align=center valign=top><?= $ors->responsibility_center ?></td>
-        <td colspan=5 style="background-color: #DAEEF3;" rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" valign=top><?= $model->purpose ?></td>
+        <td colspan=5 style="background-color: #DAEEF3;" rowspan=<?= $rowspan + 4 ?> style="border-bottom: none;" valign=top><?= $model->purpose ?> <?= !is_null($po) ? $po->type == 'PO' ? 'with PO No. '.$po->pocnNo : 'with Contract No. '.$po->pocnNo : '' ?></td>
         <?php if(!empty($prexcData)){ ?>
             <?php foreach($prexcData as $pap => $data){ ?>
                 <td colspan=2 rowspan=<?= count($data) ?> align=center style="background-color: #DAEEF3; border-top: none; border-bottom: none;" valign=top><?= $pap ?></td>
@@ -197,7 +197,7 @@
         <?php foreach($items as $item){ ?>
             <?php if($j == 0){ ?>
                 <tr>
-                    <td align=center style="border-top: none; border-bottom: none;"><?= date("m/d/Y") ?></td>
+                    <td align=center style="border-top: none; border-bottom: none;"><?= date("m/d/Y", strtotime($ors->ors_date)) ?></td>
                     <td colspan=3 style="border-top: none; border-bottom: none;"><?= $item['item'] ?></td>
                     <td colspan=3 align=center style="border-top: none; border-bottom: none;"><?= $ors->ors_no ?></td>
                     <td align=right style="border-top: none; border-bottom: none;"><b><?= number_format($item['total'] * $item['offer'], 2 ) ?></b></td>
@@ -208,7 +208,7 @@
                 </tr>
             <?php }else{ ?>
                 <tr>
-                    <td align=center style="border-top: none; border-bottom: none;"><?= date("m/d/Y") ?></td>
+                    <td align=center style="border-top: none; border-bottom: none;">&nbsp;</td>
                     <td colspan=3 style="border-top: none; border-bottom: none;"><?= $item['item'] ?></td>
                     <td colspan=3 align=center style="border-top: none; border-bottom: none;"><?= $ors->ors_no ?></td>
                     <td align=right style="border-top: none; border-bottom: none;"><b><?= number_format($item['total'] * $item['offer'], 2 ) ?></b></td>

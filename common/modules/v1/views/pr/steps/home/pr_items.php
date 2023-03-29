@@ -56,6 +56,7 @@ use yii\bootstrap\Modal;
                                 'model' => $model,
                                 'item' => $item,
                                 'prItems' => $prItems,
+                                'onQueueItems' => $onQueueItems,
                                 'specifications' => $specifications,
                                 'form' => $form,
                             ]) ?>

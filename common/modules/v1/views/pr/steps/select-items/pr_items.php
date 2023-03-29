@@ -127,8 +127,6 @@ use yii\bootstrap\Modal;
                 success: function (data) {
                     form.enableSubmitButtons();
                     alert("Items Removed");
-                    menu('.$model->id.');
-                    items('.$model->id.');
                 },
                 error: function (err) {
                     console.log(err);

@@ -133,12 +133,16 @@ $asset = AppAsset::register($this);
                             <?php } ?>
                             </td>
                             <td>&nbsp;</td>
-                            <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
-                            <td align=center>P<span style="display: inline-block; border-bottom: 1px solid black; width: 40px;"></span></td>
+                            <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
+                            <td align=right>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></td>
                         </tr>
                         <?php $i++; ?>
                     <?php } ?>
                 <?php } ?>
+                <tr>
+                    <td colspan=6 align=right><b>TOTAL AMOUNT</b></td>
+                    <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
+                </tr>
             <?php } ?>
         <?php } ?>
             <tr>
@@ -149,6 +153,10 @@ $asset = AppAsset::register($this);
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan=6 align=right><b>GRAND TOTAL</b></td>
+                <td align=right><b>P<span style="display: inline-block; border-bottom: 1px solid black; width: 60%;"></span></b></td>
             </tr>
         </tbody>
     </table>

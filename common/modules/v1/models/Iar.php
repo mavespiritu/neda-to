@@ -55,10 +55,10 @@ class Iar extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'pr_id' => 'Pr ID',
-            'po_id' => 'Po ID',
+            'pr_id' => 'PR No.',
+            'po_id' => 'PO/Contract No.',
             'iar_no' => 'IAR No.',
-            'iar_date' => 'Date',
+            'iar_date' => 'IAR Date',
             'invoice_no' => 'Invoice No.',
             'invoice_date' => 'Invoice Date',
             'inspected_by' => 'Inspected By',

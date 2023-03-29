@@ -16,10 +16,7 @@ $totals = [];
     <span class="pull-right">
     <?= $bid ? Html::a('<i class="fa fa-print"></i> Print', null, ['class' => 'btn btn-sm btn-info', 'onclick' => 'printAoq('.$bid->id.')']) : '' ?>
     <?= $bid ? Html::button('<i class="fa fa-edit"></i> Edit', ['value' => Url::to(['/v1/pr/update-bid', 'id' => $bid->id, 'i' => $i]), 'class' => 'btn btn-sm btn-warning', 'id' => 'update-bid-button']).' '.
-               Html::a('<i class="fa fa-trash"></i> Delete', null, ['href' => 'javascript:void(0)', 'class' => 'btn btn-danger btn-sm delete-bid-button', 'onClick' => 'deleteBid('.$bid->id.')', 'data' => [
-                    'confirm' => 'Are you sure you want to delete this bid?',
-                    'method' => 'post',
-                ],]).'</div>'
+               Html::a('<i class="fa fa-trash"></i> Delete', null, ['href' => 'javascript:void(0)', 'onClick' => 'deleteBid('.$bid->id.')', 'class' => 'btn btn-danger btn-sm delete-bid-button']).'</div>'
     :
     Html::button('Create AOQ', ['value' => Url::to(['/v1/pr/create-bid', 'id' => $model->id, 'rfq_id' => $rfq->id, 'i' => $i]), 'class' => 'btn btn-success btn-sm', 'id' => 'create-bid-button']) ?>
     </span>
@@ -187,17 +184,21 @@ $totals = [];
     $script = '
         function deleteBid(id)
         {
-            $.ajax({
-                url: "'.Url::to(['/v1/pr/delete-bid']).'?id=" + id,
-                success: function (data) {
-                    console.log(this.data);
-                    alert("Bid Information has been deleted");
-                    bidRfq('.$model->id.', '.$rfq->id.', '.$i.');
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            });
+            var con = confirm("Are you sure you want to delete this record?");
+            if(con===true)
+            {
+                $.ajax({
+                    url: "'.Url::to(['/v1/pr/delete-bid']).'?id=" + id,
+                    success: function (data) {
+                        console.log(this.data);
+                        alert("Bid Information has been deleted");
+                        bidRfq('.$model->id.', '.$rfq->id.', '.$i.');
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                });
+            }
         }
 
         function printAoq(id)

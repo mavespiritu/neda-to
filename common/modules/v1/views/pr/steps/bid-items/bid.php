@@ -87,7 +87,7 @@ $totals = [];
             <?php foreach($lotItems as $lot => $items){ ?>
                 <?php if($lot != 0){ ?>
                     <tr>
-                        <td colspan="<?= !empty($suppliers) ? 4 + (count($suppliers) * 3) : 4 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
+                        <td colspan="<?= !empty($suppliers) ? 7 + (count($suppliers) * 3) : 7 ?>" style="background-color: #D9D9D9;"><b><?= $lot ?></b></td>
                     </tr>
                 <?php } ?>
                 <?php if(!empty($items)){ ?>

@@ -3665,7 +3665,14 @@ class PrController extends Controller
 
         $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
 
-        $suppliers = Supplier::find()->where(['in', 'id', $supplierIDs])->all();
+        $rfqInfoSupplierIDs = RfqInfo::findAll(['rfq_id' => $rfq->id]);
+
+        $rfqInfoSupplierIDs = ArrayHelper::map($rfqInfoSupplierIDs, 'supplier_id', 'supplier_id');
+
+        $suppliers = Supplier::find()
+                    ->andWhere(['in', 'id', $supplierIDs])
+                    ->orWhere(['in', 'id', $rfqInfoSupplierIDs])
+                    ->all();
 
         // if supplier is selected
         $bidWinners = $bid ? BidWinner::find()->andWhere(['bid_id' => $bid->id])->asArray()->all() : [];
@@ -4384,7 +4391,14 @@ class PrController extends Controller
         $supplierIDs = PrItemCost::find()->select(['supplier_id'])->andWhere(['pr_id' => $model->id, 'rfq_id' => $rfq->id])->andWhere(['<>', 'supplier_id', 1])->groupBy(['supplier_id'])->asArray()->all();
         $supplierIDs = ArrayHelper::map($supplierIDs, 'supplier_id', 'supplier_id');
 
-        $supplierList = Supplier::find()->where(['id' => $supplierIDs])->all();
+        $rfqInfoSupplierIDs = RfqInfo::findAll(['rfq_id' => $rfq->id]);
+
+        $rfqInfoSupplierIDs = ArrayHelper::map($rfqInfoSupplierIDs, 'supplier_id', 'supplier_id');
+
+        $supplierList = Supplier::find()
+                    ->andWhere(['in', 'id', $supplierIDs])
+                    ->orWhere(['in', 'id', $rfqInfoSupplierIDs])
+                    ->all();
 
         $bidWinners = $bid ? BidWinner::find()->andWhere(['bid_id' => $bid->id])->asArray()->all() : [];
         $suppliers = [];

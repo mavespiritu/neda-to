@@ -69,7 +69,7 @@ $asset = AppAsset::register($this);
     <br>
     <b><?= $rd->value ?></b>
     <br>
-    Regional Director
+    OIC - Regional Director
     <br>
     <br>
     <br>

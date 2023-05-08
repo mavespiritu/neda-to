@@ -129,7 +129,7 @@ $letters = range('A', 'Z');
                 <?php foreach($lotItems as $lot => $items){ ?>
                     <?php if($lot != 0){ ?>
                         <tr>
-                            <td colspan=<?= !empty($supplierList) ? 4 + (count($supplierList) * 3) : 4 ?> style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
+                            <td colspan=<?= !empty($supplierList) ? 7 + (count($supplierList) * 3) : 7 ?> style="background-color: #D9D9D9 !important;"><b><?= $lot ?></b></td>
                            
                         </tr>
                     <?php } ?>
@@ -213,7 +213,7 @@ $letters = range('A', 'Z');
             <td style="width: 30%;">
                 <p><i>APPROVED:</i></p><br>
                 <b><?= $regionalDirector->value ?></b><br>
-                <i>Regional Director</i>   
+                <i>OIC - Regional Director</i>   
             </td>
             <td style="width: 30%;">
                 <p><u>List of Participating Establishments</u></p><br>

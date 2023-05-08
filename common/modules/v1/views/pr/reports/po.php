@@ -152,7 +152,7 @@ $asset = AppAsset::register($this);
                 <br>
                 <b><?= $rd->value ?></b>
                 <br>
-                <i>Regional Director</i>
+                <i>OIC - Regional Director</i>
             </td>
         </tr>
         <tr>

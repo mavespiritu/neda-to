@@ -53,10 +53,31 @@ use yii\web\View;
             ]) ?>
         </div>
         <div class="col-md-3 col-xs-12">
-            <?= $form->field($model, 'inspected_by') ?>
+            <?= $form->field($model, 'inspectorName') ?>
         </div>
         <div class="col-md-3 col-xs-12">
             <?= $form->field($model, 'date_inspected')->widget(DatePicker::classname(), [
+                'options' => ['placeholder' => 'Enter date'],
+                'clientOptions' => [
+                    'autoclose' => true,
+                    'format' => 'yyyy-mm-dd'
+                ],
+            ]) ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-xs-12">
+            &nbsp;
+        </div>
+        <div class="col-md-3 col-xs-12">
+            &nbsp;
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'receiverName') ?>
+        </div>
+        <div class="col-md-3 col-xs-12">
+            <?= $form->field($model, 'date_received')->widget(DatePicker::classname(), [
                 'options' => ['placeholder' => 'Enter date'],
                 'clientOptions' => [
                     'autoclose' => true,

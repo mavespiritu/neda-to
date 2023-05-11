@@ -94,7 +94,7 @@ $asset = AppAsset::register($this);
                     <tr>
                         <td align=center><?= $item['id'] ?></td>
                         <td><?= $item['item'] ?></td>
-                        <td><?= $item['unit'] ?></td>
+                        <td align=center><?= $item['unit'] ?></td>
                         <td align=center><?= number_format($item['delivered'], 0) ?></td>
                         <td align=center><?= $item['delivery_time'] ?></td>
                         <td align=center><?= $item['courtesy'] ?></td>
@@ -118,7 +118,7 @@ $asset = AppAsset::register($this);
                     <b>Date Inspected:  </b><u><?= date("F j, Y", strtotime($iar->date_inspected)) ?></u>
                     <br>
                     <br>
-                    <input type="checkbox" checked /> Inspected, verified and found in order as to quantity and specifications.
+                    &#9745; Inspected, verified and found in order as to quantity and specifications.
                     <br>
                     <br>
                     <br>
@@ -131,9 +131,9 @@ $asset = AppAsset::register($this);
                 <td colspan=3>
                     <b>Date Received:  </b><u><?= date("F j, Y", strtotime($iar->date_received)) ?></u>
                     <br>
-                    <input type="checkbox" <?= $iar->status == 'Complete' ? 'checked' : '' ?> /> Complete 
+                    <?= $iar->status == 'Complete' ? '&#9745;' : '&#9744;' ?> Complete 
                     <br>
-                    <input type="checkbox" <?= $iar->status == 'Partial' ? 'checked' : '' ?>  /> Partial (pls. specify quantity)
+                    <?= $iar->status == 'Partial' ? '&#9745;' : '&#9744;' ?> Partial (pls. specify quantity)
                     <br>
                     <br>
                     <br>

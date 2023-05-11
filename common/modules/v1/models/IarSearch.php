@@ -11,6 +11,10 @@ use common\modules\v1\models\Iar;
  */
 class IarSearch extends Iar
 {
+    public $prNo;
+    public $poNo;
+    public $inspectorName;
+    public $receiverName;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +22,7 @@ class IarSearch extends Iar
     {
         return [
             [['id', 'pr_id', 'po_id', 'inspected_by', 'received_by'], 'integer'],
-            [['iar_no', 'iar_date', 'invoice_no', 'invoice_date', 'date_inspected', 'date_received'], 'safe'],
+            [['iar_no', 'iar_date', 'invoice_no', 'invoice_date', 'date_inspected', 'date_received', 'prNo', 'poNo', 'inspectorName', 'receiverName'], 'safe'],
         ];
     }
 
@@ -40,12 +44,43 @@ class IarSearch extends Iar
      */
     public function search($params)
     {
-        $query = Iar::find();
+        $query = Iar::find()
+                ->joinWith('pr')
+                ->joinWith('po')
+                ->joinWith('inspector i')
+                ->joinWith('receiver r');
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+        ]);
+
+        $dataProvider->setSort([
+            'attributes' => [
+                'iar_no',
+                'iar_date',
+                'prNo' => [
+                    'asc' => ['ppmp_pr.pr_no' => SORT_ASC],
+                    'desc' => ['ppmp_pr.pr_no' => SORT_DESC],
+                ],
+                'poNo' => [
+                    'asc' => ['ppmp_po.po_no' => SORT_ASC],
+                    'desc' => ['ppmp_po.po_no' => SORT_DESC],
+                ],
+                'invoice_no',
+                'invoice_date',
+                'inspectorName' => [
+                    'asc' => ['i.name' => SORT_ASC],
+                    'desc' => ['i.name' => SORT_DESC],
+                ],
+                'date_inspected',
+                'receiverName' => [
+                    'asc' => ['concat(r.name)' => SORT_ASC],
+                    'desc' => ['concat(r.name)' => SORT_DESC],
+                ],
+                'date_received',
+            ]
         ]);
 
         $this->load($params);
@@ -70,7 +105,12 @@ class IarSearch extends Iar
         ]);
 
         $query->andFilterWhere(['like', 'iar_no', $this->iar_no])
-            ->andFilterWhere(['like', 'invoice_no', $this->invoice_no]);
+            ->andFilterWhere(['like', 'ppmp_pr.pr_no', $this->prNo])
+            ->andFilterWhere(['like', 'ppmp_po.po_no', $this->poNo])
+            ->andFilterWhere(['like', 'invoice_no', $this->invoice_no])
+            ->andFilterWhere(['like', 'i.name', $this->inspectorName])
+            ->andFilterWhere(['like', 'r.name', $this->receiverName])
+            ;
 
         return $dataProvider;
     }

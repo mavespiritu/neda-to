@@ -39,10 +39,10 @@ class Iar extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['iar_date', 'invoice_no', 'invoice_date', 'inspected_by', 'date_inspected', 'received_by', 'date_received'], 'required'],
-            [['pr_id', 'po_id', 'inspected_by', 'received_by'], 'integer'],
+            [['pr_id', 'po_id', 'iar_date', 'invoice_no', 'invoice_date', 'inspected_by', 'date_inspected', 'received_by', 'date_received'], 'required'],
+            [['pr_id', 'po_id'], 'integer'],
             [['iar_date', 'invoice_date', 'date_inspected', 'date_received'], 'safe'],
-            [['iar_no'], 'string', 'max' => 20],
+            [['iar_no', 'inspected_by', 'received_by'], 'string', 'max' => 20],
             [['invoice_no'], 'string', 'max' => 100],
             [['po_id'], 'exist', 'skipOnError' => true, 'targetClass' => Po::className(), 'targetAttribute' => ['po_id' => 'id']],
         ];
@@ -56,26 +56,40 @@ class Iar extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'pr_id' => 'PR No.',
+            'prNo' => 'PR No.',
             'po_id' => 'PO/Contract No.',
+            'poNo' => 'PO/Contract No.',
             'iar_no' => 'IAR No.',
             'iar_date' => 'IAR Date',
             'invoice_no' => 'Invoice No.',
             'invoice_date' => 'Invoice Date',
             'inspected_by' => 'Inspected By',
+            'inspectorName' => 'Inspected By',
             'date_inspected' => 'Date Inspected',
             'received_by' => 'Received By',
+            'receiverName' => 'Received By',
             'date_received' => 'Date Received',
         ];
     }
 
-    /**
-     * Gets query for [[Po]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
+    public function getPr()
+    {
+        return $this->hasOne(Pr::className(), ['id' => 'pr_id']);
+    }
+
+    public function getPrNo()
+    {
+        return $this->pr ? $this->pr->pr_no : '';
+    }
+
     public function getPo()
     {
         return $this->hasOne(Po::className(), ['id' => 'po_id']);
+    }
+
+    public function getPoNo()
+    {
+        return $this->po ? $this->po->po_no : '';
     }
 
     public function getStatus()
@@ -103,7 +117,7 @@ class Iar extends \yii\db\ActiveRecord
             ->asArray()
             ->one();
 
-        return $quantity['total'] - $delivered['total'] > 0 ? 'Partial' : 'Complete';
+        return $quantity['total'] > 0 ? $quantity['total'] - $delivered['total'] > 0 ? 'Partial' : 'Complete' : 'No inspected items';
     }
 
     /**

@@ -2,6 +2,11 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\widgets\Pjax;
+use yii\bootstrap\Modal;
+use yii\helpers\Url;
+use yii\web\View;
+use common\modules\v1\models\Iar;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\modules\v1\models\IarSearch */
@@ -13,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="iar-index">
 
     <p>
-        <?= Html::a('<i class="fa fa-plus"></i> Create', ['/v1/iar/create'], ['class' => 'btn btn-app', 'id' => 'create-button']) ?>
+        <?= Html::button('<i class="fa fa-plus"></i> Create', ['value' => Url::to(['/v1/iar/create']), 'class' => 'btn btn-app', 'id' => 'create-button']) ?>
     </p>
 
 
@@ -44,20 +49,23 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             ['class' => 'yii\grid\SerialColumn'],
 
-                            'id',
                             'iar_no',
                             'iar_date',
-                            'pr_id',
-                            'po_id',
+                            'prNo',
+                            'poNo',
                             'invoice_no',
                             'invoice_date',
                             'inspectorName',
                             'date_inspected',
-                            //'receiverName',
-                            //'received_by',
+                            'receiverName',
+                            'date_received',
                             'status',
 
-                            ['class' => 'yii\grid\ActionColumn', 'template' => '{update}{delete}'],
+                            [
+                                'format' => 'raw', 
+                                'value' => function($model){
+                                    return Html::a('View', ['/v1/iar/view', 'id' => $model->id],['class' => 'btn btn-primary btn-xs btn-block']);
+                            }],
                         ],
                     ]); ?>
                 </div>
@@ -65,3 +73,24 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
+<?php
+  Modal::begin([
+    'id' => 'create-modal',
+    'size' => "modal-md",
+    'header' => '<div id="create-modal-header"><h4>Create IAR</h4></div>',
+    'options' => ['tabindex' => false],
+  ]);
+  echo '<div id="create-modal-content"></div>';
+  Modal::end();
+?>
+<?php
+    $script = '
+        $(document).ready(function(){
+            $("#create-button").click(function(){
+              $("#create-modal").modal("show").find("#create-modal-content").load($(this).attr("value"));
+            });
+        });     
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>

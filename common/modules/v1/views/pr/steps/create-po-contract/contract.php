@@ -41,17 +41,24 @@ $asset = AppAsset::register($this);
     </div>
     by and between the <b><?= $agency->value ?> REGIONAL OFFICE 1</b>, represented by the Regional Director, <b><?= $rd->value ?></b>, hereinafter known as the party of the first part and <b><?= $supplier->business_name ?></b> represented by <b><?= $supplier->owner_name ?></b>, hereinafter known as the party of the second part.</p>
     <p class="text-center"><b>W I T N E S S E T H:</b></p>
-    <p>1. That the Party of the Second Part shall provide the following:</p>
-    <p><b><?= $model->purpose ?>:</b></p>
+    <?php $content = '
+        <p>1. That the Party of the Second Part shall provide the following:</p>
+        <p><b>'.$model->purpose.':</b></p>
+        <p>2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b>'.strtoupper(Yii::$app->controller->module->getNumberToWords(sprintf('%0.2f', $total['total']))).' (Php '.number_format($total['total'], 2).') ONLY</b> upon satisfactory completion of the service contracted for.</p>
+        <p>3. That this Contract shall automatically cease to be of any force and effect when sooner terminated at
+    the option of any or both parties. In such case, payment shall be made on the basis of percentage of service
+    completed.</p>
+        <p><b>IN WITNESS WHEREOF</b>, both parties sign this Agreement this <b>'.date('jS \\d\\a\\y \\o\\f F Y', strtotime(date('Y-m-d'))).'</b> at the '.ucwords(strtolower($agency->value)).' Regional Office 1, '.$address->value.'.</p>
+    '; ?>
+    
     <?= $form->field($contractModel, 'content')->widget(CKEditor::className(), [
-        'options' => ['rows' => 3],
-        'preset' => 'full'
+        'options' => [
+            'rows' => 3,
+            'value' => $contractModel->isNewRecord ? $content : $contractModel->content
+        ],
+        'preset' => 'full',
     ])->label(false) ?>
-    <p>2. That the Party of the First Part shall pay the Party of the Second Part in Philippine Currency the amount of <b><?= strtoupper(Yii::$app->controller->module->getNumberToWords(sprintf('%0.2f', $total['total']))) ?> (Php <?= number_format($total['total'], 2) ?>) ONLY</b> upon satisfactory completion of the service contracted for.</p>
-    <p>3. That this Contract shall automatically cease to be of any force and effect when sooner terminated at
-the option of any or both parties. In such case, payment shall be made on the basis of percentage of service
-completed.</p>
-    <p><b>IN WITNESS WHEREOF</b>, both parties sign this Agreement this <b>17th day of October 2022</b> at the <?= ucwords(strtolower($agency->value))?> Regional Office 1, <?= $address->value ?>.</p>
+
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <i><u>PARTY OF THE FIRST PART</u></i>

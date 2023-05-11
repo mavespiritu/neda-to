@@ -64,7 +64,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'format' => 'raw', 
                                 'value' => function($model){
-                                    return Html::a('View', ['/v1/iar/view', 'id' => $model->id],['class' => 'btn btn-primary btn-xs btn-block']);
+                                    $buttons = Html::a('View', ['/v1/iar/view', 'id' => $model->id],['class' => 'btn btn-primary btn-xs']);
+                                    $buttons.= '&nbsp;&nbsp;';
+                                    $buttons.= Html::a('Print', null, ['class' => 'btn btn-info btn-xs', 'onclick' => 'printIar('.$model->id.')']);
+
+                                    return $buttons;
                             }],
                         ],
                     ]); ?>
@@ -90,6 +94,31 @@ $this->params['breadcrumbs'][] = $this->title;
               $("#create-modal").modal("show").find("#create-modal-content").load($(this).attr("value"));
             });
         });     
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>
+<?php
+    $script = '
+        function printIar(id)
+        {
+            var printWindow = window.open(
+                "'.Url::to(['/v1/pr/print-iar']).'?id=" + id, 
+                "Print",
+                "left=200", 
+                "top=200", 
+                "width=650", 
+                "height=500", 
+                "toolbar=0", 
+                "resizable=0"
+                );
+                printWindow.addEventListener("load", function() {
+                    printWindow.print();
+                    setTimeout(function() {
+                    printWindow.close();
+                }, 1);
+                }, true);
+        }
     ';
 
     $this->registerJs($script, View::POS_END);

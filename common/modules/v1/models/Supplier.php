@@ -59,11 +59,11 @@ class Supplier extends \yii\db\ActiveRecord
             'owner_name' => 'Owner Name',
             'contact_person' => 'Contact Person',
             'landline' => 'Landline',
-            'mobile_no' => 'Mobile No',
+            'mobile_no' => 'Mobile No.',
             'email_address' => 'Email Address',
             'philgeps_no' => 'Philgeps No',
-            'bir_registration' => 'Bir Registration',
-            'tin_no' => 'Tin No',
+            'bir_registration' => 'BIR Registration',
+            'tin_no' => 'TIN No.',
         ];
     }
 

@@ -112,7 +112,7 @@
                         
                     ],
                     ['label' => 'BAC', 'icon' => 'users', 'url' => ['/v1/bac-member'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))], 
-                    ['label' => 'Suppliers', 'icon' => 'folder', 'url' => ['/v1/supplier'], 'visible' => !Yii::$app->user->isGuest && (in_array('ProcurementStaff', $userRoles) || in_array('Administrator', $userRoles))], 
+                    ['label' => 'Suppliers', 'icon' => 'folder', 'url' => ['/v1/supplier'], 'visible' => !Yii::$app->user->isGuest], 
                     
                     ['label' => 'User Management', 'icon' => 'users', 'url' => ['/user/admin'], 'visible' => !Yii::$app->user->isGuest && (in_array('Administrator', $userRoles))],
                 ],

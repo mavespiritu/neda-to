@@ -35,7 +35,7 @@ class SupplierController extends Controller
                     [
                         'actions' => ['index', 'create', 'update', 'view', 'delete'],
                         'allow' => true,
-                        'roles' => ['ProcurementStaff', 'Administrator'],
+                        'roles' => ['@'],
                     ],
                 ],
             ],

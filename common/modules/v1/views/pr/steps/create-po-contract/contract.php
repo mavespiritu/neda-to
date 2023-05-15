@@ -48,6 +48,7 @@ $asset = AppAsset::register($this);
         <p>3. That this Contract shall automatically cease to be of any force and effect when sooner terminated at
     the option of any or both parties. In such case, payment shall be made on the basis of percentage of service
     completed.</p>
+        <br>
         <p><b>IN WITNESS WHEREOF</b>, both parties sign this Agreement this <b>'.date('jS \\d\\a\\y \\o\\f F Y', strtotime(date('Y-m-d'))).'</b> at the '.ucwords(strtolower($agency->value)).' Regional Office 1, '.$address->value.'.</p>
     '; ?>
     

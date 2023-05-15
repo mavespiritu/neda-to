@@ -43,21 +43,27 @@ $asset = AppAsset::register($this);
 <p style="text-align:right;">Contract No: <b><?= $contractModel->pocnNo ?></b></p>
 <p><b>KNOW ALL MEN BY THESE PRESENTS:</b></p>
 <br>
-<p style="text-indent: 50px;">This agreement made and entered into this <?= date("F j, Y", strtotime($contractModel->po_date)) ?> by and between the <b><?= $agency->value ?> REGIONAL OFFICE 1</b>, represented by the Regional Director, <b><?= $rd->value ?></b>, hereinafter known as the party of the first part and <b><?= $supplier->business_name ?></b> represented by <b><?= $supplier->owner_name ?></b>, hereinafter known as the party of the second part.</p>
+<p style="text-indent: 50px; text-align: justify;">This agreement made and entered into this <?= date("F j, Y", strtotime($contractModel->po_date)) ?> by and between the <b><?= $agency->value ?> REGIONAL OFFICE 1</b>, represented by the Regional Director, <b><?= $rd->value ?></b>, hereinafter known as the party of the first part and <b><?= $supplier->business_name ?></b> represented by <b><?= $supplier->owner_name ?></b>, hereinafter known as the party of the second part.</p>
+<br>
 <p class="text-center"><b>W I T N E S S E T H:</b></p>
-<span style="text-indent: 50px;"><?= $contractModel->content ?></span>
+<br>
+<span style="text-indent: 50px; text-align: justify;"><?= $contractModel->content ?></span>
+<br>
 <table style="width: 100%">
     <tr>
         <td style="width: 50%;">
             <i><u>PARTY OF THE FIRST PART</u></i>
             <br>
             <br>
+            <br>
             <b><?= $agency->value ?> <br> REGIONAL OFFICE 1</b>
+            <br>
             <br>
             <br>
             <br>
             <b><?= $rd->value ?></b><br>
             Regional Director
+            <br>
             <br>
             <br>
             <i><u>REQUISITION OFFICE/DEPT.</u></i>
@@ -76,8 +82,11 @@ $asset = AppAsset::register($this);
             <br>
             <br>
             <br>
+            <br>
+            <br>
             <b><?= $supplier->business_name ?></b><br>
             (Signature)
+            <br>
             <br>
             <br>
             <i><u>FUNDS AVAILABLE:</u></i>

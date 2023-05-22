@@ -39,7 +39,7 @@ class Iar extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_id', 'po_id', 'iar_date', 'invoice_no', 'invoice_date', 'inspected_by', 'date_inspected', 'received_by', 'date_received'], 'required'],
+            [['pr_id', 'po_id', 'iar_no', 'iar_date', 'invoice_no', 'invoice_date', 'inspected_by', 'date_inspected', 'received_by', 'date_received'], 'required'],
             [['pr_id', 'po_id'], 'integer'],
             [['iar_date', 'invoice_date', 'date_inspected', 'date_received'], 'safe'],
             [['iar_no', 'inspected_by', 'received_by'], 'string', 'max' => 20],

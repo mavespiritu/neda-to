@@ -4624,7 +4624,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all() : PrItemCost::find()
@@ -4644,7 +4644,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['is', 'ppmp_pr_item_cost.rfq_id', null])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -4738,7 +4738,7 @@ class PrController extends Controller
                 ->all();
 
         $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
         $total = !is_null($bid) ? PrItemCost::find()
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total'
@@ -4749,6 +4749,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->asArray()
             ->one() : PrItemCost::find()
@@ -4830,7 +4831,7 @@ class PrController extends Controller
             ->all();
             
         $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
         $total = !is_null($bid) ? PrItemCost::find()
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total'
@@ -4841,6 +4842,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->asArray()
             ->one() : PrItemCost::find()
@@ -4953,7 +4955,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all() : PrItemCost::find()
@@ -4973,7 +4975,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['is', 'ppmp_pr_item_cost.rfq_id', null])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5075,7 +5077,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id','ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5136,7 +5138,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5181,7 +5183,7 @@ class PrController extends Controller
             ->all();
             
         $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
         $total = !is_null($bid) ? PrItemCost::find()
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total'
@@ -5192,6 +5194,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->asArray()
             ->one() : PrItemCost::find()
@@ -5254,7 +5257,7 @@ class PrController extends Controller
             ->all();
             
         $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
         $total = !is_null($bid) ? PrItemCost::find()
             ->select([
                 'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total'
@@ -5265,6 +5268,7 @@ class PrController extends Controller
             ->andWhere(['ppmp_pr_item.pr_id' => $model->id])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->asArray()
             ->one() : PrItemCost::find()
@@ -5376,7 +5380,7 @@ class PrController extends Controller
                 'ppmp_pr_item_cost.rfq_id' => $bid->rfq_id,
             ])
             ->andWhere(['in', 'ppmp_pr_item_cost.pr_item_id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5532,7 +5536,7 @@ class PrController extends Controller
                 'ppmp_iar_item.iar_id' => $iarModel->id,
             ])
             ->andWhere(['in', 'ppmp_pr_item_cost.pr_item_id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5682,7 +5686,7 @@ class PrController extends Controller
                 'ppmp_iar_item.iar_id' => $iar->id,
             ])
             ->andWhere(['in', 'ppmp_pr_item_cost.pr_item_id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -5834,7 +5838,7 @@ class PrController extends Controller
                 'ppmp_iar_item.iar_id' => $iar->id,
             ])
             ->andWhere(['in', 'ppmp_pr_item_cost.pr_item_id', $awardedItems])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -6050,7 +6054,7 @@ class PrController extends Controller
             ->andWhere(['not in', 'ppmp_pr_item.id', $orsItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
             ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+            ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
             ->orderBy(['item' => SORT_ASC])
             ->asArray()
             ->all();
@@ -6343,7 +6347,7 @@ class PrController extends Controller
                 ->all();
             
             $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+            $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
             $items = PrItemCost::find()
                 ->select([
                     'ppmp_pr_item.id as id',
@@ -6366,7 +6370,7 @@ class PrController extends Controller
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-                ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
                 ->orderBy(['item' => SORT_ASC])
                 ->asArray()
                 ->all();
@@ -6409,6 +6413,7 @@ class PrController extends Controller
                 ->andWhere(['ppmp_pr_item_cost.pr_id' => $model->id])
                 ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
                 ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+                ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
                 ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
@@ -6657,7 +6662,7 @@ class PrController extends Controller
                 ->all();
             
             $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+            $rfqInfo = RfqInfo::findOne(['rfq_id' => $bid->rfq->id, 'supplier_id' => $supplier->id]);
             $items = PrItemCost::find()
                 ->select([
                     'ppmp_pr_item.id as id',
@@ -6676,11 +6681,12 @@ class PrController extends Controller
                 ->andWhere(['ppmp_pr_item_cost.pr_id' => $model->id])
                 ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
                 ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+                ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
                 ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $nonProcurableItemIDs])
-                ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost'])
+                ->groupBy(['ppmp_item.id', 'ppmp_pr_item_cost.cost', 'ppmp_pr_item_cost.rfq_info_id'])
                 ->orderBy(['item' => SORT_ASC])
                 ->asArray()
                 ->all();
@@ -6723,6 +6729,7 @@ class PrController extends Controller
                 ->andWhere(['ppmp_pr_item_cost.pr_id' => $model->id])
                 ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier->id])
                 ->andWhere(['ppmp_pr_item_cost.rfq_id' => $bid->rfq->id])
+                ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
                 ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['not in', 'ppmp_pr_item.id', $aprItemIDs])

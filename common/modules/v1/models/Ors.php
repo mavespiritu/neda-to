@@ -160,7 +160,7 @@ class Ors extends \yii\db\ActiveRecord
                 ->one();
 
         }else if($this->type == 'PO'){
-
+            $rfqInfo = RfqInfo::findOne(['rfq_id' => $this->po->bid->rfq_id, 'supplier_id' => $this->po->supplier_id]);
             $items = PrItemCost::find()
                 ->select([
                     'sum(ppmp_pr_item.quantity * ppmp_pr_item_cost.cost) as total',
@@ -170,6 +170,7 @@ class Ors extends \yii\db\ActiveRecord
                 ->andWhere(['in', 'ppmp_pr_item.id', $orsItemIDs])
                 ->andWhere(['ppmp_pr_item_cost.supplier_id' => $this->po->supplier_id])
                 ->andWhere(['ppmp_pr_item_cost.rfq_id' => $this->po->bid->rfq_id])
+                ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
                 ->asArray()
                 ->one();
 

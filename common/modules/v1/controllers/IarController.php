@@ -347,11 +347,11 @@ class IarController extends Controller
         }
 
         if ($model->load(Yii::$app->request->post())) {
-            $lastIar = Iar::find()->orderBy(['id' => SORT_DESC])->one();
-            $lastNumber = $lastIar ? str_pad(intval(substr($lastIar->iar_no, -4)) + 1, 4, '0', STR_PAD_LEFT) : '0001';
-            $iarNo = substr(date("Y"), -2).'-'.$lastNumber;
+            //$lastIar = Iar::find()->orderBy(['id' => SORT_DESC])->one();
+            //$lastNumber = $lastIar ? str_pad(intval(substr($lastIar->iar_no, -4)) + 1, 4, '0', STR_PAD_LEFT) : '0001';
+            //$iarNo = substr(date("Y"), -2).'-'.$lastNumber;
             
-            $model->iar_no = $iarNo;
+            //$model->iar_no = $iarNo;
             $model->save();
 
             \Yii::$app->getSession()->setFlash('success', 'Record Saved');

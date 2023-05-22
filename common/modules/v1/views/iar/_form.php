@@ -81,6 +81,8 @@ $posUrl = \yii\helpers\Url::to(['/v1/iar/po-list']);
         ],
     ])?>
 
+<?= $form->field($model, 'iar_no')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'iar_date')->widget(DatePicker::classname(), [
         'options' => ['placeholder' => 'Enter date', 'autocomplete' => 'off'],
         'clientOptions' => [

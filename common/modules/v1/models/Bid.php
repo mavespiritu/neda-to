@@ -115,7 +115,8 @@ class Bid extends \yii\db\ActiveRecord
                 ->asArray()
                 ->all();
         $awardedItems = ArrayHelper::map($awardedItems, 'pr_item_id', 'pr_item_id');
-
+        
+        $rfqInfo = RfqInfo::findOne(['rfq_id' => $this->rfq->id, 'supplier_id' => $supplier_id]);
         $total = PrItemCost::find()
             ->select([
                 'COALESCE(sum(ppmp_pr_item_cost.cost * ppmp_pr_item.quantity), 0) as total',
@@ -124,6 +125,7 @@ class Bid extends \yii\db\ActiveRecord
             ->andWhere(['ppmp_pr_item.pr_id' => $this->pr_id])
             ->andWhere(['ppmp_pr_item_cost.supplier_id' => $supplier_id])
             ->andWhere(['ppmp_pr_item_cost.rfq_id' => $this->rfq->id])
+            ->andWhere(['ppmp_pr_item_cost.rfq_info_id' => $rfqInfo->id])
             ->andWhere(['in', 'ppmp_pr_item.id', $awardedItems])
             ->asArray()
             ->one();

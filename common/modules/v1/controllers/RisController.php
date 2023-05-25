@@ -546,7 +546,7 @@ class RisController extends Controller
 
         $office = Office::findOne(Yii::$app->user->identity->userinfo->OFFICE_C);
 
-        if(!Yii::$app->user->can('Administrator') && $office->abbreviation != $model->office_id){ throw new NotFoundHttpException('Page not found'); }
+        if(!Yii::$app->user->can('Administrator') && !Yii::$app->user->can('SupplyStaff') && !Yii::$app->user->can('ProcurementStaff') && $office->abbreviation != $model->office_id){ throw new NotFoundHttpException('Page not found'); }
 
         $entityName = Settings::findOne(['title' => 'Entity Name']);
         $fundCluster = FundCluster::find()->one();

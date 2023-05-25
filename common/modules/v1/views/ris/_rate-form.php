@@ -32,10 +32,11 @@ DisableButtonAsset::register($this);
                 <td align=center style="width: 5%"><b>#</b></td>
                 <td align=center style="width: 8%"><b>Stock No.</b></td>
                 <td align=center style="width: 12%"><b>Unit</b></td>
-                <td align=center style="width: 35%"><b>Description</b></td>
+                <td align=center style="width: 25%"><b>Description</b></td>
                 <td align=center style="width: 10%"><b>Total Requested</b></td>
                 <td align=center style="width: 10%"><b>Total Issued</b></td>
-                <td align=center style="width: 20%"><b>Rating</b></td>
+                <td align=center style="width: 10%"><b>Rating</b></td>
+                <td align=center style="width: 20%"><b>Remarks</b></td>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +49,7 @@ DisableButtonAsset::register($this);
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
             <?php if(!empty($subActivityitems)){ ?>
                     <?php foreach($subActivityitems as $subActivity => $items){ ?>
@@ -56,6 +58,7 @@ DisableButtonAsset::register($this);
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <th><?= $subActivity ?> - <?= $model->fundSource->code ?> Funded</th>
+                        <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -72,6 +75,7 @@ DisableButtonAsset::register($this);
                                     <td align=center><?= number_format($item['total'], 0) ?></td>
                                     <td align=center><?= number_format($item['available'], 0) ?></td>
                                     <td><?= $form->field($rateItemModels[$item['id']], "[$id]rating")->dropdownList(['5' => '5', '4' => '4', '3' => '3', '2' => '2', '1' => '1'])->label(false) ?></td>
+                                    <td><?= $form->field($rateItemModels[$item['id']], "[$id]remarks")->textInput(['maxlength' => true])->label(false) ?></td>
                                 </tr>
                                 <?php $i++; ?>
                             <?php } ?>

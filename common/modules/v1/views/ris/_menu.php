@@ -10,10 +10,12 @@ use yii\bootstrap\ButtonDropdown;
 <div>
     <div class="pull-left">
       <?= Html::a('<i class="fa fa-angle-double-left"></i> Back to RIS List', ['/'.Yii::$app->session->get('RIS_ReturnURL')], ['class' => 'btn btn-app']) ?>
-      <?= Html::a('<i class="fa fa-file-o"></i> View Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-      <?= Html::a('<i class="fa fa-plus"></i> Add Original', ['/v1/ris/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-      <?= Html::a('<i class="fa fa-plus"></i> Add Supplemental', ['/v1/ris/supplemental', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
-      <?= $model->getRealignedAmount() > 0 ? Html::a('<span class="badge bg-red"><i class="fa fa-exclamation"></i></span> <i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) : Html::a('<i class="fa fa-mail-forward"></i> Realign', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-file-o"></i> Preview Report', ['/v1/ris/info', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-plus"></i> Add Orig Items', ['/v1/ris/view', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-plus"></i> Add Supp Items', ['/v1/ris/supplemental', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= $model->getRealignedAmount() > 0 ? Html::a('<span class="badge bg-red"><i class="fa fa-exclamation"></i></span> <i class="fa fa-mail-forward"></i> Re-align', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) : Html::a('<i class="fa fa-mail-forward"></i> Realign Items', ['/v1/ris/realign', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-handshake-o"></i> Issue Items', ['/v1/ris/issue', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
+      <?= Html::a('<i class="fa fa-star"></i> Rate Items', ['/v1/ris/rate', 'id' => $model->id], ['class' => 'btn btn-app']) ?>
     </div>
     <div class="pull-right">
       <?= $model->getRealignAmount('Supplemental') <= 0 && $model->risItems && ($model->statusName == 'Draft' || $model->statusName == 'For Revision') ? Html::a('<i class="fa fa-paper-plane"></i> Send For Approval', ['for-approval', 'id' => $model->id], [

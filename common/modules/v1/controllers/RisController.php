@@ -26,6 +26,9 @@ use common\modules\v1\models\RisSource;
 use common\modules\v1\models\RisSearch;
 use common\modules\v1\models\ForContractItem;
 use common\modules\v1\models\Settings;
+use common\modules\v1\models\Issuance;
+use common\modules\v1\models\IssuanceItem;
+use common\modules\v1\models\IarItem;
 use common\modules\v1\models\Model;
 use common\modules\v1\models\MultipleModel;
 use common\modules\v1\models\Transaction;
@@ -58,12 +61,22 @@ class RisController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'info', 'supplemental', 'original', 'realign'],
+                'only' => ['index', 'info', 'supplemental', 'original', 'realign', 'approve', 'disapprove', 'issue', 'rate'],
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'view', 'delete', 'info', 'supplemental', 'original', 'realign'],
+                        'actions' => ['index', 'create', 'update', 'view', 'delete', 'info', 'supplemental', 'original', 'realign', 'rate'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['approve', 'disapprove'],
+                        'allow' => true,
+                        'roles' => ['ProcurementStaff'],
+                    ],
+                    [
+                        'actions' => ['issue'],
+                        'allow' => true,
+                        'roles' => ['SupplyStaff'],
                     ],
                 ],
             ],
@@ -2935,6 +2948,408 @@ class RisController extends Controller
             \Yii::$app->getSession()->setFlash('success', 'Specification has been deleted');
             return $type == 'Original' ? $this->redirect(['view', 'id' => $model->id]) : $this->redirect(['supplemental', 'id' => $model->id]);
         }
+    }
+
+    public function actionIssue($id)
+    {
+        $model = $this->findModel($id);
+
+        $issuances = Issuance::findAll(['ris_id' => $model->id]);
+
+        return $this->render('_issue', [
+            'model' => $model,
+            'issuances' => $issuances
+        ]);
+    }
+
+    public function actionCreateIssuance($id)
+    {
+        $model = $this->findModel($id);
+
+        $issuanceModel = new Issuance();
+        $issuanceModel->ris_id = $model->id;
+
+        $signatories = Signatory::find()->all();
+        $signatories = ArrayHelper::map($signatories, 'emp_id', 'name');
+
+        if (Yii::$app->request->isAjax && $issuanceModel->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($issuanceModel);
+        }
+
+        if ($issuanceModel->load(Yii::$app->request->post())) {
+            $issuanceModel->save();
+
+            \Yii::$app->getSession()->setFlash('success', 'Record Saved');
+            return $this->redirect(['issue', 'id' => $model->id]);
+        }
+
+        return $this->renderAjax('_issuance_form', [
+            'model' => $model,
+            'issuanceModel' => $issuanceModel,
+            'signatories' => $signatories,
+        ]);
+    }
+
+    public function actionViewIssuance($id)
+    {
+        $issuance = Issuance::findOne($id);
+        $model = $issuance->ris;
+
+        $specifications = [];
+
+        $iarItems = IarItem::find()
+                ->select([
+                    'ris_item_id as id',
+                    'sum(balance) as total'
+                ])
+                ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_iar_item.pr_item_id')
+                ->where(['ppmp_pr_item.ris_id' => $model->id])
+                ->groupBy(['ris_item_id'])
+                ->createCommand()
+                ->getRawSql();
+
+        $issuanceItems = IssuanceItem::find()
+                ->select([
+                    'ris_item_id as id',
+                    'sum(quantity) as total'
+                ])
+                ->leftJoin('ppmp_issuance', 'ppmp_issuance.id = ppmp_issuance_item.issuance_id')
+                ->where(['ppmp_issuance.ris_id' => $model->id])
+                ->groupBy(['ris_item_id'])
+                ->createCommand()
+                ->getRawSql();
+
+        $items = RisItem::find()
+                ->select([
+                    'ppmp_ris_item.id as id',
+                    'ppmp_ris_item.ris_id as ris_id',
+                    'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
+                    'ppmp_item.id as stockNo',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
+                    'ppmp_activity.id as activityId',
+                    'ppmp_activity.title as activityTitle',
+                    'ppmp_sub_activity.id as subActivityId',
+                    'ppmp_sub_activity.title as subActivityTitle',
+                    'ppmp_item.title as itemTitle',
+                    'ppmp_item.unit_of_measure as unitOfMeasure',
+                    'ppmp_ppmp_item.cost as cost',
+                    'sum(quantity) as total',
+                    'ppmp_ris_item.type',
+                    'COALESCE(iarItems.total, 0) - COALESCE(issuanceItems.total, 0) as available'
+                ])
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->leftJoin(['iarItems' => '('.$iarItems.')'], 'iarItems.id = ppmp_ris_item.id')
+                ->leftJoin(['issuanceItems' => '('.$issuanceItems.')'], 'issuanceItems.id = ppmp_ris_item.id')
+                ->andWhere([
+                    'ris_id' => $model->id,
+                ])
+                ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
+                ->asArray()
+                ->all();
+
+        $risItems = [];
+        $issuanceItemModels = [];
+
+        if(!empty($items))
+        {
+            foreach($items as $item)
+            {
+                $risItems[$item['activity']][$item['prexc']][] = $item;
+                
+                $issuanceItem = IssuanceItem::findOne(['issuance_id' => $issuance->id, 'ris_item_id' => $item['id']]) ? IssuanceItem::findOne(['issuance_id' => $issuance->id, 'ris_item_id' => $item['id']]) : new IssuanceItem();
+
+                $issuanceItem->scenario = 'issueItem';
+                
+                $issuanceItem->issuance_id = $issuance->id;
+                $issuanceItem->ris_item_id = $item['id'];
+
+                $issuanceItemModels[$item['id']] = $issuanceItem;
+
+                $spec = RisItemSpec::findOne([
+                    'ris_id' => $item['ris_id'],
+                    'activity_id' => $item['activityId'],
+                    'sub_activity_id' => $item['subActivityId'],
+                    'item_id' => $item['stockNo'],
+                    'cost' => $item['cost'],
+                    'type' => $item['type'],
+                ]);
+
+                if($spec)
+                {
+                    $specifications[$item['id']] = $spec;
+                }
+            }
+        }
+
+        if (MultipleModel::loadMultiple($issuanceItemModels, Yii::$app->request->post()) && MultipleModel::validateMultiple($issuanceItemModels)) {
+
+            foreach($issuanceItemModels as $issuanceItemModel)
+            {
+                $iarItem = IarItem::find()
+                            ->leftJoin('ppmp_pr_item', 'ppmp_pr_item.id = ppmp_iar_item.pr_item_id')
+                            ->where(['ppmp_pr_item.ris_item_id' => $issuanceItemModel->ris_item_id])
+                            ->one();
+                $issuanceItemModel->iar_item_id = $issuanceItemModel->isNewRecord ? $iarItem ? $iarItem->id : null : $issuanceItemModel->iar_item_id;
+                $issuanceItemModel->save();
+            }
+
+        }
+
+        return $this->renderAjax('_issuance', [
+            'model' => $model,
+            'issuance' => $issuance,
+            'risItems' => $risItems,
+            'issuanceItemModels' => $issuanceItemModels,
+            'specifications' => $specifications,
+        ]);
+    }
+
+    public function actionUpdateIssuance($id)
+    {
+        $issuanceModel = Issuance::findOne($id);
+        
+        $model = $issuanceModel->ris;
+
+        $signatories = Signatory::find()->all();
+        $signatories = ArrayHelper::map($signatories, 'emp_id', 'name');
+
+        if (Yii::$app->request->isAjax && $issuanceModel->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($issuanceModel);
+        }
+
+        if ($issuanceModel->load(Yii::$app->request->post())) {
+            $issuanceModel->save();
+
+            \Yii::$app->getSession()->setFlash('success', 'Record Saved');
+            return $this->redirect(['issue', 'id' => $model->id]);
+        }
+
+        return $this->renderAjax('_issuance_form', [
+            'model' => $model,
+            'issuanceModel' => $issuanceModel,
+            'signatories' => $signatories,
+        ]);
+    }
+
+    public function actionDeleteIssuance($id)
+    {
+        $issuanceModel = Issuance::findOne($id);
+        
+        $model = $issuanceModel->ris;
+
+        $issuanceModel->delete();
+
+        \Yii::$app->getSession()->setFlash('success', 'Record Deleted');
+            return $this->redirect(['issue', 'id' => $model->id]);
+    }
+
+    public function actionRate($id)
+    {
+        $model = $this->findModel($id);
+
+        $issuances = Issuance::findAll(['ris_id' => $model->id]);
+
+        return $this->render('_rate', [
+            'model' => $model,
+            'issuances' => $issuances
+        ]);
+    }
+
+    public function actionRateIssuance($id)
+    {
+        $issuance = Issuance::findOne($id);
+        $model = $issuance->ris;
+
+        $specifications = [];
+
+        $issuanceItems = IssuanceItem::find()
+                ->select([
+                    'ris_item_id as id',
+                    'sum(quantity) as total'
+                ])
+                ->leftJoin('ppmp_issuance', 'ppmp_issuance.id = ppmp_issuance_item.issuance_id')
+                ->where(['ppmp_issuance.ris_id' => $model->id])
+                ->where(['ppmp_issuance.id' => $issuance->id])
+                ->groupBy(['ris_item_id'])
+                ->createCommand()
+                ->getRawSql();
+
+        $items = RisItem::find()
+                ->select([
+                    'ppmp_ris_item.id as id',
+                    'ppmp_ris_item.ris_id as ris_id',
+                    'ppmp_ris_item.ppmp_item_id as ppmp_item_id',
+                    'ppmp_item.id as stockNo',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code," - ",
+                            ppmp_activity.title
+                        )
+                    ) as activity',
+                    'IF(ppmp_pap.short_code IS NULL,
+                        concat(
+                            ppmp_cost_structure.code,"",
+                            ppmp_organizational_outcome.code,"",
+                            ppmp_program.code,"",
+                            ppmp_sub_program.code,"",
+                            ppmp_identifier.code,"",
+                            ppmp_pap.code,"000-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                        ,
+                        concat(
+                            ppmp_pap.short_code,"-",
+                            ppmp_activity.code,"-",
+                            ppmp_sub_activity.code," - ",
+                            ppmp_sub_activity.title
+                        )
+                    ) as prexc',
+                    'ppmp_activity.id as activityId',
+                    'ppmp_activity.title as activityTitle',
+                    'ppmp_sub_activity.id as subActivityId',
+                    'ppmp_sub_activity.title as subActivityTitle',
+                    'ppmp_item.title as itemTitle',
+                    'ppmp_item.unit_of_measure as unitOfMeasure',
+                    'ppmp_ppmp_item.cost as cost',
+                    'sum(quantity) as total',
+                    'ppmp_ris_item.type',
+                    'COALESCE(issuanceItems.total, 0) as available'
+                ])
+                ->leftJoin('ppmp_ppmp_item', 'ppmp_ppmp_item.id = ppmp_ris_item.ppmp_item_id')
+                ->leftJoin('ppmp_item', 'ppmp_item.id = ppmp_ppmp_item.item_id')
+                ->leftJoin('ppmp_activity', 'ppmp_activity.id = ppmp_ppmp_item.activity_id')
+                ->leftJoin('ppmp_sub_activity', 'ppmp_sub_activity.id = ppmp_ppmp_item.sub_activity_id')
+                ->leftJoin('ppmp_pap', 'ppmp_pap.id = ppmp_activity.pap_id')
+                ->leftJoin('ppmp_identifier', 'ppmp_identifier.id = ppmp_pap.identifier_id')
+                ->leftJoin('ppmp_sub_program', 'ppmp_sub_program.id = ppmp_pap.sub_program_id')
+                ->leftJoin('ppmp_program', 'ppmp_program.id = ppmp_pap.program_id')
+                ->leftJoin('ppmp_organizational_outcome', 'ppmp_organizational_outcome.id = ppmp_pap.organizational_outcome_id')
+                ->leftJoin('ppmp_cost_structure', 'ppmp_cost_structure.id = ppmp_pap.cost_structure_id')
+                ->leftJoin(['issuanceItems' => '('.$issuanceItems.')'], 'issuanceItems.id = ppmp_ris_item.id')
+                ->andWhere([
+                    'ris_id' => $model->id,
+                ])
+                ->andWhere(['>','issuanceItems.total', 0])
+                ->andWhere(['in', 'ppmp_ris_item.type', ['Original', 'Supplemental']])
+                ->groupBy(['ppmp_item.id', 'ppmp_activity.id', 'ppmp_sub_activity.id', 'ppmp_ris_item.cost'])
+                ->orderBy(['activity' => SORT_ASC, 'prexc' => SORT_ASC, 'itemTitle' => SORT_ASC])
+                ->asArray()
+                ->all();
+
+        $risItems = [];
+        $rateItemModels = [];
+
+        if(!empty($items))
+        {
+            foreach($items as $item)
+            {
+                $risItems[$item['activity']][$item['prexc']][] = $item;
+                
+                $rateItem = IssuanceItem::findOne(['issuance_id' => $issuance->id, 'ris_item_id' => $item['id']]);
+
+                $rateItem->scenario = 'rateItem';
+
+                $rateItemModels[$item['id']] = $rateItem;
+
+                $spec = RisItemSpec::findOne([
+                    'ris_id' => $item['ris_id'],
+                    'activity_id' => $item['activityId'],
+                    'sub_activity_id' => $item['subActivityId'],
+                    'item_id' => $item['stockNo'],
+                    'cost' => $item['cost'],
+                    'type' => $item['type'],
+                ]);
+
+                if($spec)
+                {
+                    $specifications[$item['id']] = $spec;
+                }
+            }
+        }
+
+        if (MultipleModel::loadMultiple($rateItemModels, Yii::$app->request->post()) && MultipleModel::validateMultiple($rateItemModels)) {
+
+            foreach($rateItemModels as $rateItemModel)
+            {
+                $rateItemModel->save();
+            }
+
+            \Yii::$app->getSession()->setFlash('success', 'Rating Saved');
+            return $this->redirect(['rate', 'id' => $model->id]);
+
+        }
+
+        return $this->renderAjax('_rate-form', [
+            'model' => $model,
+            'issuance' => $issuance,
+            'risItems' => $risItems,
+            'rateItemModels' => $rateItemModels,
+            'specifications' => $specifications,
+        ]);
     }
 
     /**

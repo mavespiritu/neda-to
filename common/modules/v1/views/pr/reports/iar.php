@@ -90,15 +90,17 @@ $asset = AppAsset::register($this);
         <tbody>
             <?php if(!empty($items)){ ?>
                 <?php foreach($items as $item){ ?>
-                    <?php $id = $item['id']; ?>
-                    <tr>
-                        <td align=center><?= $item['id'] ?></td>
-                        <td><?= $item['item'] ?></td>
-                        <td align=center><?= $item['unit'] ?></td>
-                        <td align=center><?= number_format($item['delivered'], 0) ?></td>
-                        <td align=center><?= $item['delivery_time'] ?></td>
-                        <td align=center><?= $item['courtesy'] ?></td>
-                    </tr>
+                    <?php if($item['delivered'] > 0){ ?>
+                        <?php $id = $item['id']; ?>
+                        <tr>
+                            <td align=center><?= $item['id'] ?></td>
+                            <td><?= $item['item'] ?></td>
+                            <td align=center><?= $item['unit'] ?></td>
+                            <td align=center><?= number_format($item['delivered'], 0) ?></td>
+                            <td align=center><?= $item['delivery_time'] ?></td>
+                            <td align=center><?= $item['courtesy'] ?></td>
+                        </tr>
+                    <?php } ?>
                 <?php } ?>
             <?php } ?>
             <tr>

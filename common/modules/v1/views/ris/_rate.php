@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?php } ?>
                                 <?php }else{ ?>
                                     <tr>
-                                        <td colspan=3 align=center>No issuances</td>
+                                        <td colspan=4 align=center>No issuances</td>
                                     </tr>
                                 <?php } ?>
                                 </tbody>

@@ -39,6 +39,7 @@ return array(
     'file\\' => array($vendorDir . '/axelpal/yii2-attachments'),
     'fedemotta\\datatables\\' => array($vendorDir . '/fedemotta/yii2-widget-datatables'),
     'faryshta\\disableSubmitButtons\\' => array($vendorDir . '/faryshta/yii2-disable-submit-buttons/src'),
+    'dosamigos\\switchery\\' => array($vendorDir . '/2amigos/yii2-switchery-widget/src'),
     'dosamigos\\datepicker\\' => array($vendorDir . '/2amigos/yii2-date-picker-widget/src'),
     'dosamigos\\ckeditor\\' => array($vendorDir . '/2amigos/yii2-ckeditor-widget/src'),
     'dosamigos\\chartjs\\' => array($vendorDir . '/2amigos/yii2-chartjs-widget/src'),

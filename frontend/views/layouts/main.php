@@ -26,7 +26,7 @@ if (class_exists('backend\assets\AppAsset')) {
         <link rel="stylesheet" href="<?= $asset->baseUrl.'/css/site.css' ?>"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
             crossorigin="anonymous"></script>
@@ -36,7 +36,7 @@ if (class_exists('backend\assets\AppAsset')) {
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
     </head>
-    <body class="<?= !Yii::$app->user->isGuest ? 'hold-transition skin-blue' : 'hold-transition layout-top-nav skin-blue' ?>">
+    <body class="<?= !Yii::$app->user->isGuest ? 'hold-transition skin-purple fixed' : 'hold-transition layout-top-nav fixed skin-purple' ?>">
     <?php $this->beginBody() ?>
     <div class="wrapper">
 

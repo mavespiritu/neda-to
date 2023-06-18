@@ -86,6 +86,7 @@ class ComposerStaticInit5dc79614d4211f4e341f1ed4c7fbc2a9
         ),
         'd' => 
         array (
+            'dosamigos\\switchery\\' => 20,
             'dosamigos\\datepicker\\' => 21,
             'dosamigos\\ckeditor\\' => 19,
             'dosamigos\\chartjs\\' => 18,
@@ -316,6 +317,10 @@ class ComposerStaticInit5dc79614d4211f4e341f1ed4c7fbc2a9
         'faryshta\\disableSubmitButtons\\' => 
         array (
             0 => __DIR__ . '/..' . '/faryshta/yii2-disable-submit-buttons/src',
+        ),
+        'dosamigos\\switchery\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/2amigos/yii2-switchery-widget/src',
         ),
         'dosamigos\\datepicker\\' => 
         array (

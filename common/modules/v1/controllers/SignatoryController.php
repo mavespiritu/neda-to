@@ -3,19 +3,31 @@
 namespace common\modules\v1\controllers;
 
 use Yii;
-use common\modules\v1\models\Signatory;
-use common\modules\v1\models\SignatorySearch;
+use common\modules\v1\models\AuthApprover;
+use common\modules\v1\models\Region;
+use common\modules\v1\models\Province;
+use common\modules\v1\models\Citymun;
+use common\modules\v1\models\Employee;
+use common\modules\v1\models\Location;
+use common\modules\v1\models\ConcernStaff;
+use common\modules\v1\models\TravelOrder;
+use common\modules\v1\models\TravelOrderLocation;
+use common\modules\v1\models\TravelOrderVehicle;
+use common\modules\v1\models\DigitalSignature;
+use common\modules\v1\models\TravelType;
+use common\modules\v1\models\Vehicle;
+use common\modules\v1\models\Driver;
+use common\modules\v1\models\TravelOrderSearch;
+use common\modules\v1\models\Model;
+use common\modules\v1\models\MultipleModel;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
-use markavespiritu\user\models\Office;
-use yii\widgets\ActiveForm;
-use yii\web\Response;
 
 /**
- * SignatoriesController implements the CRUD actions for Signatories model.
+ * TravelOrderController implements the CRUD actions for TravelOrder model.
  */
 class SignatoryController extends Controller
 {
@@ -36,7 +48,7 @@ class SignatoryController extends Controller
                 'only' => ['index'],
                 'rules' => [
                     [
-                        'actions' => ['index', 'create', 'update', 'view', 'delete'],
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['Administrator'],
                     ],
@@ -45,109 +57,61 @@ class SignatoryController extends Controller
         ];
     }
 
-    /**
-     * Lists all Signatories models.
-     * @return mixed
-     */
     public function actionIndex()
     {
-        $searchModel = new SignatorySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $data = [];
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+        $staffs = AuthApprover::find()->select([
+            'staff.emp_id as emp_id',
+            'staff.division_id as division',
+            'IF(staff.mname <> "", concat(staff.fname," ",LEFT(staff.mname, 1),". ",staff.lname), concat(staff.fname," ",staff.lname)) as staff',
+            'IF(recommendingApprover.mname <> "", concat(recommendingApprover.fname," ",LEFT(recommendingApprover.mname, 1),". ",recommendingApprover.lname), concat(recommendingApprover.fname," ",recommendingApprover.lname)) as recommender',
+            'IF(finalApprover.mname <> "", concat(finalApprover.fname," ",LEFT(finalApprover.mname, 1),". ",finalApprover.lname), concat(finalApprover.fname," ",finalApprover.lname)) as approver',
+        ])
+        ->leftJoin('tblemployee staff', 'staff.emp_id = tbltev_authapprover.emp_id')
+        ->leftJoin('tblemployee recommendingApprover', 'recommendingApprover.emp_id = tbltev_authapprover.recommending')
+        ->leftJoin('tblemployee finalApprover', 'finalApprover.emp_id = tbltev_authapprover.final')
+        ->where(['staff.work_status' => 'Active'])
+        ->orderBy(['staff.division_id' => SORT_ASC, 'staff' => SORT_ASC])
+        ->asArray()
+        ->all();
+
+        if(!empty($staffs)){
+            foreach($staffs as $staff){
+                $data[$staff['division']][] = $staff;
+            }
+        }
+
+        return $this->render('index',[
+            'data' => $data
         ]);
     }
 
-    /**
-     * Displays a single Signatories model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
+    public function actionAssign($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
+        $model = AuthApprover::findOne(['emp_id' => $id]);
 
-    /**
-     * Creates a new Signatories model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Signatory();
+        $staffs = Employee::find()
+                ->select([
+                    'emp_id',
+                    'IF(tblemployee.mname <> "", concat(tblemployee.fname," ",LEFT(tblemployee.mname, 1),". ",tblemployee.lname), concat(tblemployee.fname," ",tblemployee.lname)) as staff'])
+                ->where(['work_status' => 'Active'])
+                ->asArray()
+                ->all();
 
-        $offices = Office::find()->all();
-        $offices = ArrayHelper::map($offices, 'id', 'abbreviation');
+        $staffs = ArrayHelper::map($staffs, 'emp_id', 'staff');
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if($model->load(Yii::$app->request->post())){
+
+            $model->save();
+
             \Yii::$app->getSession()->setFlash('success', 'Record Saved');
             return $this->redirect(['index']);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('_form',[
             'model' => $model,
-            'offices' => $offices,
+            'staffs' => $staffs
         ]);
-    }
-
-    /**
-     * Updates an existing Signatories model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        $offices = Office::find()->all();
-        $offices = ArrayHelper::map($offices, 'id', 'abbreviation');
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            \Yii::$app->getSession()->setFlash('success', 'Record Updated');
-            return $this->redirect(['index']);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-            'offices' => $offices,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Signatories model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-        \Yii::$app->getSession()->setFlash('success', 'Record Deleted');
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Signatories model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Signatories the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Signatory::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

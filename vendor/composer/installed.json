@@ -190,6 +190,69 @@
             "install-path": "../2amigos/yii2-date-picker-widget"
         },
         {
+            "name": "2amigos/yii2-switchery-widget",
+            "version": "1.0.2",
+            "version_normalized": "1.0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/2amigos/yii2-switchery-widget.git",
+                "reference": "8ccb90b94968b4a93c6b1a295fe1a5ee1f931836"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/2amigos/yii2-switchery-widget/zipball/8ccb90b94968b4a93c6b1a295fe1a5ee1f931836",
+                "reference": "8ccb90b94968b4a93c6b1a295fe1a5ee1f931836",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/switchery": "0.8.*",
+                "yiisoft/yii2": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "time": "2017-06-26T14:55:59+00:00",
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "dosamigos\\switchery\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikola Radovic",
+                    "email": "nikola@2amigos.us",
+                    "homepage": "http://2amigos.us",
+                    "role": "Developer"
+                }
+            ],
+            "description": "iOS 7 style switch widget for Yii2.",
+            "homepage": "https://github.com/2amigos/yii2-switchery-widget",
+            "keywords": [
+                "2amigos",
+                "extension",
+                "switchery",
+                "yii",
+                "yii 2",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/2amigos/yii2-switchery-widget/issues",
+                "source": "https://github.com/2amigos/yii2-switchery-widget"
+            },
+            "install-path": "../2amigos/yii2-switchery-widget"
+        },
+        {
             "name": "almasaeed2010/adminlte",
             "version": "v2.4.18",
             "version_normalized": "2.4.18.0",
@@ -561,6 +624,24 @@
             "install-path": "../bower-asset/datatables-tabletools"
         },
         {
+            "name": "bower-asset/fastclick",
+            "version": "v0.6.11",
+            "version_normalized": "0.6.11.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:ftlabs/fastclick.git",
+                "reference": "57d35f73ca54e31ee37161e32f6ac11786f520d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ftlabs/fastclick/zipball/57d35f73ca54e31ee37161e32f6ac11786f520d2",
+                "reference": "57d35f73ca54e31ee37161e32f6ac11786f520d2"
+            },
+            "type": "bower-asset",
+            "installation-source": "dist",
+            "install-path": "../bower-asset/fastclick"
+        },
+        {
             "name": "bower-asset/fullcalendar",
             "version": "v4.4.3",
             "version_normalized": "4.4.3.0",
@@ -703,6 +784,52 @@
             "type": "bower-asset",
             "installation-source": "dist",
             "install-path": "../bower-asset/punycode"
+        },
+        {
+            "name": "bower-asset/switchery",
+            "version": "0.8.2",
+            "version_normalized": "0.8.2.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:abpetkov/switchery.git",
+                "reference": "81208cba869afed3ab3ac63f2379261977f0400e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/abpetkov/switchery/zipball/81208cba869afed3ab3ac63f2379261977f0400e",
+                "reference": "81208cba869afed3ab3ac63f2379261977f0400e"
+            },
+            "require": {
+                "bower-asset/fastclick": "0.6.11",
+                "bower-asset/transitionize": "*"
+            },
+            "type": "bower-asset",
+            "installation-source": "dist",
+            "license": [
+                "MIT"
+            ],
+            "install-path": "../bower-asset/switchery"
+        },
+        {
+            "name": "bower-asset/transitionize",
+            "version": "0.0.3",
+            "version_normalized": "0.0.3.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:abpetkov/transitionize.git",
+                "reference": "bd106f74b90520774c1a7fff5f1f24073c0bce89"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/abpetkov/transitionize/zipball/bd106f74b90520774c1a7fff5f1f24073c0bce89",
+                "reference": "bd106f74b90520774c1a7fff5f1f24073c0bce89"
+            },
+            "type": "bower-asset",
+            "installation-source": "dist",
+            "license": [
+                "MIT"
+            ],
+            "install-path": "../bower-asset/transitionize"
         },
         {
             "name": "bower-asset/yii2-pjax",

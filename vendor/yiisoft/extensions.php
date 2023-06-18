@@ -330,4 +330,13 @@ return array (
       '@kartik/dialog' => $vendorDir . '/kartik-v/yii2-dialog/src',
     ),
   ),
+  '2amigos/yii2-switchery-widget' => 
+  array (
+    'name' => '2amigos/yii2-switchery-widget',
+    'version' => '1.0.2.0',
+    'alias' => 
+    array (
+      '@dosamigos/switchery' => $vendorDir . '/2amigos/yii2-switchery-widget/src',
+    ),
+  ),
 );

@@ -19,6 +19,7 @@ use common\modules\v1\models\Driver;
 use common\modules\v1\models\TravelOrderSearch;
 use common\modules\v1\models\Model;
 use common\modules\v1\models\MultipleModel;
+use markavespiritu\user\models\UserInfo;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -303,7 +304,7 @@ class TravelOrderController extends Controller
                 
                 try{
                     if($flag = $model->save(false)){
-                        
+
                         if(!empty($staffModels))
                         {
                             foreach($staffModels as $staff)
@@ -314,10 +315,26 @@ class TravelOrderController extends Controller
                                 $staffModel->TO_NO = $model->TO_NO;
                                 $staffModel->emp_id = $staff;
                                 $staffModel->date_modified = date("Y-m-d H:i:s");
+
+                                /* $user = UserInfo::findOne(['EMP_N' => $staffModel->emp_id]);
+
+                                if($user){
+                                    $mailer = Yii::$app->mailer->compose([
+                                        'html' => 'travel-order-detail-html'
+                                    ],[
+                                        'model' => $model,
+                                    ]);
+                                    $mailer->setFrom('mvespiritu@neda.gov.ph');
+                                    $mailer->setTo($user->user->email);
+                                    $mailer->setSubject('Travel Order No. '.$model->TO_NO);
+                                    $mailer->send();
+                                }
+
+                                */
                                 if (! ($flag = $staffModel->save(false))) {
                                     $transaction->rollBack();
                                     break;
-                                }
+                                } 
                             }
                         }
 
@@ -692,6 +709,22 @@ class TravelOrderController extends Controller
             $approvalModel->date_approved = date("Y-m-d H:i:s");
             $approvalModel->save();
 
+            
+            /* $user = UserInfo::findOne(['EMP_N' => $model->TO_creator]);
+
+            if($user){
+                $mailer = Yii::$app->mailer->compose([
+                    'html' => 'travel-order-approve-html'
+                ],[
+                    'model' => $model,
+                ]);
+                $mailer->setFrom('mvespiritu@neda.gov.ph');
+                $mailer->setTo($user->user->email);
+                $mailer->setSubject('Travel Order No. '.$model->TO_NO.' is now approved');
+                $mailer->send();
+                
+            } */
+
             \Yii::$app->getSession()->setFlash('success', 'Travel order is now approved.');
             return $this->redirect(['view', 'id' => $model->TO_NO]);
         }
@@ -749,6 +782,21 @@ class TravelOrderController extends Controller
             $approvalModel->to_no = $model->TO_NO;
             $approvalModel->date_disapproved = date("Y-m-d H:i:s");
             $approvalModel->save();
+
+            /* $user = UserInfo::findOne(['EMP_N' => $model->TO_creator]);
+
+            if($user){
+                $mailer = Yii::$app->mailer->compose([
+                    'html' => 'travel-order-disapprove-html'
+                ],[
+                    'model' => $model,
+                ]);
+                $mailer->setFrom('mvespiritu@neda.gov.ph');
+                $mailer->setTo($user->user->email);
+                $mailer->setSubject('Travel Order No. '.$model->TO_NO.' is disapproved');
+                $mailer->send();
+                
+            } */
 
             \Yii::$app->getSession()->setFlash('success', 'Travel order is now disapproved.');
             return $this->redirect(['view', 'id' => $model->TO_NO]);

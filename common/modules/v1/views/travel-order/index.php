@@ -109,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 Modal::begin([
   'id' => 'search-modal',
-  'size' => "modal-sm",
+  'size' => "modal-md",
   'header' => '<div id="search-modal-header"><h4>Search Travel Orders</h4></div>',
   'options' => ['tabindex' => false],
 ]);

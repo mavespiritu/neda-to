@@ -369,7 +369,7 @@ class TravelOrderController extends Controller
     {
         $model = $this->findModel($id);
 
-        if(!Yii::$app->user->can('Staff') && Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator && $model->isDirector_Approved == 1){
+        if(!Yii::$app->user->can('Staff') || Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator || $model->isDirector_Approved == 1){
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
@@ -544,7 +544,7 @@ class TravelOrderController extends Controller
     {
         $model = $this->findModel($id);
 
-        if(!Yii::$app->user->can('Staff') && Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator && $model->isDirector_Approved == 1){
+        if(!Yii::$app->user->can('Staff') || Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator || $model->isDirector_Approved == 1){
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 

@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw', 
                 'contentOptions' => ['style' => 'width: 1%'],
                 'value' => function($model){
-                    $content = Html::a('<i class="fa fa-pencil"></i>', ['/v1/travel-order/update', 'id' => $model->TO_NO],['class' => 'btn btn-info btn-xs']);
+                    $content = Yii::$app->user->can('Staff') ? Yii::$app->user->identity->userinfo->EMP_N == $model->TO_creator ? $model->isDirector_Approved != 1 ? Html::a('<i class="fa fa-pencil"></i>', ['/v1/travel-order/update', 'id' => $model->TO_NO],['class' => 'btn btn-info btn-xs']) : '' : '' : '';
 
                     return $content;
             }],
@@ -87,13 +87,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw', 
                 'contentOptions' => ['style' => 'width: 1%; padding-left: 0;'],
                 'value' => function($model){
-                    $content = Html::a('<i class="fa fa-trash"></i>', ['delete', 'id' => $model->TO_NO], [
+                    $content = Yii::$app->user->can('Staff') ? Yii::$app->user->identity->userinfo->EMP_N == $model->TO_creator ? $model->isDirector_Approved != 1 ? Html::a('<i class="fa fa-trash"></i>', ['delete', 'id' => $model->TO_NO], [
                         'class' => 'btn btn-danger btn-xs',
                         'data' => [
                             'confirm' => 'Are you sure you want to delete this record?',
                             'method' => 'post',
                         ],
-                    ]);
+                    ]) : '' : '' : '';
 
                     return $content;
             }],

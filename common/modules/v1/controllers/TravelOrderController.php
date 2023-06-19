@@ -369,6 +369,10 @@ class TravelOrderController extends Controller
     {
         $model = $this->findModel($id);
 
+        if(!Yii::$app->user->can('Staff') && Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator && $model->isDirector_Approved == 1){
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
         $concernStaffs = ConcernStaff::find()->where(['TO_NO' => $model->TO_NO])->all();
         $concernStaffs = ArrayHelper::map($concernStaffs, 'emp_id', 'emp_id');
 

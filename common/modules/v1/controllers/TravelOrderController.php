@@ -544,6 +544,10 @@ class TravelOrderController extends Controller
     {
         $model = $this->findModel($id);
 
+        if(!Yii::$app->user->can('Staff') && Yii::$app->user->identity->userinfo->EMP_N != $model->TO_creator && $model->isDirector_Approved == 1){
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
         ConcernStaff::deleteAll(['TO_NO' => $model->TO_NO]);
         TravelOrderLocation::deleteAll(['TO_NO' => $model->TO_NO]);
         TravelOrderVehicle::deleteAll(['TO_NO' => $model->TO_NO]);

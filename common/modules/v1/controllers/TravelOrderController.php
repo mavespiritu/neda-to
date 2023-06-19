@@ -297,7 +297,9 @@ class TravelOrderController extends Controller
                         {
                             foreach($staffModels as $staff)
                             {
+                                $lastStaff = ConcernStaff::find()->orderBy(['id' => SORT_DESC])->one();
                                 $staffModel = new ConcernStaff();
+                                $staffModel->id = $lastStaff ? $lastStaff->id + 1 : 0;
                                 $staffModel->TO_NO = $model->TO_NO;
                                 $staffModel->emp_id = $staff;
                                 $staffModel->date_modified = date("Y-m-d H:i:s");
@@ -456,7 +458,9 @@ class TravelOrderController extends Controller
         
                         foreach($staffModels as $staff)
                         {
+                            $lastStaff = ConcernStaff::find()->orderBy(['id' => SORT_DESC])->one();
                             $staffModel = ConcernStaff::findOne(['TO_NO' => $model->TO_NO, 'emp_id' => $staff]) ? ConcernStaff::findOne(['TO_NO' => $model->TO_NO, 'emp_id' => $staff]) : new ConcernStaff();
+                            $staffModel->id = $staffModel->isNewRecord ? $lastStaff ? $lastStaff->id + 1 : 0 : $staffModel->id;
                             $staffModel->TO_NO = $model->TO_NO;
                             $staffModel->emp_id = $staff;
                             $staffModel->date_modified = date("Y-m-d H:i:s");

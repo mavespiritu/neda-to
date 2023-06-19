@@ -705,6 +705,13 @@ class TravelOrderController extends Controller
             $model->remarks = '';
             $model->save(false);
 
+            //continue here: loop to dates and concern staffs to add ob destination and dtr type
+            /* if($model->concernStaffs){
+                foreach($model->concernStaffs as $staff){
+                    
+                }
+            } */
+
             $approvalModel->to_no = $model->TO_NO;
             $approvalModel->date_approved = date("Y-m-d H:i:s");
             $approvalModel->save();

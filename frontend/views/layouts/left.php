@@ -22,7 +22,8 @@
                     [
                         'label' => 'Travel Orders', 
                         'icon' => 'truck', 
-                        'url' => '#', 
+                        'url' => '#',
+                        'visible' => !Yii::$app->user->isGuest && (in_array('Staff', $userRoles)), 
                         'items' => [
                             ['label' => 'Add New', 'icon' => 'plus', 'url' => ['/v1/travel-order/create'], 'visible' => !Yii::$app->user->isGuest],
                             ['label' => 'List', 'icon' => 'list', 'url' => ['/v1/travel-order/'], 'visible' => !Yii::$app->user->isGuest],

@@ -127,6 +127,17 @@ class TravelOrderController extends Controller
         ]);
     }
 
+    public function actionSearch()
+    {
+        $searchModel = new TravelOrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->renderAjax('_search', [
+            'model' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
     /**
      * Displays a single TravelOrder model.
      * @param string $id

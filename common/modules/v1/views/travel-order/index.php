@@ -1,8 +1,10 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
-
+use yii\bootstrap\Modal;
+use yii\web\View;
 /* @var $this yii\web\View */
 /* @var $searchModel common\modules\v1\models\TravelOrderSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -14,6 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h2><?= $this->title ?>
     <span class="pull-right">
+        <?= Html::button('<i class="fa fa-search"></i> Search Travel Orders', ['value' => Url::to(['/v1/travel-order/search']), 'class' => 'btn btn-default', 'title' => 'Search Travel Orders', 'id' => 'search-button']) ?>
+        <?= Html::a('<i class="fa fa-refresh"></i> Refresh', ['index'], ['class' => 'btn btn-default']) ?>
         <?= Html::a('<i class="fa fa-plus"></i> Add New', ['create'], ['class' => 'btn btn-primary']) ?>
     </span>
     </h2>
@@ -102,3 +106,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<?php
+Modal::begin([
+  'id' => 'search-modal',
+  'size' => "modal-sm",
+  'header' => '<div id="search-modal-header"><h4>Search Travel Orders</h4></div>',
+  'options' => ['tabindex' => false],
+]);
+echo '<div id="search-modal-content"></div>';
+Modal::end();
+?>
+<?php
+    $script = '
+        $("#search-button").click(function(){
+            $("#search-modal").modal("show").find("#search-modal-content").load($(this).attr("value"));
+        });  
+    ';
+
+    $this->registerJs($script, View::POS_END);
+?>

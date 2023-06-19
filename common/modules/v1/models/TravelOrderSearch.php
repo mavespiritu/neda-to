@@ -11,13 +11,14 @@ use common\modules\v1\models\TravelOrder;
  */
 class TravelOrderSearch extends TravelOrder
 {
+    public $creatorName;
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['TO_NO', 'date_filed', 'TO_creator', 'TO_subject', 'date_from', 'date_to', 'isDirector_Approved', 'otherpassenger', 'othervehicle', 'otherdriver'], 'safe'],
+            [['TO_NO', 'date_filed', 'TO_creator', 'TO_subject', 'date_from', 'date_to', 'isDirector_Approved', 'otherpassenger', 'othervehicle', 'otherdriver', 'creatorName'], 'safe'],
             [['withVehicle', 'type_of_travel'], 'integer'],
         ];
     }
@@ -41,6 +42,7 @@ class TravelOrderSearch extends TravelOrder
     public function search($params)
     {
         $query = TravelOrder::find()
+                ->joinWith('creator')
                 ->orderBy(['TO_NO' => SORT_DESC]);
 
         // add conditions that should always apply here
@@ -60,12 +62,12 @@ class TravelOrderSearch extends TravelOrder
         // grid filtering conditions
         $query->andFilterWhere([
             'withVehicle' => $this->withVehicle,
-            'type_of_travel' => $this->type_of_travel,
+            'type_of_travel' => $this->type_of_travel
         ]);
 
         $query->andFilterWhere(['like', 'TO_NO', $this->TO_NO])
             ->andFilterWhere(['like', 'date_filed', $this->date_filed])
-            ->andFilterWhere(['like', 'TO_creator', $this->TO_creator])
+            ->andFilterWhere(['like', 'concat(tblemployee.fname," ",tblemployee.lname)', $this->creatorName])
             ->andFilterWhere(['like', 'TO_subject', $this->TO_subject])
             ->andFilterWhere(['like', 'date_from', $this->date_from])
             ->andFilterWhere(['like', 'date_to', $this->date_to])

@@ -241,6 +241,12 @@ class TravelOrderController extends Controller
 
         $approver = array_values(array_diff_key($approvers, $recommenders));
 
+        $key = array_search('Irenea B. Ubungen (ORD)', $recommenders);
+
+        if($key !== false){
+            unset($recommenders[$key]);
+        }
+
         $staffEmptyLines = max(8 - count($staffs), 0);
         $staffEmptyLines = $staffEmptyLines > 0 ? $staffEmptyLines : 0;
 

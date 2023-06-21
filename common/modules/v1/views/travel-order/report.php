@@ -159,9 +159,9 @@ $asset = AppAsset::register($this);
             <br>
             <br>
             <center>
-                <span style="display: inline-block; border-bottom: 1px solid black; width: 40%; text-align: center;"><b><?= isset($approver[0]) ? $approver[0] : '' ?></b></span>
+                <span style="display: inline-block; border-bottom: 1px solid black; width: 40%; text-align: center;"><b><?= isset($approver[0]) ? $approver[0] : 'Irenea B. Ubungen' ?></b></span>
                 <br>
-                <?= isset($approver[0]) ? $approver[0] == 'Irenea Ubungen' ? 'OIC-Regional Director' : 'OIC-Assistant Regional Director' : '' ?>
+                <?= isset($approver[0]) ? $approver[0] == 'Irenea B. Ubungen' ? 'OIC-Regional Director' : 'OIC-Assistant Regional Director' : 'OIC-Regional Director' ?>
             </center>
         </div>
         <div class="col-md-6 col-xs-12">
@@ -281,9 +281,9 @@ $asset = AppAsset::register($this);
             <br>
             <br>
             <center>
-                <span style="display: inline-block; border-bottom: 1px solid black; width: 40%; text-align: center;"><b><?= isset($approver[0]) ? $approver[0] : '' ?></b></span>
+                <span style="display: inline-block; border-bottom: 1px solid black; width: 40%; text-align: center;"><b><?= isset($approver[0]) ? $approver[0] : 'Irenea B. Ubungen' ?></b></span>
                 <br>
-                <?= isset($approver[0]) ? $approver[0] == 'Irenea Ubungen' ? 'OIC-Regional Director' : 'OIC-Assistant Regional Director' : '' ?>
+                <?= isset($approver[0]) ? $approver[0] == 'Irenea B. Ubungen' ? 'OIC-Regional Director' : 'OIC-Assistant Regional Director' : 'OIC-Regional Director' ?>
             </center>
         </div>
     </div>

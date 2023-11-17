@@ -76,6 +76,19 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    public function actionProfilePicture()
+    {
+        $imageUrl = 'http://58.69.112.182/npis/pages/get_picture.php?ID=' . Yii::$app->user->identity->userinfo->EMP_N;
+        //$imageContent = file_get_contents($imageUrl);
+
+        // Fallback to a default MIME type
+        $defaultContentType = 'image/jpeg';
+        header("Content-Type: $defaultContentType");
+
+        // Output the image content
+        return readfile($imageUrl);
+    }
+
     /**
      * Logs in a user.
      *

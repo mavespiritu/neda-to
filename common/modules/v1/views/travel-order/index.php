@@ -64,6 +64,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return date("F j, Y", strtotime($model->date_to));
                 }
             ],
+            [
+                'attribute' => 'withVehicle',
+                'label' => 'Vehicle Request',
+                'format' => 'raw',
+                'value' => function($model){
+                    return $model->withVehicle == 1 ? 'Yes' : 'No';
+                }
+            ],
             'creatorName',
             [
                 'attribute' => 'date_filed',

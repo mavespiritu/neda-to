@@ -59,5 +59,8 @@ return [
         'rbac' => [
             'class' => 'markavespiritu\rbac\RbacWebModule',
         ],
+        'sso' => [
+            'class' => 'common\modules\sso\Sso',
+        ]
     ]
 ];

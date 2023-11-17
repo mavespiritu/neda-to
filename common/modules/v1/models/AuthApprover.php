@@ -39,7 +39,7 @@ class AuthApprover extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['recommending', 'final'], 'required'],
+            [['final'], 'required'],
             [['emp_id', 'recommending', 'final'], 'string', 'max' => 32],
             [['emp_id'], 'unique'],
             [['emp_id'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::className(), 'targetAttribute' => ['emp_id' => 'emp_id']],

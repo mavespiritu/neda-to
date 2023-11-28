@@ -241,13 +241,16 @@ class TravelOrderController extends Controller
 
         $approver = array_values(array_diff_key($approvers, $recommenders));
 
-        $findRD = array_search('Irenea B. Ubungen (ORD)', $recommenders);
+        $findRD = array_search('Irenea B. Ubungen', $approver);
+
         $findARD = array_search('Racquel T. Atawe', $approver);
 
         if($findRD !== false){
             unset($recommenders[$findRD]);
             unset($approver[$findARD]);
         }
+
+        //echo "<pre>"; print_r($approver); exit;
 
         $staffEmptyLines = max(8 - count($staffs), 0);
         $staffEmptyLines = $staffEmptyLines > 0 ? $staffEmptyLines : 0;
